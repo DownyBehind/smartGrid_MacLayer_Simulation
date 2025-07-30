@@ -405,7 +405,7 @@ def main():
     # 필요 시 드롭 스캔 활성화
     # scan_drops(all_sca_csv)
 
-    edca_ac_breakdown(all_sca_csv)
+    # edca_ac_breakdown(all_sca_csv)
 
     print("✅ 완료")
 
