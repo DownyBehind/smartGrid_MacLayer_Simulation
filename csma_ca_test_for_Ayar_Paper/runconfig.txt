@@ -1,0 +1,73 @@
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Config: HPGP_Step1
+Number of runs: 1
+
+Run 0: $n=50, $repetition=0
+	extends = Base
+	*.host[*].wlan[0].mgmt.typename = "Ieee80211MgmtAdhoc"
+	*.host[*].wlan[0].mgmt.ssid = "hpgp-step1"
+	**.wlan[*].opMode = "g(mixed)"
+	**.wlan[*].mac.useEdca = true
+	**.wlan[*].mac.useDcf = false
+	*.host[*].wlan[0].radio.channelNumber = 1
+	**.arp.typename = "GlobalArp"
+	**.wlan[*].mac.qosStation = true
+	FakeWireCsmaCaNetwork.host[*].wlan[0].radio.energyDetection = -95dBm
+	FakeWireCsmaCaNetwork.host[*].wlan[0].radio.sensitivity = -92dBm
+	**.wlan[*].mac.dcf.rtsPolicy.rtsThreshold = 999999B
+	**.wlan[*].mac.hcf.edca[AC_VO].contention.cwMin = 3
+	**.wlan[*].mac.hcf.edca[AC_VO].contention.cwMax = 7
+	**.wlan[*].mac.hcf.edca[AC_VO].contention.aifsn = 2
+	**.wlan[*].mac.hcf.edca[AC_VI].contention.cwMin = 7
+	**.wlan[*].mac.hcf.edca[AC_VI].contention.cwMax = 15
+	**.wlan[*].mac.hcf.edca[AC_VI].contention.aifsn = 2
+	**.wlan[*].mac.hcf.edca[AC_BE].contention.cwMin = 15
+	**.wlan[*].mac.hcf.edca[AC_BE].contention.cwMax = 31
+	**.wlan[*].mac.hcf.edca[AC_BE].contention.aifsn = 3
+	**.wlan[*].mac.hcf.edca[AC_BK].contention.cwMin = 31
+	**.wlan[*].mac.hcf.edca[AC_BK].contention.cwMax = 63
+	**.wlan[*].mac.hcf.edca[AC_BK].contention.aifsn = 7
+	**.numHosts = 50
+	*.host[*].numApps = 1
+	*.host[*].app[0].typename = "UdpBasicApp"
+	*.host[*].app[0].destAddresses = "host[0]"
+	*.host[*].app[0].destPort = 5000
+	*.host[*].app[0].messageLength = 1500B
+	*.host[*].app[0].startTime = 1s
+	*.host[*].app[0].sendInterval = 0.5ms
+	*.host[0].app[0].typename = "UdpSink"
+	*.host[0].app[0].localPort = 5000
+	**.wlan[*].mac.dcf.rtsPolicy.rtsThreshold = 999999B
+	**.wlan[*].mac.dcf.channelAccess.pendingQueue.packetCapacity = 10000
+	**.wlan[*].mac.dcf.channelAccess.pendingQueue.dataCapacity = 100MiB
+	network = csma_ca_fakewired.FakeWireCsmaCaNetwork
+	sim-time-limit = 30s
+	load-libs = /home/kimdawoon/study/workspace/research/inet/out/clang-release/src/INET
+	cmdenv-interactive = false
+	*.configurator.config = xml("<config><interface hosts='**' address='10.0.0.x' netmask='255.255.255.0'/></config>")
+	*.configurator.addStaticRoutes = false
+	*.host[*].mobility.typename = "StationaryMobility"
+	*.host[1..2].mobility.initialX = 100m
+	*.host[1..2].mobility.initialY = 0m
+	*.host[3..4].mobility.initialX = 400m
+	*.host[3..4].mobility.initialY = 0m
+	*.host[*].mobility.initialZ = 0m
+	*.host[0].mobility.initialX = 200m
+	*.host[0].mobility.initialY = 0m
+	*.radioMedium.backgroundNoise.power = -100dBm
+	**.wlan[0].radio.transmitter.power = 20mW
+	**.wlan[0].radio.analogModel.typename = "ScalarAnalogModel"
+	**.wlan[0].radio.pathLoss.typename = "FreeSpacePathLoss"
+	**.wlan[*].opMode = "g(mixed)"
+	**.wlan[*].mac.useEdca = true
+	**.wlan[*].mac.useDcf = false
+	*.host[*].wlan[0].mgmt.typename = "Ieee80211MgmtAdhoc"
+	*.host[*].wlan[0].agent.typename = ""
+	**.vector-recording = true
+
+End.
