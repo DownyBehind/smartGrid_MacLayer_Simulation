@@ -39,7 +39,7 @@ RETRY_NAMES = [
 # ✅ DCF 전용 지표는 사용하지 않습니다.
 # SENT_NAME / SENT_MODULE_KEY 제거
 # DROP_NAME / DROP_MODULE_KEY도 모듈 제한을 두지 않습니다.
-DROP_NAME = 'packetDropRetryLimitReached:count'
+DROP_NAME = 'packetDroppedSignal:count'   # INET 4.5.4 호환
 # ---------------------------------------------------------------
 
 
@@ -272,14 +272,13 @@ def scan_drops(all_sca_csv_path):
     return cand
 
 
+# ---- postProcessing.py (일부) ----
 def total_tx_frames(all_sca_csv_path: str) -> float:
     df = read_scavetool_csv(all_sca_csv_path)
     df['value_num'] = df['value'].apply(to_float_safe)
-    # ✨ EDCAF 모듈만 집계 (중복 방지)
-    m = df['module'].str.contains(r'mac\.hcf\.edca\.edcaf\[\d+\]', case=False, na=False)
-    n = df['name'].isin(['packetSentToPeerWithRetry:count',
-                         'packetSentToPeerWithoutRetry:count'])
-    return df.loc[m & n, 'value_num'].sum(skipna=True)
+    # EDCA·DCF 공통으로 이름만 보고 합계
+    return df[df['name'].isin(RETRY_NAMES)]['value_num'].sum(skipna=True)
+
 
 
 def total_retrylimit_drops(all_sca_csv_path: str) -> float:
@@ -406,6 +405,28 @@ def main():
     # scan_drops(all_sca_csv)
 
     # edca_ac_breakdown(all_sca_csv)
+
+   # ---------- MAC 효율 계산 ----------  ← 이 아래 부분만 교체
+    # ① 성공적으로 전달된 ‘패킷 수’를 구한다
+    succ_pkts = sum_scalar(all_sca_csv, 'packetReceivedFromPeer:count')
+
+    # ② 패킷당 바이트(ini에서 messageLength) ─ 기본 800B, 필요하면 ini 읽어서 자동화 가능
+    PKT_BYTES = 1470
+
+    succ_bytes = succ_pkts * PKT_BYTES
+    succ_bits  = succ_bytes * 8
+
+    # ③ 총 전송 비트
+    tx_pkts = total_sent                         # 이미 계산돼 있는 총 전송 프레임 수
+    total_tx_bits = tx_pkts * PKT_BYTES * 8      # 800B × 8
+
+    eta = succ_bits / total_tx_bits if total_tx_bits else 0
+
+
+    print(f"succ_bytes={succ_bytes:.0f}")
+    print(f"succ_bits={succ_bits:.0f}")
+    print(f"total_tx_bits={total_tx_bits:.0f}")
+    print(f"MAC 효율 η ≈ {eta:.3f}")
 
     print("✅ 완료")
 
