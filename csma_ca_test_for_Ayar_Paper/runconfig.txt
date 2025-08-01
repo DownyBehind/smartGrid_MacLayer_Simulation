@@ -7,7 +7,7 @@ Setting up Cmdenv...
 Config: HPGP_Step1
 Number of runs: 1
 
-Run 0: $n=50, $repetition=0
+Run 0: $n=5, $repetition=0
 	extends = Base
 	*.host[*].wlan[0].mgmt.typename = "Ieee80211MgmtAdhoc"
 	*.host[*].wlan[0].mgmt.ssid = "hpgp-step1"
@@ -32,7 +32,7 @@ Run 0: $n=50, $repetition=0
 	**.wlan[*].mac.hcf.edca[AC_BK].contention.cwMin = 31
 	**.wlan[*].mac.hcf.edca[AC_BK].contention.cwMax = 63
 	**.wlan[*].mac.hcf.edca[AC_BK].contention.aifsn = 7
-	**.numHosts = 50
+	**.numHosts = 5
 	*.host[*].numApps = 1
 	*.host[*].app[0].typename = "UdpBasicApp"
 	*.host[*].app[0].destAddresses = "host[0]"
