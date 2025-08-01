@@ -13,6 +13,10 @@ import io
 import subprocess
 import pandas as pd
 from typing import List, Tuple
+# 파일 상단 import들 아래에 추가
+import re
+from pathlib import Path
+
 
 # EDCA AC 인덱스 → 이름 매핑
 AC_MAP = {0: 'AC_VO', 1: 'AC_VI', 2: 'AC_BE', 3: 'AC_BK'}
@@ -41,6 +45,111 @@ RETRY_NAMES = [
 # DROP_NAME / DROP_MODULE_KEY도 모듈 제한을 두지 않습니다.
 DROP_NAME = 'retryLimitReached'   # INET 4.5.4 호환
 # ---------------------------------------------------------------
+
+
+# ===== MAC 효율(논문 식 (4)) 계산 헬퍼 =====
+
+def _tx_time_bytes(payload_bytes, rate_bps):
+    return (payload_bytes * 8.0) / float(rate_bps)
+
+def compute_mac_efficiency_from_results(
+    all_sca_csv: str,
+    thr_df,             # compute_avg_bps() 결과 DataFrame (sum_bytes/avg_bps 포함)
+    phy_rate_bps=12_000_000,   # Baseline: 12 Mbps
+    slot_time=9e-6,            # 802.11g slot
+    rifs=2e-6,                 # 802.11g RIFS
+    cifs=34e-6,                # DIFS(유사치)
+    ack_time=44e-6,            # preamble+ACK 시간(근사)
+    pkt_bytes=1500,            # 데이터 페이로드 바이트
+    verbose=True
+    ):
+    """
+    논문 식(4) η = P_S*E[Data] / (P_S*T_S + P_I*T_I + P_C*T_C) / R 로 계산.
+    P_S: 성공확률, P_C: 충돌/드롭 확률, P_I: idle 확률(1-P_S-P_C)
+    카운트류는 스칼라에서 가져오고, 없을 경우 thr_df로 추정.
+    """
+    # (1) 카운트 추출
+    succ_pkts_scalar = sum_scalar(all_sca_csv, 'packetReceivedFromPeer:count')  # 없으면 None
+    tx_with_r   = sum_scalar(all_sca_csv, 'packetSentToPeerWithRetry:count') or 0
+    tx_wo_r     = sum_scalar(all_sca_csv, 'packetSentToPeerWithoutRetry:count') or 0
+    tx_attempts = tx_with_r + tx_wo_r
+
+    # 드롭(재시도 한계) 카운트: 빌드에 따라 없을 수 있음 → 없으면 0
+    retry_limit = sum_scalar(all_sca_csv, 'retryLimitReached:count') or 0
+
+    # (2) succ_pkts 보정: 스칼라가 없으면 thr_df에서 추정
+    succ_bytes = 0
+    if thr_df is not None and not thr_df.empty:
+        if 'sum_bytes' in thr_df.columns:
+            succ_bytes = float(thr_df['sum_bytes'].sum())
+    if succ_pkts_scalar is not None:
+        succ_pkts = float(succ_pkts_scalar)
+    else:
+        succ_pkts = (succ_bytes / float(pkt_bytes)) if pkt_bytes > 0 else 0.0
+
+    # 보호: tx_attempts가 0이면 효율 계산 불가
+    if tx_attempts <= 0:
+        if verbose:
+            print("⚠️  전송 시도가 0입니다. η 계산을 생략합니다.")
+        return {
+            'eta': 0.0, 'P_S': 0.0, 'P_I': 0.0, 'P_C': 0.0,
+            'T_S': 0.0, 'T_I': slot_time, 'T_C': 0.0,
+            'succ_pkts': 0, 'tx_attempts': 0, 'collisions': 0
+        }
+
+    # (3) 확률 계산
+    P_S = succ_pkts / tx_attempts if tx_attempts > 0 else 0.0
+    P_C = (retry_limit / tx_attempts) if tx_attempts > 0 else 0.0  # 재시도한계도달을 충돌/실패로 집계
+    P_I = max(0.0, 1.0 - P_S - P_C)
+
+    # (4) 시간 상수
+    T_FRAME = _tx_time_bytes(pkt_bytes, phy_rate_bps)
+    T_ACK   = ack_time
+    T_S     = T_FRAME + rifs + T_ACK + cifs
+    T_C     = T_FRAME + cifs
+    T_I     = slot_time
+
+    # (5) 식 (4)
+    E_DATA_bits = pkt_bytes * 8.0
+    numerator   = P_S * E_DATA_bits
+    denominator = (P_S * T_S + P_I * T_I + P_C * T_C) * phy_rate_bps
+    eta         = (numerator / denominator) if denominator > 0 else 0.0
+
+    if verbose:
+        print(f"P_S={P_S:.4f}, P_I={P_I:.4f}, P_C={P_C:.4f}")
+        print(f"T_S={T_S*1e6:.2f} µs  T_I={T_I*1e6:.2f} µs  T_C={T_C*1e6:.2f} µs")
+        print(f"🎯  MAC 효율 η ≈ {eta:.3f}")
+
+    return {
+        'eta': eta, 'P_S': P_S, 'P_I': P_I, 'P_C': P_C,
+        'T_S': T_S, 'T_I': T_I, 'T_C': T_C,
+        'succ_pkts': int(succ_pkts), 'tx_attempts': int(tx_attempts), 'collisions': int(retry_limit)
+    }
+
+
+def write_packet_loss_summary_txt(path: str, n: int, metrics: dict, extra: dict):
+    """
+    packet_loss_summary.txt 작성
+    """
+    lines = []
+    lines.append(f"n={n}")
+    lines.append(f"총 전송 시도: {metrics.get('tx_attempts',0)}")
+    lines.append(f"성공 패킷: {metrics.get('succ_pkts',0)}")
+    lines.append(f"충돌/드롭(재시도한계): {metrics.get('collisions',0)}")
+    lines.append(f"P_S={metrics.get('P_S',0):.4f}, P_I={metrics.get('P_I',0):.4f}, P_C={metrics.get('P_C',0):.4f}")
+    lines.append(f"T_S={metrics.get('T_S',0)*1e6:.2f} µs  T_I={metrics.get('T_I',0)*1e6:.2f} µs  T_C={metrics.get('T_C',0)*1e6:.2f} µs")
+    lines.append(f"MAC 효율 η ≈ {metrics.get('eta',0):.3f}")
+    # 부가 정보
+    if 'avg_bps' in extra:
+        lines.append(f"평균 스루풋(bps-벡터평균): {extra['avg_bps']:.2f}")
+    if 'retry_with' in extra and 'retry_without' in extra:
+        tot = (extra['retry_with'] or 0) + (extra['retry_without'] or 0)
+        rw  = extra['retry_with'] or 0
+        pct = (rw / tot * 100.0) if tot > 0 else 0.0
+        lines.append(f"재시도 프레임: {rw}/{tot}  ({pct:.2f}%)")
+
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write("\n".join(lines) + "\n")
 
 
 def run_cmd(cmd: List[str], desc: str) -> str:
@@ -342,117 +451,200 @@ def total_retrycount_scalar(all_sca_csv_path: str) -> float:
     df['value_num'] = pd.to_numeric(df['value'], errors='coerce')
     return df.loc[df['name'] == 'retryCount', 'value_num'].sum(skipna=True)
 
+def collect_runs_by_n(results_dir: str, conf_prefix: str = "Paper_Baseline"):
+    """
+    results_dir 안의 .vec/.sca 파일을 스캔해서
+    파일명 패턴:  <conf_prefix>-n=<N>-#<run>.{vec|sca}
+    를 찾아 N(노드 수)별로 묶어 return.
+
+    return 예시:
+    {
+      5:  {'vec': ['/.../Paper_Baseline-n=5-#0.vec'], 'sca': ['/.../Paper_Baseline-n=5-#0.sca']},
+      20: {'vec': ['/.../Paper_Baseline-n=20-#0.vec'], 'sca': ['/.../Paper_Baseline-n=20-#0.sca']},
+      ...
+    }
+    """
+    runs = {}
+    p = Path(results_dir)
+    for f in p.glob(f"{conf_prefix}-n=*#*.*"):
+        m = re.search(rf"{re.escape(conf_prefix)}-n=(\d+)-#\d+\.(vec|sca)$", f.name)
+        if not m:
+            continue
+        n = int(m.group(1))
+        ext = m.group(2)
+        runs.setdefault(n, {'vec': [], 'sca': []})
+        runs[n][ext].append(str(f))
+    # 각 n마다 vec/sca 최신 것 1개만 쓰도록 정리(여러 run 있을 때)
+    for n in list(runs.keys()):
+        runs[n]['vec'] = sorted(runs[n]['vec'])[-1:] if runs[n]['vec'] else []
+        runs[n]['sca'] = sorted(runs[n]['sca'])[-1:] if runs[n]['sca'] else []
+        if not runs[n]['vec'] and not runs[n]['sca']:
+            runs.pop(n, None)
+    return runs
+
+def make_outputs_for_n(output_dir: str, n: int):
+    """
+    n 값별 출력 파일 경로 묶음 반환
+    """
+    odir = Path(output_dir) / f"n{n}"
+    odir.mkdir(parents=True, exist_ok=True)
+    return {
+        'out_dir':   str(odir),                     # <- 추가
+        'all_vec_csv': str(odir / "all_vectors.csv"),
+        'all_sca_csv': str(odir / "all_scalars.csv"),
+        'thr_csv':     str(odir / "throughput.csv"),
+        'cw_csv':      str(odir / "cw_data.csv"),
+        'retry_csv':   str(odir / "retry_counts.csv"),
+        'thr_bps_csv': str(odir / "throughput_bps.csv"),
+    }
 
 def main():
+    eta_rows = []   # n별 MAC 효율 비교용 누적
+
     print("--- OMNeT++ 결과 데이터 후처리 시작 ---")
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     print(f"📁 결과 저장: {OUTPUT_DIR}\n")
 
-    vec_files, sca_files = ensure_files()
+    # 1) n 값별 run 수집 (없으면 기존 방식 fallback)
+    runs = collect_runs_by_n(RESULTS_DIR, conf_prefix="Paper_Baseline")
 
-    # 1) 전체 덤프
-    all_vec_csv = os.path.join(OUTPUT_DIR, 'all_vectors.csv')
-    all_sca_csv = os.path.join(OUTPUT_DIR, 'all_scalars.csv')
-    dump_all(vec_files, sca_files, all_vec_csv, all_sca_csv)
+    if not runs:
+        # 기존 동작: 한 세트만 처리
+        vec_files, sca_files = ensure_files()
+        all_vec_csv = os.path.join(OUTPUT_DIR, 'all_vectors.csv')
+        all_sca_csv = os.path.join(OUTPUT_DIR, 'all_scalars.csv')
+        dump_all(vec_files, sca_files, all_vec_csv, all_sca_csv)
 
-    # 2) Throughput 벡터 추출
-    thr_csv = os.path.join(OUTPUT_DIR, 'throughput.csv')
-    filter_vectors(all_vec_csv, thr_csv,
-                   name_keys=THR_NAME_KEYS,
-                   module_keys=THR_MODULE_KEYS)
+        # 필터링
+        thr_csv = os.path.join(OUTPUT_DIR, 'throughput.csv')
+        cw_csv = os.path.join(OUTPUT_DIR, 'cw_data.csv')
+        retry_csv = os.path.join(OUTPUT_DIR, 'retry_counts.csv')
+        filter_vectors(all_vec_csv, thr_csv, THR_NAME_KEYS, THR_MODULE_KEYS)
+        filter_vectors(all_vec_csv, cw_csv, CW_NAME_KEYS, [])
+        filter_rows(all_sca_csv, retry_csv, name_exact=RETRY_NAMES)
 
-    # 3) CW 벡터 추출
-    cw_csv = os.path.join(OUTPUT_DIR, 'cw_data.csv')
-    filter_vectors(all_vec_csv, cw_csv,
-                   name_keys=CW_NAME_KEYS)
+        # 스루풋 계산
+        thr_bps_csv = os.path.join(OUTPUT_DIR, 'throughput_bps.csv')
+        compute_avg_bps(thr_csv, thr_bps_csv)
 
-    # 4) Retry 스칼라 추출 (그대로 저장)
-    retry_csv = os.path.join(OUTPUT_DIR, 'retry_counts.csv')
-    filter_rows(all_sca_csv, retry_csv,
-                name_exact=RETRY_NAMES)
+        # 요약(기존 출력 루틴 유지)
+        retry_with = sum_scalar(all_sca_csv, 'packetSentToPeerWithRetry:count')
+        retry_without = sum_scalar(all_sca_csv, 'packetSentToPeerWithoutRetry:count')
+        total_retry_frames = int((retry_with or 0) + (retry_without or 0))
+        print(f"🔁 재시도 프레임: {int(retry_with or 0)}/{total_retry_frames}  ({(retry_with or 0)/(total_retry_frames or 1)*100:.2f}%)")
+        print("✅ 완료")
+        return
 
-    # 5) Packet Loss Rate 계산 (MAC 재시도 한계 기준)
-    total_sent    = total_tx_frames(all_sca_csv)                # ✅ 수정
-    total_dropped = total_retrylimit_drops(all_sca_csv)         # ✅ 수정
-    arp_failed    = total_arp_fail(all_sca_csv)                 # ✅ 추가
+    # 2) n별 처리
+    summary_rows = []
+    for n, files in sorted(runs.items()):
+        print(f"\n=== n={n} 처리 시작 ===")
+        out = make_outputs_for_n(OUTPUT_DIR, n)
 
-    loss_rate = (total_dropped / total_sent * 100.0) if total_sent > 0 else 0.0
+        vec_files = files.get('vec', [])
+        sca_files = files.get('sca', [])
+        if not vec_files or not sca_files:
+            print(f"⚠️  n={n}: vec/sca 파일이 부족합니다. 건너뜀.")
+            continue
 
-    # 6) 스루풋/재시도/CW 요약
-    out = compute_avg_bps(thr_csv, os.path.join(OUTPUT_DIR, 'throughput_bps.csv'))
-    if out is None or getattr(out, 'empty', True):
-        # sim-time-limit(기본 30s)에 맞춰 조정 가능
-        compute_avg_bps_fallback_from_scalars(all_sca_csv, sim_time_limit_sec=5.0)
+        # 덤프
+        dump_all(vec_files, sca_files, out['all_vec_csv'], out['all_sca_csv'])
 
-    compute_retry_ratio(all_sca_csv)
-    cw_change_summary(cw_csv)
-    retry_count_sum = total_retrycount_scalar(all_sca_csv)
+        # 필터
+        filter_vectors(out['all_vec_csv'], out['thr_csv'], THR_NAME_KEYS, THR_MODULE_KEYS)
+        filter_vectors(out['all_vec_csv'], out['cw_csv'], CW_NAME_KEYS, [])
+        filter_rows(out['all_sca_csv'], out['retry_csv'], name_exact=RETRY_NAMES)
 
-    summary = (
-        "----- 요약 -----\n"
-        f"- 총 전송 프레임(EDCA/DCF 합): {total_sent:.0f}\n"
-        f"- MAC 재시도 한계 드랍: {total_dropped:.0f}\n"
-        f"- 패킷 손실률(=재시도한계드랍/전송): {loss_rate:.2f}%\n"
-        f"- IP 주소해결 실패(ARP 실패): {arp_failed:.0f}\n"
-        f"- retryCount(스칼라 합): {retry_count_sum:.0f}\n"
-    )
-    print(summary)
+        # 스루풋 계산
+        thr_df = compute_avg_bps(out['thr_csv'], out['thr_bps_csv'])
 
-    with open(os.path.join(OUTPUT_DIR, 'packet_loss_summary.txt'), 'w', encoding='utf-8') as f:
-        f.write(summary.strip())
+        # 재시도/드롭 등 요약(스칼라에서)
+        retry_with = sum_scalar(out['all_sca_csv'], 'packetSentToPeerWithRetry:count')
+        retry_without = sum_scalar(out['all_sca_csv'], 'packetSentToPeerWithoutRetry:count')
+        retry_limit = sum_scalar(out['all_sca_csv'], 'retryLimitReached:count')  # 없으면 0 반환 처리됨
+        total_tx = sum_scalar(out['all_sca_csv'], 'packetSentToPeer:count') or 0
 
-    # 필요 시 드롭 스캔 활성화
-    # scan_drops(all_sca_csv)
+        # succ_bytes는 기존 로직/레코더에 따라 다르므로, 없으면 0
+        succ_bytes = sum_scalar(out['all_sca_csv'], 'rcvdPk:sum(packetBytes)') or 0
+        succ_bits = 8 * succ_bytes
 
-    # edca_ac_breakdown(all_sca_csv)
+        # 간단 요약 행
+        summary_rows.append({
+            'n': n,
+            'avg_bps_from_vectors': float(thr_df['avg_bps'].mean()) if thr_df is not None and not thr_df.empty else 0.0,
+            'retry_with': int(retry_with or 0),
+            'retry_without': int(retry_without or 0),
+            'retry_limit_drops': int(retry_limit or 0),
+            'total_tx_frames': int(total_tx or 0),
+            'succ_bytes': int(succ_bytes),
+            'succ_bits': int(succ_bits),
+        })
 
-   # ---------- MAC 효율 계산 ----------  ← 기존 블록을 전부 대체 -----------------
-    # (예) IEEE 802.11g 12 Mbps Baseline용 상수
-    PHY_DATA_RATE      = 12_000_000  # bps
-    PHY_SLOT_TIME      = 9e-6        # 9 µs
-    PHY_RIFS           = 2e-6        # 802.11g RIFS 2 µs (필요 없으면 0)
-    PHY_CIFS           = 34e-6       # DIFS ≈ 34 µs
-    PHY_ACK_TIME       = 44e-6       # PHY preamble+ACK bits @24 Mbps
-    PKT_BYTES          = 1500
+        # ----- η 계산(논문 식(4)) + 요약 텍스트 저장 -----
+        avg_bps_mean = float(thr_df['avg_bps'].mean()) if thr_df is not None and not thr_df.empty else 0.0
 
-    # 신호 전송시간 = 프리앰블/PHY 헤더 + 데이터/ACK 전송시간
-    def tx_time(payload_bytes, rate_bps):
-        return (payload_bytes * 8) / rate_bps      # data-only (PHY 헤더 등은 무시)
+        mac_metrics = compute_mac_efficiency_from_results(
+            out['all_sca_csv'],
+            thr_df,
+            phy_rate_bps=12_000_000,   # Baseline 12 Mbps
+            slot_time=9e-6,
+            rifs=2e-6,
+            cifs=34e-6,
+            ack_time=44e-6,
+            pkt_bytes=1500,
+            verbose=True
+        )
 
-    T_FRAME = tx_time(PKT_BYTES, PHY_DATA_RATE)    # 데이터 프레임
-    T_ACK   = PHY_ACK_TIME
-    T_S     = T_FRAME + PHY_RIFS + T_ACK + PHY_CIFS      # 성공 기간
-    T_C     = T_FRAME + PHY_CIFS                         # 충돌 기간
-    T_I     = PHY_SLOT_TIME                              # idle 기간
+        # n 전용 요약 텍스트
+        summary_txt_dir = out.get('out_dir') or str(Path(out['all_sca_csv']).parent)
+        summary_txt_path = os.path.join(summary_txt_dir, 'packet_loss_summary.txt')
+        write_packet_loss_summary_txt(
+            summary_txt_path, n, mac_metrics,
+            extra={
+                'avg_bps': avg_bps_mean,
+                'retry_with': int(retry_with or 0),
+                'retry_without': int(retry_without or 0)
+            }
+        )
+        print(f"📝 packet_loss_summary.txt 저장: {summary_txt_path}")
 
-    # === 1) 성공·충돌·전송 카운트 ===
-    succ_pkts   = sum_scalar(all_sca_csv, 'packetReceivedFromPeer:count')
-    tx_with_r   = sum_scalar(all_sca_csv, 'packetSentToPeerWithRetry:count')
-    tx_wo_r     = sum_scalar(all_sca_csv, 'packetSentToPeerWithoutRetry:count')
-    tx_attempts = tx_with_r + tx_wo_r
-    collisions  = total_retrylimit_drops(all_sca_csv)     # = 재시도 한계 초과
-    idle_slots  = 0                                       # (별도 벡터를 끌어오면 채워주세요)
 
-    if tx_attempts == 0:
-        print("⚠️  전송 시도가 0 입니다. η 계산 불가")
-        eta = 0.0
-    else:
-        P_S = succ_pkts / tx_attempts
-        P_C = collisions / tx_attempts
-        P_I = 1.0 - P_S - P_C                                # 남는 시간을 idle 로 가정
+        # 전체 비교 CSV에 η/확률도 포함하도록 별도 리스트에 추가
+        # (main() 맨 위에 eta_rows = [] 선언 필요)
+        eta_rows.append({
+            'n': n,
+            'eta': mac_metrics.get('eta', 0.0),
+            'P_S': mac_metrics.get('P_S', 0.0),
+            'P_I': mac_metrics.get('P_I', 0.0),
+            'P_C': mac_metrics.get('P_C', 0.0),
+            'avg_bps': avg_bps_mean,
+            'tx_attempts': mac_metrics.get('tx_attempts', 0),
+            'succ_pkts': mac_metrics.get('succ_pkts', 0),
+            'collisions': mac_metrics.get('collisions', 0),
+            'retry_with': int(retry_with or 0),
+            'retry_without': int(retry_without or 0),
+            'retry_limit_drops': int(retry_limit or 0)
+        })
 
-        # === 2) 식 (4) 적용 ===
-        E_DATA_bits = PKT_BYTES * 8
-        numerator   = P_S * E_DATA_bits
-        denominator = (P_S * T_S + P_I * T_I + P_C * T_C) * PHY_DATA_RATE
-        eta         = numerator / denominator if denominator else 0.0
+        print(f"=== n={n} 처리 완료 ===")
 
-        print(f"P_S={P_S:.4f}, P_I={P_I:.4f}, P_C={P_C:.4f}")
-        print(f"T_S={T_S*1e6:.2f} µs  T_I={T_I*1e6:.2f} µs  T_C={T_C*1e6:.2f} µs")
+    # 3) n별 요약 CSV 저장
+    if summary_rows:
+        import pandas as pd
+        summary_df = pd.DataFrame(summary_rows).sort_values('n')
+        summary_path = os.path.join(OUTPUT_DIR, "summary_by_n.csv")
+        summary_df.to_csv(summary_path, index=False)
+        print(f"\n📊 n별 요약 저장: {summary_path}")
 
-    print(f"🎯  MAC 효율 η ≈ {eta:.3f}")
+        # 4) n별 MAC 효율 비교 CSV 저장
+    if eta_rows:
+        import pandas as pd
+        eta_df = pd.DataFrame(eta_rows).sort_values('n')
+        eta_csv_path = os.path.join(OUTPUT_DIR, "summary_eta_by_n.csv")
+        eta_df.to_csv(eta_csv_path, index=False)
+        print(f"📊 n별 MAC 효율 요약 저장: {eta_csv_path}")
+
     print("✅ 완료")
-    # --------------------------------------------------------------------------
 
 
 
