@@ -39,7 +39,7 @@ RETRY_NAMES = [
 # ✅ DCF 전용 지표는 사용하지 않습니다.
 # SENT_NAME / SENT_MODULE_KEY 제거
 # DROP_NAME / DROP_MODULE_KEY도 모듈 제한을 두지 않습니다.
-DROP_NAME = 'packetDroppedSignal:count'   # INET 4.5.4 호환
+DROP_NAME = 'retryLimitReached'   # INET 4.5.4 호환
 # ---------------------------------------------------------------
 
 
@@ -382,7 +382,7 @@ def main():
     out = compute_avg_bps(thr_csv, os.path.join(OUTPUT_DIR, 'throughput_bps.csv'))
     if out is None or getattr(out, 'empty', True):
         # sim-time-limit(기본 30s)에 맞춰 조정 가능
-        compute_avg_bps_fallback_from_scalars(all_sca_csv, sim_time_limit_sec=10.0)
+        compute_avg_bps_fallback_from_scalars(all_sca_csv, sim_time_limit_sec=5.0)
 
     compute_retry_ratio(all_sca_csv)
     cw_change_summary(cw_csv)
@@ -406,29 +406,54 @@ def main():
 
     # edca_ac_breakdown(all_sca_csv)
 
-   # ---------- MAC 효율 계산 ----------  ← 이 아래 부분만 교체
-    # ① 성공적으로 전달된 ‘패킷 수’를 구한다
-    succ_pkts = sum_scalar(all_sca_csv, 'packetReceivedFromPeer:count')
+   # ---------- MAC 효율 계산 ----------  ← 기존 블록을 전부 대체 -----------------
+    # (예) IEEE 802.11g 12 Mbps Baseline용 상수
+    PHY_DATA_RATE      = 12_000_000  # bps
+    PHY_SLOT_TIME      = 9e-6        # 9 µs
+    PHY_RIFS           = 2e-6        # 802.11g RIFS 2 µs (필요 없으면 0)
+    PHY_CIFS           = 34e-6       # DIFS ≈ 34 µs
+    PHY_ACK_TIME       = 44e-6       # PHY preamble+ACK bits @24 Mbps
+    PKT_BYTES          = 1500
 
-    # ② 패킷당 바이트(ini에서 messageLength) ─ 기본 800B, 필요하면 ini 읽어서 자동화 가능
-    PKT_BYTES = 1470
+    # 신호 전송시간 = 프리앰블/PHY 헤더 + 데이터/ACK 전송시간
+    def tx_time(payload_bytes, rate_bps):
+        return (payload_bytes * 8) / rate_bps      # data-only (PHY 헤더 등은 무시)
 
-    succ_bytes = succ_pkts * PKT_BYTES
-    succ_bits  = succ_bytes * 8
+    T_FRAME = tx_time(PKT_BYTES, PHY_DATA_RATE)    # 데이터 프레임
+    T_ACK   = PHY_ACK_TIME
+    T_S     = T_FRAME + PHY_RIFS + T_ACK + PHY_CIFS      # 성공 기간
+    T_C     = T_FRAME + PHY_CIFS                         # 충돌 기간
+    T_I     = PHY_SLOT_TIME                              # idle 기간
 
-    # ③ 총 전송 비트
-    tx_pkts = total_sent                         # 이미 계산돼 있는 총 전송 프레임 수
-    total_tx_bits = tx_pkts * PKT_BYTES * 8      # 800B × 8
+    # === 1) 성공·충돌·전송 카운트 ===
+    succ_pkts   = sum_scalar(all_sca_csv, 'packetReceivedFromPeer:count')
+    tx_with_r   = sum_scalar(all_sca_csv, 'packetSentToPeerWithRetry:count')
+    tx_wo_r     = sum_scalar(all_sca_csv, 'packetSentToPeerWithoutRetry:count')
+    tx_attempts = tx_with_r + tx_wo_r
+    collisions  = total_retrylimit_drops(all_sca_csv)     # = 재시도 한계 초과
+    idle_slots  = 0                                       # (별도 벡터를 끌어오면 채워주세요)
 
-    eta = succ_bits / total_tx_bits if total_tx_bits else 0
+    if tx_attempts == 0:
+        print("⚠️  전송 시도가 0 입니다. η 계산 불가")
+        eta = 0.0
+    else:
+        P_S = succ_pkts / tx_attempts
+        P_C = collisions / tx_attempts
+        P_I = 1.0 - P_S - P_C                                # 남는 시간을 idle 로 가정
 
+        # === 2) 식 (4) 적용 ===
+        E_DATA_bits = PKT_BYTES * 8
+        numerator   = P_S * E_DATA_bits
+        denominator = (P_S * T_S + P_I * T_I + P_C * T_C) * PHY_DATA_RATE
+        eta         = numerator / denominator if denominator else 0.0
 
-    print(f"succ_bytes={succ_bytes:.0f}")
-    print(f"succ_bits={succ_bits:.0f}")
-    print(f"total_tx_bits={total_tx_bits:.0f}")
-    print(f"MAC 효율 η ≈ {eta:.3f}")
+        print(f"P_S={P_S:.4f}, P_I={P_I:.4f}, P_C={P_C:.4f}")
+        print(f"T_S={T_S*1e6:.2f} µs  T_I={T_I*1e6:.2f} µs  T_C={T_C*1e6:.2f} µs")
 
+    print(f"🎯  MAC 효율 η ≈ {eta:.3f}")
     print("✅ 완료")
+    # --------------------------------------------------------------------------
+
 
 
 if __name__ == "__main__":
