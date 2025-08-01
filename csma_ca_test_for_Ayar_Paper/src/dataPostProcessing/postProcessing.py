@@ -382,7 +382,7 @@ def main():
     out = compute_avg_bps(thr_csv, os.path.join(OUTPUT_DIR, 'throughput_bps.csv'))
     if out is None or getattr(out, 'empty', True):
         # sim-time-limit(기본 30s)에 맞춰 조정 가능
-        compute_avg_bps_fallback_from_scalars(all_sca_csv, sim_time_limit_sec=30.0)
+        compute_avg_bps_fallback_from_scalars(all_sca_csv, sim_time_limit_sec=10.0)
 
     compute_retry_ratio(all_sca_csv)
     cw_change_summary(cw_csv)
