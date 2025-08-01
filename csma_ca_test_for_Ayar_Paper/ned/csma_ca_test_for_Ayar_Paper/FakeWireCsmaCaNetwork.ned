@@ -12,7 +12,7 @@ network FakeWireCsmaCaNetwork
     // 네트워크 전체에서 사용할 파라미터를 정의하는 섹션입니다.
     parameters:
         // 노드(호스트)의 개수를 정의하는 정수형 파라미터입니다. 기본값은 10개입니다.
-        int numHosts = default(50);
+        int numHosts = default(20);
 
     // 네트워크를 구성하는 하위 모듈들을 정의하는 섹션입니다.
     submodules:
