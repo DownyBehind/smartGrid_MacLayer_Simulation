@@ -160,31 +160,57 @@ def write_packet_loss_summary_txt(path: str, n: int, metrics: dict, extra: dict)
         f.write("\n".join(lines) + "\n")
 
 # ---------------------------------------------------------------------
-# 패킷 통계만으로 P_S, P_C, P_I 를 근사 계산
-# W0 = withoutRetry, W1 = withRetry, D = retry-limit drops
-# slot_time [s], sim_time [s] 은 호출부에서 넘겨줌
+# 패킷 통계만으로 P_S, P_C, P_I 근사 계산 (Time-budget 방식)
+# - all_sca_csv : opp_scavetool로 덤프한 스칼라 CSV 경로
+# - slot_time   : 802.11 슬롯 시간(예: 9e-6)
+# - sim_time_sec: 시뮬레이션 총 시간(초)
+# 나머지 파라미터는 기본값(12 Mbps, 1500B, SIFS/DIFS/ACK)으로 둬도 됨
 # ---------------------------------------------------------------------
 def estimate_probs_from_packets(all_sca_csv: str,
                                 slot_time: float,
-                                sim_time_sec: float):
+                                sim_time_sec: float,
+                                phy_rate_bps: float = 12_000_000,
+                                pkt_bytes: int      = 1500,
+                                sifs: float         = 16e-6,
+                                difs: float         = 34e-6,
+                                ack_time: float     = 44e-6):
+    # 성공/재시도/드롭 카운트
     W0 = sum_scalar(all_sca_csv, 'packetSentToPeerWithoutRetry:count') or 0
     W1 = sum_scalar(all_sca_csv, 'packetSentToPeerWithRetry:count') or 0
-    D  = sum_scalar(all_sca_csv, 'packetDropRetryLimitReached:count') or 0
-    # 전체 PHY 전송(데이터) 상한 ― 없으면 W0+W1+D 로 대체
+    # 드롭 이름은 빌드에 따라 다를 수 있어 둘 다 시도
+    D  = (sum_scalar(all_sca_csv, 'packetDropRetryLimitReached:count')
+          or sum_scalar(all_sca_csv, 'retryLimitReached:count')
+          or 0)
+    # PHY로 내려간 총 송신 수(데이터/관리 포함). 없으면 보수적으로 대체
     L  = sum_scalar(all_sca_csv, 'packetSentToLower:count') or (W0 + W1 + D)
 
-    C_min = W1 + 8 * D                               # 충돌 슬롯 최소
-    C_max = max(L - (W0 + W1 + D), C_min)           # 최대(재전송 전부 충돌)
-    C_est = 0.5 * (C_min + C_max)                   # Heuristic 중간값
+    # 충돌 슬롯 추정 (하한/상한 평균)
+    C_min = W1 + 8 * D
+    C_max = max(L - (W0 + W1 + D), C_min)
+    C_est = 0.5 * (C_min + C_max)
 
-    S_slots = W0 + W1                               # 성공 슬롯
-    total_slots = int(sim_time_sec / slot_time)     # 시뮬 전체 슬롯
-    idle_slots  = max(total_slots - S_slots - C_est, 0)
+    # 프레임/슬롯 시간
+    t_frame = (pkt_bytes * 8.0) / float(phy_rate_bps)
+    T_S = t_frame + sifs + ack_time + difs
+    T_C = t_frame + difs
 
-    P_S = S_slots  / total_slots
-    P_C = C_est    / total_slots
-    P_I = idle_slots / total_slots
-    return P_S, P_C, P_I, int(C_est)
+    # idle 슬롯 개수: 전체 시간 보존식에서 역산
+    idle_slots = max(0.0, (sim_time_sec - (W0 + W1) * T_S - C_est * T_C) / slot_time)
+
+    # 시간 비중을 확률로 사용
+    if sim_time_sec <= 0:
+        return 0.0, 0.0, 0.0, int(round(C_est))
+
+    P_S = ((W0 + W1) * T_S) / sim_time_sec
+    P_C = (C_est * T_C) / sim_time_sec
+    P_I = max(0.0, 1.0 - P_S - P_C)
+
+    # 수치적 오차 보정(0~1 클램프)
+    P_S = min(max(P_S, 0.0), 1.0)
+    P_C = min(max(P_C, 0.0), 1.0)
+    P_I = min(max(P_I, 0.0), 1.0)
+
+    return P_S, P_C, P_I, int(round(C_est))
 
 def run_cmd(cmd: List[str], desc: str) -> str:
     print(f"🚀 {desc}...")
@@ -533,6 +559,7 @@ def make_outputs_for_n(output_dir: str, n: int):
     }
 
 def main():
+    summary_rows = []   # n별 요약 행
     eta_rows = []   # n별 MAC 효율 비교용 누적
 
     print("--- OMNeT++ 결과 데이터 후처리 시작 ---")
