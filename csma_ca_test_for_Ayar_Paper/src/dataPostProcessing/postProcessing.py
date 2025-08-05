@@ -55,6 +55,7 @@ def _tx_time_bytes(payload_bytes, rate_bps):
 def compute_mac_efficiency_from_results(
     all_sca_csv: str,
     thr_df,             # compute_avg_bps() 결과 DataFrame (sum_bytes/avg_bps 포함)
+    sim_time_sec,
     phy_rate_bps=12_000_000,   # Baseline: 12 Mbps
     slot_time=9e-6,            # 802.11g slot
     rifs=2e-6,                 # 802.11g RIFS
@@ -98,10 +99,16 @@ def compute_mac_efficiency_from_results(
         }
 
     # (3) 확률 계산
-    P_S = succ_pkts / tx_attempts if tx_attempts > 0 else 0.0
-    P_C = (retry_limit / tx_attempts) if tx_attempts > 0 else 0.0  # 재시도한계도달을 충돌/실패로 집계
-    P_I = max(0.0, 1.0 - P_S - P_C)
+#    P_S = succ_pkts / tx_attempts if tx_attempts > 0 else 0.0
+#    P_C = ((retry_limit + tx_with_r) / tx_attempts) if tx_attempts > 0 else 0.0  # 재시도한계도달을 충돌/실패로 집계
+#    P_I = max(0.0, 1.0 - P_S - P_C)
 
+    # (3) 확률 계산 ― 패킷 기반 근사치
+    P_S, P_C, P_I, coll_slots = estimate_probs_from_packets(
+        all_sca_csv,
+        slot_time=slot_time,
+        sim_time_sec=sim_time_sec          # ▼ (아래 호출부에서 넘김)
+    )
     # (4) 시간 상수
     T_FRAME = _tx_time_bytes(pkt_bytes, phy_rate_bps)
     T_ACK   = ack_time
@@ -123,7 +130,8 @@ def compute_mac_efficiency_from_results(
     return {
         'eta': eta, 'P_S': P_S, 'P_I': P_I, 'P_C': P_C,
         'T_S': T_S, 'T_I': T_I, 'T_C': T_C,
-        'succ_pkts': int(succ_pkts), 'tx_attempts': int(tx_attempts), 'collisions': int(retry_limit)
+        #'succ_pkts': int(succ_pkts), 'tx_attempts': int(tx_attempts), 'collisions': int(retry_limit)
+        'succ_pkts': int(succ_pkts), 'tx_attempts': int(tx_attempts), 'collisions': coll_slots
     }
 
 
@@ -151,6 +159,32 @@ def write_packet_loss_summary_txt(path: str, n: int, metrics: dict, extra: dict)
     with open(path, 'w', encoding='utf-8') as f:
         f.write("\n".join(lines) + "\n")
 
+# ---------------------------------------------------------------------
+# 패킷 통계만으로 P_S, P_C, P_I 를 근사 계산
+# W0 = withoutRetry, W1 = withRetry, D = retry-limit drops
+# slot_time [s], sim_time [s] 은 호출부에서 넘겨줌
+# ---------------------------------------------------------------------
+def estimate_probs_from_packets(all_sca_csv: str,
+                                slot_time: float,
+                                sim_time_sec: float):
+    W0 = sum_scalar(all_sca_csv, 'packetSentToPeerWithoutRetry:count') or 0
+    W1 = sum_scalar(all_sca_csv, 'packetSentToPeerWithRetry:count') or 0
+    D  = sum_scalar(all_sca_csv, 'packetDropRetryLimitReached:count') or 0
+    # 전체 PHY 전송(데이터) 상한 ― 없으면 W0+W1+D 로 대체
+    L  = sum_scalar(all_sca_csv, 'packetSentToLower:count') or (W0 + W1 + D)
+
+    C_min = W1 + 8 * D                               # 충돌 슬롯 최소
+    C_max = max(L - (W0 + W1 + D), C_min)           # 최대(재전송 전부 충돌)
+    C_est = 0.5 * (C_min + C_max)                   # Heuristic 중간값
+
+    S_slots = W0 + W1                               # 성공 슬롯
+    total_slots = int(sim_time_sec / slot_time)     # 시뮬 전체 슬롯
+    idle_slots  = max(total_slots - S_slots - C_est, 0)
+
+    P_S = S_slots  / total_slots
+    P_C = C_est    / total_slots
+    P_I = idle_slots / total_slots
+    return P_S, P_C, P_I, int(C_est)
 
 def run_cmd(cmd: List[str], desc: str) -> str:
     print(f"🚀 {desc}...")
@@ -586,6 +620,7 @@ def main():
         mac_metrics = compute_mac_efficiency_from_results(
             out['all_sca_csv'],
             thr_df,
+            sim_time_sec=5.0,
             phy_rate_bps=12_000_000,   # Baseline 12 Mbps
             slot_time=9e-6,
             rifs=2e-6,

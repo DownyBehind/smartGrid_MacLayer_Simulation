@@ -321,7 +321,7 @@ def edca_ac_breakdown(all_sca_csv_path: str):
 
 
 def compute_avg_bps_fallback_from_scalars(all_sca_csv_path: str,
-                                          sim_time_limit_sec: float = 30.0):
+                                          sim_time_limit_sec: float = 5.0):
     """
     CSV-R 벡터(throughput)가 비어 있을 때 UDP Sink의
     rcvdPk:sum(packetBytes) 스칼라 합계로 평균 bps 계산.
@@ -383,7 +383,7 @@ def main():
     out = compute_avg_bps(thr_csv, os.path.join(OUTPUT_DIR, 'throughput_bps.csv'))
     if out is None or getattr(out, 'empty', True):
         # sim-time-limit(기본 30s)에 맞춰 조정 가능
-        compute_avg_bps_fallback_from_scalars(all_sca_csv, sim_time_limit_sec=30.0)
+        compute_avg_bps_fallback_from_scalars(all_sca_csv, sim_time_limit_sec=5.0)
 
     compute_retry_ratio(all_sca_csv)
     cw_change_summary(cw_csv)
