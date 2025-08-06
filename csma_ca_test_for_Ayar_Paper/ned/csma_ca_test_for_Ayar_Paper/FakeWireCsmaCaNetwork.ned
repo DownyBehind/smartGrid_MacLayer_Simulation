@@ -5,6 +5,8 @@ package csma_ca_test_for_Ayar_Paper;
 import inet.node.inet.WirelessHost;
 import inet.physicallayer.wireless.ieee80211.packetlevel.Ieee80211ScalarRadioMedium;
 import inet.networklayer.configurator.ipv4.Ipv4NetworkConfigurator;
+import timeslot.TimeSlotObserver;
+
 
 // 'FakeWireCsmaCaNetwork'라는 이름의 새로운 네트워크를 정의합니다.
 network FakeWireCsmaCaNetwork
@@ -12,7 +14,7 @@ network FakeWireCsmaCaNetwork
     // 네트워크 전체에서 사용할 파라미터를 정의하는 섹션입니다.
     parameters:
         // 노드(호스트)의 개수를 정의하는 정수형 파라미터입니다. 기본값은 10개입니다.
-        int numHosts = default(10);
+        int numHosts = default(5);
 
     // 네트워크를 구성하는 하위 모듈들을 정의하는 섹션입니다.
     submodules:
@@ -32,6 +34,18 @@ network FakeWireCsmaCaNetwork
             // 경로 손실 지수(alpha)를 0으로 설정하여 거리에 따른 신호 감쇠를 완전히 없앱니다.
             // 모든 노드가 서로의 신호를 동일한 세기로 수신하게 됩니다.
             // fading.typename = "";
+        }
+
+        tsObs: TimeSlotObserver {
+            parameters:
+                targetNodePath = ".host[0]";
+                wlanIndex = 0;
+                slotTime   = 9e-6s;
+                sifs       = 16e-6s;
+                cifs       = 34e-6s;
+                ackTxTime  = 44e-6s;
+                ackTimeout = 60e-6s;
+            @display("p=100,100");
         }
 
         // 'host'라는 이름으로 'numNodes' 개수만큼의 'WirelessHost' 모듈 배열을 생성합니다.
