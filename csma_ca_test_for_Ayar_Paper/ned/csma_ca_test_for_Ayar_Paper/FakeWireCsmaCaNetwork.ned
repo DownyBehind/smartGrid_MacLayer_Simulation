@@ -38,9 +38,9 @@ network FakeWireCsmaCaNetwork
 
         tsObs: TimeSlotObserver {
             parameters:
-                targetNodePath = ".host[0]";
+                targetNodePath = ".host[0]";   // 참조 노드 (필요시 변경)
                 wlanIndex = 0;
-                slotTime   = 9e-6s;
+                slotTime   = 9e-6s;            // 802.11 가정
                 sifs       = 16e-6s;
                 cifs       = 34e-6s;
                 ackTxTime  = 44e-6s;

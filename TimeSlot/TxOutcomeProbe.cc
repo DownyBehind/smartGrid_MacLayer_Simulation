@@ -42,7 +42,14 @@ void TxOutcomeProbe::initialize() {
 }
 
 void TxOutcomeProbe::attach() {
-    cModule *node = getSimulation()->getModuleByPath(targetNodePath.c_str());
+    std::string p = targetNodePath;
+    if (!p.empty() && p[0] == '.') {
+        p = getSimulation()->getSystemModule()->getFullPath() + p;
+    }
+    cModule *node = getSimulation()->findModuleByPath(p.c_str());
+    if (!node)
+        throw cRuntimeError("targetNodePath not found: '%s' (resolved: '%s')",
+                           targetNodePath.c_str(), p.c_str());
     if (!node) throw cRuntimeError("targetNodePath not found: %s", targetNodePath.c_str());
     cModule *wlan = node->getSubmodule("wlan", wlanIndex);
     if (!wlan) throw cRuntimeError("wlan[%d] not found", wlanIndex);
