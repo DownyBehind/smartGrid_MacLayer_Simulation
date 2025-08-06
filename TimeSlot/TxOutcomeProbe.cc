@@ -3,7 +3,9 @@
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/packet/Packet.h"
 #include "inet/linklayer/base/MacProtocolBase.h"
-#include "inet/common/Simsignals.h"   // ★ 전역 시그널 심볼들
+#include "inet/common/Simsignals.h"   // 전역 시그널 심볼들
+#include <cstring>
+
 #if __has_include("inet/physicallayer/contract/packetlevel/IRadio.h")
   #include "inet/physicallayer/contract/packetlevel/IRadio.h"
 #elif __has_include("inet/physicallayer/wireless/common/contract/packetlevel/IRadio.h")
@@ -38,19 +40,23 @@ void TxOutcomeProbe::initialize() {
     ackTxTime  = par("ackTxTime").doubleValue();
     ackTimeout = par("ackTimeout").doubleValue();
     attach();
+
+    // ★ 소유권 명시 (스케줄 전 take)
     ackWait = new cMessage("ackWait");
+    take(ackWait);
 }
 
 void TxOutcomeProbe::attach() {
+    // targetNodePath가 ".host[0]" 같은 상대경로면 루트에 붙여 절대경로로 만듦
     std::string p = targetNodePath;
     if (!p.empty() && p[0] == '.') {
-        p = getSimulation()->getSystemModule()->getFullPath() + p;
+        p = getSimulation()->getSystemModule()->getFullPath() + p; // "Root.host[0]"
     }
     cModule *node = getSimulation()->findModuleByPath(p.c_str());
     if (!node)
         throw cRuntimeError("targetNodePath not found: '%s' (resolved: '%s')",
-                           targetNodePath.c_str(), p.c_str());
-    if (!node) throw cRuntimeError("targetNodePath not found: %s", targetNodePath.c_str());
+                            targetNodePath.c_str(), p.c_str());
+
     cModule *wlan = node->getSubmodule("wlan", wlanIndex);
     if (!wlan) throw cRuntimeError("wlan[%d] not found", wlanIndex);
     radio = wlan->getSubmodule("radio");
@@ -61,13 +67,20 @@ void TxOutcomeProbe::attach() {
     txStateSig = inet::physicallayer::IRadio::transmissionStateChangedSignal;
     radio->subscribe(txStateSig, this);
 
-    // 2) MAC 하위수신(ACK 프레임 탐지)
-    //    전역 심볼: inet/common/Simsignals.h
+    // 2) MAC 하위수신(ACK 프레임 탐지) — 전역 시그널
     rxFromLowerSig = inet::packetReceivedFromLowerSignal;
     mac->subscribe(rxFromLowerSig, this);
+
+    // 3) 일부 모듈/버전에서 제공하는 "성공" 시그널 이름 (있으면 자동 연결)
+    try { mac->subscribe("ackReceived", this); } catch(...) {}
+    try { mac->subscribe("txSuccess", this); } catch(...) {}
+    try { mac->subscribe("transmissionSuccessful", this); } catch(...) {}
 }
 
 void TxOutcomeProbe::receiveSignal(cComponent *, simsignal_t id, long l, cObject *) {
+    // ★ 모듈 컨텍스트 진입 (필수)
+    Enter_Method_Silent();
+
     if (id == txStateSig) {
         auto st = static_cast<inet::physicallayer::IRadio::TransmissionState>(l);
         if (st == inet::physicallayer::IRadio::TRANSMISSION_STATE_TRANSMITTING) onTxStart();
@@ -75,7 +88,22 @@ void TxOutcomeProbe::receiveSignal(cComponent *, simsignal_t id, long l, cObject
     }
 }
 
-void TxOutcomeProbe::receiveSignal(cComponent *, simsignal_t id, cObject *obj, cObject *) {
+
+void TxOutcomeProbe::receiveSignal(cComponent *src, simsignal_t id, cObject *obj, cObject *) {
+    // ★ 모듈 컨텍스트 진입 (필수)
+    Enter_Method_Silent();
+
+    // 이름 기반 성공 시그널이 들어오면 즉시 성공 처리
+    if (src == mac) {
+        const char* sigName = cComponent::getSignalName(id);
+        if (sigName && (std::strcmp(sigName,"ackReceived")==0 ||
+                        std::strcmp(sigName,"txSuccess")==0 ||
+                        std::strcmp(sigName,"transmissionSuccessful")==0)) {
+            onAckReceived();
+            return;
+        }
+    }
+
     if (id != rxFromLowerSig) return;
 
     auto pk = dynamic_cast<inet::Packet*>(obj);
@@ -83,7 +111,14 @@ void TxOutcomeProbe::receiveSignal(cComponent *, simsignal_t id, cObject *obj, c
 
     bool isAck = false;
 
-    // 1) 구버전/일부 버전: Ieee80211MacHeader 존재 시
+    // 1) 태그 기반
+    #if defined(HAS_IEEE80211_SUBTYPE_TAG)
+    if (auto ind = pk->findTag<inet::ieee80211::Ieee80211SubtypeInd>())
+        if (ind->getSubtype() == inet::ieee80211::ST_ACK)
+            isAck = true;
+    #endif
+
+    // 2) 헤더 기반
     #if defined(HAS_IEEE80211_MACHEADER)
     if (!isAck) {
         const auto& mh = pk->peekAtFront<inet::ieee80211::Ieee80211MacHeader>();
@@ -91,8 +126,6 @@ void TxOutcomeProbe::receiveSignal(cComponent *, simsignal_t id, cObject *obj, c
             isAck = true;
     }
     #endif
-
-    // 2) 현행(네 트리): ieee80211Frame_m.h 사용 시
     #if defined(HAS_IEEE80211_FRAME)
     if (!isAck) {
         const auto& mh2 = pk->peekAtFront<inet::ieee80211::Ieee80211MacHeader>();
@@ -101,18 +134,19 @@ void TxOutcomeProbe::receiveSignal(cComponent *, simsignal_t id, cObject *obj, c
     }
     #endif
 
-    // 3) 태그 기반: ieee80211SubtypeTag_m.h (Ind/Req 중 수신이면 보통 Ind)
-    #if defined(HAS_IEEE80211_SUBTYPE_TAG)
+    // 3) 클래스/패킷명 Fallback
     if (!isAck) {
-        auto ind = pk->findTag<inet::ieee80211::Ieee80211SubtypeInd>();
-        if (ind && ind->getSubtype() == inet::ieee80211::ST_ACK)
-            isAck = true;
+        std::string cn = pk->getClassName();
+        std::string nm = pk->getName();
+        auto hasAck = [](const std::string& s){
+            return s.find("Ack")!=std::string::npos || s.find("ACK")!=std::string::npos;
+        };
+        if (hasAck(cn) || hasAck(nm)) isAck = true;
     }
-    #endif
 
-    if (isAck)
-        onAckReceived();
+    if (isAck) onAckReceived();
 }
+
 
 void TxOutcomeProbe::onTxStart() {
     if (!inTx) {
@@ -138,7 +172,7 @@ void TxOutcomeProbe::onTxEnd() {
 
 void TxOutcomeProbe::onAckReceived() {
     if (!awaitingAck) return;
-    // 성공: TX 종료 시각 기준 SIFS + ACK 시간 포함
+    // 성공: TX 종료 시각 기준 SIFS + ACK 시간 포함 (논문 T_S 근사)
     succTime += (txEnd - txStart) + sifs + ackTxTime;
     succs++;
     if (ackWait->isScheduled()) cancelEvent(ackWait);
@@ -147,7 +181,7 @@ void TxOutcomeProbe::onAckReceived() {
 
 void TxOutcomeProbe::onAckTimeout() {
     if (!awaitingAck) return;
-    // 실패/충돌: TX 종료 시각 기준 CIFS 포함(필요시 값 조정)
+    // 실패/충돌: TX 종료 시각 기준 CIFS 포함 (논문 T_C 근사)
     collTime += (txEnd - txStart) + cifs;
     awaitingAck = false;
 }

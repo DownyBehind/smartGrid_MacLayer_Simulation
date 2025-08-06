@@ -1,7 +1,7 @@
 // project_smartCharging_macLayer_improvement/TimeSlot/MediumBusyIdleProbe.cc
 #include "MediumBusyIdleProbe.h"
 #include "inet/common/ModuleAccess.h"
-#include "inet/physicallayer/wireless/common/contract/packetlevel/IRadio.h"
+
 Define_Module(MediumBusyIdleProbe);
 
 void MediumBusyIdleProbe::initialize() {
@@ -13,17 +13,16 @@ void MediumBusyIdleProbe::initialize() {
 }
 
 void MediumBusyIdleProbe::attach() {
-    // targetNodePath.wlan[wlanIndex].radio
+    // targetNodePath가 ".host[0]" 같은 상대경로면 루트에 붙여 절대경로로 만듦
     std::string p = targetNodePath;
     if (!p.empty() && p[0] == '.') {
-        // 루트 모듈 경로 + ".host[0]" 그대로 결합 → "Root.host[0]"
-        p = getSimulation()->getSystemModule()->getFullPath() + p;
+        p = getSimulation()->getSystemModule()->getFullPath() + p; // "Root.host[0]"
     }
     cModule *node = getSimulation()->findModuleByPath(p.c_str());
     if (!node)
         throw cRuntimeError("targetNodePath not found: '%s' (resolved: '%s')",
-                           targetNodePath.c_str(), p.c_str());
-    if (!node) throw cRuntimeError("targetNodePath not found: %s", targetNodePath.c_str());
+                            targetNodePath.c_str(), p.c_str());
+
     cModule *wlan = node->getSubmodule("wlan", wlanIndex);
     if (!wlan) throw cRuntimeError("wlan[%d] not found", wlanIndex);
     radio = wlan->getSubmodule("radio");
@@ -39,6 +38,9 @@ void MediumBusyIdleProbe::attach() {
 }
 
 void MediumBusyIdleProbe::receiveSignal(cComponent *, simsignal_t id, long l, cObject *) {
+    // ★ scheduleAt/cancelEvent/recordScalar 등 안전하게 호출하려면 컨텍스트 진입
+    Enter_Method_Silent();
+
     if (id != rxStateSig) return;
     auto newState = static_cast<inet::physicallayer::IRadio::ReceptionState>(l);
     simtime_t now = simTime();
@@ -48,6 +50,7 @@ void MediumBusyIdleProbe::receiveSignal(cComponent *, simsignal_t id, long l, cO
     lastRxState = newState;
     lastChange = now;
 }
+
 
 void MediumBusyIdleProbe::finish() {
     // close last interval

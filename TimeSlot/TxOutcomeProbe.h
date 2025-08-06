@@ -1,6 +1,7 @@
 // project_smartCharging_macLayer_improvement/TimeSlot/TxOutcomeProbe.h
 #pragma once
 #include <omnetpp.h>
+
 // INET 버전에 따라 IRadio.h 경로가 다름 → 안전하게 순차 체크
 #if __has_include("inet/physicallayer/contract/packetlevel/IRadio.h")
   #include "inet/physicallayer/contract/packetlevel/IRadio.h"
@@ -11,6 +12,7 @@
 #else
   #include "inet/physicallayer/wireless/common/contract/IRadio.h"
 #endif
+
 using namespace omnetpp;
 using namespace inet;
 
