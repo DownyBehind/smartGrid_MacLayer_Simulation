@@ -70,10 +70,14 @@ def compute_mac_efficiency_from_results(
     카운트류는 스칼라에서 가져오고, 없을 경우 thr_df로 추정.
     """
     # (1) 카운트 추출
-    succ_pkts_scalar = sum_scalar(all_sca_csv, 'packetReceivedFromPeer:count')  # 없으면 None
+    succ_pkts_scalar = sum_scalar(all_sca_csv, 'packetReceivedFromPeer:count')  # 성공 수신
     tx_with_r   = sum_scalar(all_sca_csv, 'packetSentToPeerWithRetry:count') or 0
     tx_wo_r     = sum_scalar(all_sca_csv, 'packetSentToPeerWithoutRetry:count') or 0
-    tx_attempts = tx_with_r + tx_wo_r
+    retry_limit = sum_scalar(all_sca_csv, 'retryLimitReached:count') or 0
+
+    # 총 전송 시도: PHY로 내려간 송신(가장 보편적). 없으면 성공+드롭으로 근사
+    tx_attempts_phy = sum_scalar(all_sca_csv, 'packetSentToLower:count')
+    tx_attempts = int(tx_attempts_phy or (tx_with_r + tx_wo_r + retry_limit))
 
     # 드롭(재시도 한계) 카운트: 빌드에 따라 없을 수 있음 → 없으면 0
     retry_limit = sum_scalar(all_sca_csv, 'retryLimitReached:count') or 0
@@ -127,11 +131,36 @@ def compute_mac_efficiency_from_results(
         print(f"T_S={T_S*1e6:.2f} µs  T_I={T_I*1e6:.2f} µs  T_C={T_C*1e6:.2f} µs")
         print(f"🎯  MAC 효율 η ≈ {eta:.3f}")
 
+    # --- [ADD] Rate-efficiency (payload throughput / PHY rate) --------------------    
+    # payload_bits_delivered 계산 (가급적 스칼라 → 없으면 thr_df → 최후 succ_pkts*pkt_bytes)
+    payload_bits = 0
+
+    # 1) 스칼라에 packet 바이트 합이 노출되어 있다면 (가장 정확)
+    succ_bytes_scalar = sum_scalar(all_sca_csv, 'packetReceivedFromPeer:sum(packetBytes)')
+    if succ_bytes_scalar is not None:
+        payload_bits = int(succ_bytes_scalar) * 8
+
+    # 2) 없으면 thr_df의 합계를 사용 (모듈 평균이 아니라 반드시 '합(sum_bytes)' 사용)
+    elif thr_df is not None and not thr_df.empty and 'sum_bytes' in thr_df.columns:
+        payload_bits = int(thr_df['sum_bytes'].sum()) * 8
+
+    # 3) 최후 보정: 성공 패킷 수 × 페이로드 크기(가정)
+    else:
+        payload_bits = int(succ_pkts) * int(pkt_bytes) * 8
+
+    # η_rate = (전달 payload 처리율) / PHY rate
+    eta_rate = (payload_bits / float(sim_time_sec)) / float(phy_rate_bps)
+    # ------------------------------------------------------------------------------
+
+    # 기존 return 딕셔너리에 함께 넣기
     return {
-        'eta': eta, 'P_S': P_S, 'P_I': P_I, 'P_C': P_C,
+        'eta': eta,                       # (기존: time-efficiency 추정치)
+        'eta_rate': eta_rate,             # (추가) rate-efficiency
+        'P_S': P_S, 'P_I': P_I, 'P_C': P_C,
         'T_S': T_S, 'T_I': T_I, 'T_C': T_C,
-        #'succ_pkts': int(succ_pkts), 'tx_attempts': int(tx_attempts), 'collisions': int(retry_limit)
-        'succ_pkts': int(succ_pkts), 'tx_attempts': int(tx_attempts), 'collisions': coll_slots
+        'succ_pkts': int(succ_pkts),
+        'tx_attempts': int(tx_attempts),
+        'collisions': coll_slots
     }
 
 
@@ -148,6 +177,10 @@ def write_packet_loss_summary_txt(path: str, n: int, metrics: dict, extra: dict)
     lines.append(f"T_S={metrics.get('T_S',0)*1e6:.2f} µs  T_I={metrics.get('T_I',0)*1e6:.2f} µs  T_C={metrics.get('T_C',0)*1e6:.2f} µs")
     lines.append(f"MAC 효율 η ≈ {metrics.get('eta',0):.3f}")
     # 부가 정보
+    # --- [ADD] η_rate 표시 --------------------------------------------------------
+    if 'eta_rate' in metrics:
+        lines.append(f"Rate 효율 η_rate ≈ {metrics['eta_rate']:.3f}  (payload throughput / PHY rate)")
+    # -----------------------------------------------------------------------------                                                                         
     if 'avg_bps' in extra:
         lines.append(f"평균 스루풋(bps-벡터평균): {extra['avg_bps']:.2f}")
     if 'retry_with' in extra and 'retry_without' in extra:
@@ -203,9 +236,19 @@ def estimate_probs_from_packets(all_sca_csv: str,
 
     P_S = ((W0 + W1) * T_S) / sim_time_sec
     P_C = (C_est * T_C) / sim_time_sec
-    P_I = max(0.0, 1.0 - P_S - P_C)
 
-    # 수치적 오차 보정(0~1 클램프)
+    # 1차 계산 후 정합성 보장:
+    if P_S + P_C >= 1.0:
+        # idle은 0으로, 성공/충돌을 비율 유지한 채 1로 스케일
+        scale = 1.0 / (P_S + P_C)
+        P_S *= scale
+        P_C *= scale
+        P_I = 0.0
+    else:
+        P_I = 1.0 - P_S - P_C
+
+    # 수치 오차만 최소한의 클램핑
+    eps = 1e-12
     P_S = min(max(P_S, 0.0), 1.0)
     P_C = min(max(P_C, 0.0), 1.0)
     P_I = min(max(P_I, 0.0), 1.0)
@@ -557,6 +600,69 @@ def make_outputs_for_n(output_dir: str, n: int):
         'retry_csv':   str(odir / "retry_counts.csv"),
         'thr_bps_csv': str(odir / "throughput_bps.csv"),
     }
+def update_eta_summary_csv(csv_path: str, n: int, metrics: dict, thr_df=None):
+    """
+    summary_eta_by_n.csv 파일에 한 줄을 (n 기준) 추가/갱신한다.
+    - 기존 파일에 eta_rate 열이 없어도 자동으로 추가한다.
+    - 같은 n 값이 이미 있으면 최신 값으로 덮어쓴다.
+    """
+    # 1) 값 추출
+    eta_time = metrics.get('eta', float('nan'))
+    eta_rate = metrics.get('eta_rate', float('nan'))
+    succ_pkts = metrics.get('succ_pkts', float('nan'))
+    tx_attempts = metrics.get('tx_attempts', float('nan'))
+    collisions = metrics.get('collisions', float('nan'))
+    P_S = metrics.get('P_S', float('nan'))
+    P_I = metrics.get('P_I', float('nan'))
+    P_C = metrics.get('P_C', float('nan'))
+    T_S = metrics.get('T_S', float('nan'))
+    T_I = metrics.get('T_I', float('nan'))
+    T_C = metrics.get('T_C', float('nan'))
+
+    # thr_df에 avg_bps가 있으면 가져옴(없으면 NaN)
+    avg_bps = float('nan')
+    if thr_df is not None and not getattr(thr_df, 'empty', True) and 'avg_bps' in thr_df.columns:
+        avg_bps = float(thr_df['avg_bps'].mean())
+
+    # 2) 현재 행(dict)
+    row = {
+        'n': n,
+        'eta': eta_time,         # 기존 time-efficiency
+        'eta_rate': eta_rate,    # (신규) rate-efficiency
+        'avg_bps': avg_bps,
+        'tx_attempts': tx_attempts,
+        'succ_pkts': succ_pkts,
+        'collisions': collisions,
+        'P_S': P_S, 'P_I': P_I, 'P_C': P_C,
+        'T_S_us': T_S * 1e6 if isinstance(T_S, (int, float)) else T_S,
+        'T_I_us': T_I * 1e6 if isinstance(T_I, (int, float)) else T_I,
+        'T_C_us': T_C * 1e6 if isinstance(T_C, (int, float)) else T_C,
+    }
+
+    # 3) 기존 CSV 읽기 (없으면 빈 DF 생성)
+    if os.path.exists(csv_path):
+        df = pd.read_csv(csv_path)
+        # 열이 없으면 추가
+        for k in row.keys():
+            if k not in df.columns:
+                df[k] = pd.NA
+    else:
+        df = pd.DataFrame(columns=list(row.keys()))
+
+    # 4) 같은 n이 있으면 덮어쓰기, 없으면 추가
+    if (df.shape[0] > 0) and ('n' in df.columns) and (df['n'] == n).any():
+        df.loc[df['n'] == n, list(row.keys())] = pd.Series(row)
+    else:
+        df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+
+    # 5) n 기준 정렬 후 저장
+    if 'n' in df.columns:
+        try:
+            df = df.sort_values('n').reset_index(drop=True)
+        except Exception:
+            pass
+
+    df.to_csv(csv_path, index=False)
 
 def main():
     summary_rows = []   # n별 요약 행
@@ -644,11 +750,27 @@ def main():
         # ----- η 계산(논문 식(4)) + 요약 텍스트 저장 -----
         avg_bps_mean = float(thr_df['avg_bps'].mean()) if thr_df is not None and not thr_df.empty else 0.0
 
+        # mac_metrics = compute_mac_efficiency_from_results(
+        #     out['all_sca_csv'],
+        #     thr_df,
+        #     sim_time_sec=5.0,
+        #     phy_rate_bps=12_000_000,   # Baseline 12 Mbps
+        #     slot_time=9e-6,
+        #     rifs=2e-6,
+        #     cifs=34e-6,
+        #     ack_time=44e-6,
+        #     pkt_bytes=1500,
+        #     verbose=True
+        # )
+        sim_time_sec = 5.0
+        if thr_df is not None and not thr_df.empty and 'duration' in thr_df.columns:
+            sim_time_sec = float(thr_df['duration'].max())
+
         mac_metrics = compute_mac_efficiency_from_results(
             out['all_sca_csv'],
             thr_df,
-            sim_time_sec=5.0,
-            phy_rate_bps=12_000_000,   # Baseline 12 Mbps
+            sim_time_sec=sim_time_sec,   # ← 측정값 사용
+            phy_rate_bps=12_000_000,
             slot_time=9e-6,
             rifs=2e-6,
             cifs=34e-6,
@@ -670,12 +792,15 @@ def main():
         )
         print(f"📝 packet_loss_summary.txt 저장: {summary_txt_path}")
 
+        print(f"η_time≈{mac_metrics.get('eta',0):.3f}, η_rate≈{mac_metrics.get('eta_rate',0):.3f}")
+
 
         # 전체 비교 CSV에 η/확률도 포함하도록 별도 리스트에 추가
         # (main() 맨 위에 eta_rows = [] 선언 필요)
         eta_rows.append({
             'n': n,
             'eta': mac_metrics.get('eta', 0.0),
+            'eta_rate': mac_metrics.get('eta_rate', float('nan')),  # ← 추가
             'P_S': mac_metrics.get('P_S', 0.0),
             'P_I': mac_metrics.get('P_I', 0.0),
             'P_C': mac_metrics.get('P_C', 0.0),
