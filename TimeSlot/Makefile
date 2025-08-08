@@ -28,7 +28,7 @@ PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/MediumBusyIdleProbe.o $O/TxOutcomeProbe.o
+OBJS = $O/MediumBusyIdleProbe.o $O/SendIntervalConfigurator.o $O/TxOutcomeProbe.o
 
 # Message files
 MSGFILES =

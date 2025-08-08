@@ -2,3 +2,5 @@
 *.sca
 *.vci
 *.vec
+*.log
+*.elog

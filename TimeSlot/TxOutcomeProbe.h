@@ -1,58 +1,64 @@
-// project_smartCharging_macLayer_improvement/TimeSlot/TxOutcomeProbe.h
 #pragma once
 #include <omnetpp.h>
+#include <string>
 
-// INET 버전에 따라 IRadio.h 경로가 다름 → 안전하게 순차 체크
-#if __has_include("inet/physicallayer/contract/packetlevel/IRadio.h")
-  #include "inet/physicallayer/contract/packetlevel/IRadio.h"
-#elif __has_include("inet/physicallayer/wireless/common/contract/packetlevel/IRadio.h")
-  #include "inet/physicallayer/wireless/common/contract/packetlevel/IRadio.h"
-#elif __has_include("inet/physicallayer/contract/IRadio.h")
-  #include "inet/physicallayer/contract/IRadio.h"
-#else
-  #include "inet/physicallayer/wireless/common/contract/IRadio.h"
-#endif
+using namespace omnetpp;          // OMNeT++ 기본 네임스페이스
 
-using namespace omnetpp;
-using namespace inet;
+/**
+ * 802.11 Tx 결과(성공·충돌)-타임슬롯을 누적하는 간단한 프로브
+ *  - host[0]·wlan[wlanIndex] 아래 mac 서브모듈의 시그널을 구독
+ *  - ts_success_time / tc_collision_time / succ_pkts / tx_attempts 스칼라 기록
+ */
+class TxOutcomeProbe : public cSimpleModule, public cListener
+{
+  private:
+    /* ---------- 파라미터 ---------- */
+    std::string targetNodePath;   // 상위 INI: **.targetNodePath
+    int         wlanIndex = 0;    // INI: **.wlanIndex
+    double      sifs = 0, cifs = 0, ackTxTime = 0, ackTimeout = 0;
+    double slotTime = 0;                    // ★ 추가
 
-class TxOutcomeProbe : public cSimpleModule, public cListener {
-  protected:
-    std::string targetNodePath;
-    int wlanIndex = 0;
-    double sifs=0, cifs=0, ackTxTime=0, ackTimeout=0;
 
-    cModule *radio = nullptr;
+    bool  debugSignals  = false;  // INI: **.debugSignals (true → 첫 N개 시그널 로그)
+    int   debugMaxLines = 12;     // INI: **.debugMaxLines
+
+    /* ---------- 내부 포인터 ---------- */
     cModule *mac   = nullptr;
+    cModule *radio = nullptr;
 
-    simsignal_t txStateSig = SIMSIGNAL_NULL;
-    simsignal_t rxFromLowerSig = SIMSIGNAL_NULL; // MAC 하위수신(ACK 탐지)
+    /* ---------- 구독 시그널 ---------- */
+    simsignal_t rxFromUpperSig = SIMSIGNAL_NULL;   // upper→MAC (TX 시작)
+    simsignal_t rxFromLowerSig = SIMSIGNAL_NULL;   // radio→MAC (ACK 수신)
+    simsignal_t txToUpperSig   = SIMSIGNAL_NULL;   // MAC→upper (무ACK 성공)
 
-    bool inTx = false;
-    bool awaitingAck = false;
-    simtime_t txStart;
-    simtime_t txEnd;      // TX 종료 시간(ACK/CIFS 보정에 사용)
+    /* ---------- 런타임 상태 ---------- */
+    bool   awaitingAck      = false;
+    double currentDataBits  = 0.0;
+    double currentDataTxDur = 0.0;
+    cMessage *ackWait       = nullptr;             // 타임아웃 이벤트
 
-    cMessage *ackWait = nullptr;
-
-    // 누적
+    /* ---------- 누적 ---------- */
     simtime_t succTime = SIMTIME_ZERO;
     simtime_t collTime = SIMTIME_ZERO;
     long attempts = 0;
-    long succs = 0;
+    long succs    = 0;
 
   protected:
+    /* 기본 API */
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
     virtual void finish() override;
-    virtual void receiveSignal(cComponent *src, simsignal_t id, long l, cObject *details) override;
-    virtual void receiveSignal(cComponent *src, simsignal_t id, cObject *obj, cObject *details) override;
 
-    void attach();
-    void onTxStart();
-    void onTxEnd();
-    void onAckReceived();
-    void onAckTimeout();
+    /* 시그널 수신 오버로드 (object) */
+    virtual void receiveSignal(cComponent *src, simsignal_t id,
+                               cObject *obj, cObject *details) override;
+    /* 시그널 수신 오버로드 (intval_t — 구현은 빈 스텁) */
+    virtual void receiveSignal(cComponent *src, simsignal_t id,
+                               intval_t l, cObject *details) override;
 
-    virtual ~TxOutcomeProbe() override { cancelAndDelete(ackWait); }
+    /* 내부 유틸 */
+    void attach();               // 대상 wlan 찾아 subscribe
+
+  public:
+    virtual ~TxOutcomeProbe() override;            // 타이머 안전 제거
 };

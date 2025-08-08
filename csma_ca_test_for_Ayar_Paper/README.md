@@ -28,6 +28,12 @@ opp_run -u Cmdenv \
     ini/omnetpp.ini
 ```
 
+Test Command + TimeSlot
+
+```bash
+opp_run -u Cmdenv   -n "/home/kimdawoon/study/workspace/research/inet/src;./ned;../TimeSlot"   -c Paper_Baseline   ini/omnetpp.ini
+```
+
 Collect Env Value Command
 
 ```bash

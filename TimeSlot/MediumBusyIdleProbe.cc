@@ -4,63 +4,89 @@
 
 Define_Module(MediumBusyIdleProbe);
 
-void MediumBusyIdleProbe::initialize() {
-    targetNodePath = par("targetNodePath").stdstringValue();
-    wlanIndex = par("wlanIndex");
-    slotTime  = par("slotTime").doubleValue();
-    attach();
+/*** INITIALIZE *************************************************************/
+void MediumBusyIdleProbe::initialize()
+{
+    /* 1) 파라미터 */
+    std::string path = par("targetNodePath").stdstringValue();
+    wlanIndex  = par("wlanIndex");
+    slotTime   = par("slotTime");
+
+    /* 2) 상대경로("^","."), 빈 문자열 처리 */
+    cModule *tgt = nullptr;
+    if (path.empty() || path == "^" || path == ".")
+        tgt = getParentModule();
+    else
+        tgt = getSimulation()->getModuleByPath(path.c_str());
+
+    if (!tgt)
+        throw cRuntimeError("Cannot resolve targetNodePath='%s'", path.c_str());
+
+    targetNodePath = path;
     lastChange = simTime();
+
+    attach();          // Radio 포인터 + 시그널 구독
 }
 
-void MediumBusyIdleProbe::attach() {
-    // targetNodePath가 ".host[0]" 같은 상대경로면 루트에 붙여 절대경로로 만듦
+/*** attach(): 노드->radio 연결 *********************************************/
+void MediumBusyIdleProbe::attach()
+{
     std::string p = targetNodePath;
-    if (!p.empty() && p[0] == '.') {
-        p = getSimulation()->getSystemModule()->getFullPath() + p; // "Root.host[0]"
-    }
+    if (p.empty() || p == "^" || p == ".")
+        p = getParentModule()->getFullPath();
+    else if (p[0] == '.')
+        p = getSimulation()->getSystemModule()->getFullPath() + p;
+
     cModule *node = getSimulation()->findModuleByPath(p.c_str());
-    if (!node)
-        throw cRuntimeError("targetNodePath not found: '%s' (resolved: '%s')",
-                            targetNodePath.c_str(), p.c_str());
+    if (!node)  throw cRuntimeError("target '%s' not found", p.c_str());
 
     cModule *wlan = node->getSubmodule("wlan", wlanIndex);
-    if (!wlan) throw cRuntimeError("wlan[%d] not found", wlanIndex);
-    radio = wlan->getSubmodule("radio");
-    if (!radio) throw cRuntimeError("radio not found");
+    if (!wlan)   throw cRuntimeError("wlan[%d] not found in %s",
+                                     wlanIndex, node->getFullPath().c_str());
 
-    // Subscribe radio reception state
-    rxStateSig = inet::physicallayer::IRadio::receptionStateChangedSignal;
+    radio = wlan->getSubmodule("radio");
+    if (!radio)  throw cRuntimeError("radio not found");
+
+    rxStateSig =
+        inet::physicallayer::IRadio::receptionStateChangedSignal;
     radio->subscribe(rxStateSig, this);
 
-    // init current state
-    auto r = check_and_cast<inet::physicallayer::IRadio*>(radio);
-    lastRxState = r->getReceptionState();
+    lastRxState =
+        check_and_cast<inet::physicallayer::IRadio*>(radio)->getReceptionState();
 }
 
-void MediumBusyIdleProbe::receiveSignal(cComponent *, simsignal_t id, long l, cObject *) {
-    // ★ scheduleAt/cancelEvent/recordScalar 등 안전하게 호출하려면 컨텍스트 진입
+/*** 시그널 처리 ************************************************************/
+void MediumBusyIdleProbe::receiveSignal(cComponent *, simsignal_t id,
+                                        long value, cObject*)
+{
+    if (id != rxStateSig) return;
     Enter_Method_Silent();
 
-    if (id != rxStateSig) return;
-    auto newState = static_cast<inet::physicallayer::IRadio::ReceptionState>(l);
     simtime_t now = simTime();
-    bool wasIdle = (lastRxState == inet::physicallayer::IRadio::RECEPTION_STATE_IDLE);
+    bool wasIdle =
+        (lastRxState == inet::physicallayer::IRadio::RECEPTION_STATE_IDLE);
     if (wasIdle) idleAcc += (now - lastChange);
     else         busyAcc += (now - lastChange);
-    lastRxState = newState;
-    lastChange = now;
+
+    lastRxState = static_cast<inet::physicallayer::IRadio::ReceptionState>(value);
+    lastChange  = now;
 }
 
-
-void MediumBusyIdleProbe::finish() {
-    // close last interval
+/*** finish(): 스칼라 저장 ***************************************************/
+void MediumBusyIdleProbe::finish()
+{
+    /* 마지막 interval 누적 */
     simtime_t now = simTime();
-    bool isIdle = (lastRxState == inet::physicallayer::IRadio::RECEPTION_STATE_IDLE);
+    bool isIdle =
+        (lastRxState == inet::physicallayer::IRadio::RECEPTION_STATE_IDLE);
     if (isIdle) idleAcc += (now - lastChange);
     else        busyAcc += (now - lastChange);
 
-    recordScalar("ti_idle_time", idleAcc.dbl());   // seconds
-    recordScalar("busy_time",    busyAcc.dbl());
-    if (slotTime > 0)
-        recordScalar("idle_slots", (idleAcc.dbl() / slotTime));
+    recordScalar("ti_idle_time",  idleAcc.dbl());
+    recordScalar("tb_busy_time",  busyAcc.dbl());
+
+    if (slotTime > 0) {
+        recordScalar("ni_idle_slots", idleAcc.dbl() / slotTime);
+        recordScalar("nb_busy_slots", busyAcc.dbl() / slotTime);
+    }
 }
