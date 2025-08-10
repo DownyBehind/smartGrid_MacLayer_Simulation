@@ -47,7 +47,7 @@ network FakeWireCsmaCaNetwork
         // ② 새 Configurator (트래픽 간격 계산)
         cfg: SendIntervalConfigurator {
             parameters:
-                baseInterval = default(0.00001s);   // 0.01 ms
+                baseInterval = default(0.0002s);   // 0.2 ms
                 @display("p=100,100;i=block/cogwheel");
         }
 }
