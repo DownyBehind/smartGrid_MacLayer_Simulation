@@ -11,7 +11,7 @@ network FakeWireCsmaCaNetwork
 {
     parameters:
         // 노드(호스트)의 개수를 정의하는 정수형 파라미터입니다. 기본값은 10개입니다.
-        int numHosts = default(150);
+        int numHosts = default(100);
 
     // 네트워크를 구성하는 하위 모듈들을 정의하는 섹션입니다.
     submodules:
@@ -47,7 +47,7 @@ network FakeWireCsmaCaNetwork
         // ② 새 Configurator (트래픽 간격 계산)
         cfg: SendIntervalConfigurator {
             parameters:
-                baseInterval = default(0.0002s);   // 0.2 ms
+                baseInterval = default(0.000150000s);   // 1 ms
                 @display("p=100,100;i=block/cogwheel");
         }
 }
