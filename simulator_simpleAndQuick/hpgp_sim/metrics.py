@@ -2,92 +2,127 @@
 metrics.py
 ==========
 역할
-- 시뮬레이션 결과를 수집/요약/저장한다.
-- 프레임 단위 TX 로그, 데드라인 hit/miss, 상위계층 타임아웃, 채널 활용도(η), 처리율, 퍼센타일 지연을 계산한다.
+- 시뮬레이션 결과를 수집/요약/저장
+- 효율 분해(T_success/T_collision/T_idle/T_control) 및 Drop, Deadline Miss 집계
 
-출력
-- tx_log.csv     : 전송 기록(시작/종료, 우선순위, 길이, 성공여부 등)
-- deadlines.csv  : 데드라인 기록(생성/종료 시각, 데드라인, hit=1/miss=0)
-- timeouts.csv   : 상위계층 타임아웃 발생 시각
+정의
+- T_success: 성공한 데이터 전송 airtime 합
+- T_collision: 경합 충돌 airtime 합(한 번만 가산)
+- T_control: Beacon/PRS 등 제어 오버헤드 airtime 합
+- T_idle: 전체시간 - (T_success + T_collision + T_control)
+- 효율 η = T_success / (T_success + T_collision + T_idle) = T_success / (전체 - T_control)
 """
 
-import math, statistics, csv, json, os  # 통계/파일 입출력
+import csv, os
 
 class Metrics:
     def __init__(self, sim, out_dir):
-        self.sim = sim                               # 시뮬레이터
-        self.out_dir = out_dir                       # 출력 디렉터리
-        os.makedirs(out_dir, exist_ok=True)          # 폴더 생성
-        self.tx_log = []                             # TX 로그 레코드
-        self.deadlines = []                          # 데드라인 레코드
-        self.timeouts = []                           # 타임아웃 이벤트
-        self.busy_time = 0                           # 매체 점유 누적 시간
-        self.last_busy_mark = None                   # (미사용) 세밀 회계용
-        self.frames_in_flight = 0                    # (미사용) 동시 전송 추적
+        self.sim = sim
+        self.out_dir = out_dir
+        os.makedirs(out_dir, exist_ok=True)
 
+        self.tx_log = []              # per-frame TX 기록
+        self.deadlines = []           # (app_id, kind, born, end, deadline_us, hit)
+        self.timeouts = []            # (app_id, stage, t_us)
+
+        # 효율 분해
+        self.t_success_us = 0
+        self.t_collision_us = 0
+        self.t_control_us = 0
+
+        # 드롭 집계
+        self.drops = []               # (node, app_id, kind, attempts, born_t, drop_t)
+
+    # ---- 시간 회계 ----
+    def add_collision_time(self, dt_us):
+        self.t_collision_us += max(0, int(dt_us))
+
+    def add_control_time(self, kind, dt_us):
+        self.t_control_us += max(0, int(dt_us))
+
+    # ---- 이벤트 ----
     def on_tx(self, frame, success, start_t, end_t, node_id, medium):
-        """프레임 전송 결과를 기록하고, 채널 점유 시간(에어타임)을 누적."""
-        self.busy_time += max(0, end_t-start_t)      # 점유 시간 누적
-        record = dict(t_start=start_t, t_end=end_t, node=node_id, prio=frame.prio.name,
-                      bits=frame.bits, kind=frame.kind, app_id=frame.app_id, success=int(success))
-        self.tx_log.append(record)                   # TX 로그 추가
-        if frame.deadline_us is not None:           # 데드라인 평가
+        air = max(0, end_t - start_t)
+        if success:
+            self.t_success_us += air
+        self.tx_log.append(dict(
+            t_start=start_t, t_end=end_t, node=node_id, prio=frame.prio.name,
+            bits=frame.bits, kind=frame.kind, app_id=frame.app_id, success=int(success),
+            air_us=air
+        ))
+        if frame.deadline_us is not None:
             miss = int((end_t - frame.born_t) > frame.deadline_us)
             self.deadlines.append((frame.app_id, frame.kind, frame.born_t, end_t, frame.deadline_us, 1-miss))
 
     def on_timeout(self, app_id, stage):
-        """상위계층(애플리케이션) 타임아웃 기록."""
         self.timeouts.append((app_id, stage, self.sim.now()))
 
+    def on_drop(self, node_id, frame, attempts):
+        self.drops.append((node_id, frame.app_id, frame.kind, attempts, frame.born_t, self.sim.now()))
+
+    # ---- 요약/저장 ----
     def summary(self, sim_time_us):
-        """요약 메트릭 계산."""
-        bits_ok = sum(r["bits"] for r in self.tx_log if r["success"]==1)   # 성공 비트 합
-        eta = self.busy_time / max(1, sim_time_us)                         # 채널 활용도
-        delays = [ (r["t_end"]-r["t_start"]) for r in self.tx_log if r["success"]==1 ]  # TX 지연(매체 점유)
-        # e2e 지연(간이): 프레임 생성시각 대비 종료시각 차이
-        e2e_delays = []
-        for r in self.tx_log:
-            if r["success"]!=1: 
-                continue
-            # deadlines 테이블에서 같은 app_id/kind의 born_t를 찾거나, 없으면 t_start 사용
-            born_t = None
-            for d in self.deadlines:
-                if d[0]==r["app_id"] and d[1]==r["kind"]:
-                    born_t = d[2]; break
-            e2e_delays.append((r["t_end"]-(born_t if born_t is not None else r["t_start"])))
-
-        # 퍼센타일(표본 수에 따라 근사)
-        p95 = None
-        p999 = None
-        if e2e_delays:
-            ed = sorted(e2e_delays)
-            p95  = ed[int(max(0, min(len(ed)-1, 0.95*len(ed)-1)))]
-            p999 = ed[-1] if len(ed)<1000 else ed[int(0.999*len(ed))-1]
-
-        dmr = 1 - (sum(d[5] for d in self.deadlines)/max(1,len(self.deadlines)))  # 데드라인 미스 비율
-
+        bits_ok = sum(r["bits"] for r in self.tx_log if r["success"]==1)
+        denom = max(1, sim_time_us - self.t_control_us)
+        eta = self.t_success_us / denom
+        dmr = 1 - (sum(d[5] for d in self.deadlines)/max(1,len(self.deadlines)))
+        e2e = [r["t_end"]-r["t_start"] for r in self.tx_log if r["success"]==1]
+        p95  = e2e[int(0.95*len(e2e))-1] if e2e else None
+        p999 = e2e[-1] if e2e else None
         return dict(
             sim_time_us=sim_time_us,
-            throughput_mbps= (bits_ok/sim_time_us) if sim_time_us>0 else 0.0,
-            utilization_eta= eta,
+            throughput_mbps=(bits_ok/sim_time_us) if sim_time_us>0 else 0.0,
+            efficiency_eta=eta,
+            t_success_us=self.t_success_us,
+            t_collision_us=self.t_collision_us,
+            t_control_us=self.t_control_us,
+            t_idle_us=max(0, sim_time_us - (self.t_success_us + self.t_collision_us + self.t_control_us)),
             n_tx=len(self.tx_log),
             n_ok=sum(1 for r in self.tx_log if r["success"]==1),
             n_deadline=len(self.deadlines),
-            deadline_miss_ratio= dmr,
+            deadline_miss_ratio=dmr,
             p95_delay_us=p95,
             p999_delay_us=p999,
-            timeouts=len(self.timeouts)
+            timeouts=len(self.timeouts),
+            drops=len(self.drops)
         )
 
     def dump(self):
-        """CSV 파일로 로그를 저장."""
         with open(os.path.join(self.out_dir,"tx_log.csv"),"w", newline="") as f:
-            w=csv.DictWriter(f, fieldnames=self.tx_log[0].keys() if self.tx_log else [])
-            if self.tx_log: w.writeheader()
-            for r in self.tx_log: w.writerow(r)
+            if self.tx_log:
+                w=csv.DictWriter(f, fieldnames=self.tx_log[0].keys()); w.writeheader()
+                for r in self.tx_log: w.writerow(r)
         with open(os.path.join(self.out_dir,"deadlines.csv"),"w", newline="") as f:
             w=csv.writer(f); w.writerow(["app_id","kind","born_t","end_t","deadline_us","hit"])
             for d in self.deadlines: w.writerow(d)
         with open(os.path.join(self.out_dir,"timeouts.csv"),"w", newline="") as f:
             w=csv.writer(f); w.writerow(["app_id","stage","t_us"])
             for d in self.timeouts: w.writerow(d)
+        with open(os.path.join(self.out_dir,"drops.csv"),"w", newline="") as f:
+            w=csv.writer(f); w.writerow(["node","app_id","kind","attempts","born_t","drop_t"])
+            for d in self.drops: w.writerow(d)
+
+    def dump_per_node(self, sim_time_us):
+        nodes = {}
+        for r in self.tx_log:
+            nd = nodes.setdefault(r["node"], {"bits_ok":0,"tx":0,"ok":0,"deadline_total":0,"deadline_hit":0,"drops":0})
+            nd["tx"] += 1
+            if r["success"]==1:
+                nd["ok"] += 1
+                nd["bits_ok"] += r["bits"]
+        for (app_id, kind, born, end, ddl, hit) in self.deadlines:
+            nd = nodes.setdefault(app_id, {"bits_ok":0,"tx":0,"ok":0,"deadline_total":0,"deadline_hit":0,"drops":0})
+            nd["deadline_total"] += 1
+            nd["deadline_hit"] += hit
+        for (node, app_id, kind, attempts, born_t, drop_t) in self.drops:
+            nd = nodes.setdefault(node, {"bits_ok":0,"tx":0,"ok":0,"deadline_total":0,"deadline_hit":0,"drops":0})
+            nd["drops"] += 1
+
+        path = os.path.join(self.out_dir, "node_summary.csv")
+        with open(path, "w", newline="") as f:
+            w = csv.writer(f); w.writerow(["node","throughput_mbps","deadline_miss_ratio","tx","ok","drops"])
+            for node, st in sorted(nodes.items()):
+                thr = (st["bits_ok"]/sim_time_us) if sim_time_us>0 else 0.0
+                dmr = 1.0 - (st["deadline_hit"]/st["deadline_total"]) if st["deadline_total"]>0 else 0.0
+                w.writerow([node, thr, dmr, st["tx"], st["ok"], st["drops"]])
+        return path
