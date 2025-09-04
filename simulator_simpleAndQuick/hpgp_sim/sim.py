@@ -1,45 +1,80 @@
 """
 sim.py
 ======
-역할
-- 설정(JSON) 파일을 읽어 시뮬레이션 구성 요소를 조립하고 실행한다.
-- 토폴로지에 따라 2노드(cp_point_to_point) 또는 N노드(shared_bus)를 구성한다.
-- 실행 후 요약 메트릭을 반환하고, CSV 로그를 디스크에 저장한다.
-
-주요 엔트리
-- load_config(path): JSON 로더
-- build_and_run(cfg_path, out_dir, seed): 시뮬레이터 구축/실행/요약
+- shared_bus:
+    * N0=EVSE, N1..=EV
+    * Background traffic OFF
+    * EVs start SLAC in sequence (peer offset)
+    * Detailed SLAC enabled (counts/gaps from config.traffic.slac_detail)
+    * Post-SLAC random traffic (CAP0/1/2) per node
+- cp_point_to_point: EV <-> EVSE peers, same detailed SLAC
+- terminal progress bar while simulation runs (optional)
+- pass session timeout to metrics (session-level timeout accounting)
 """
 
-import json, os                                   # 설정 로드/경로
-from .utils import Sim                            # 시뮬레이터 코어
-from .medium import Medium, BeaconScheduler, PRSManager  # 매체/비콘/PRS
-from .channel import GEChannel                    # 채널
-from .mac_hpgp import HPGPMac, Priority, Frame    # MAC/우선순위
-from .app_15118 import App15118                   # 트래픽 생성기
-from .metrics import Metrics                      # 메트릭
+import json, os
+from .utils import Sim
+from .medium import Medium, BeaconScheduler, PRSManager
+from .channel import GEChannel
+from .mac_hpgp import HPGPMac, Priority, Frame
+from .app_15118 import App15118
+from .metrics import Metrics
 
 def load_config(path):
-    """JSON 설정 로드."""
     with open(path, "r") as f:
         return json.load(f)
 
-def build_and_run(cfg_path, out_dir="/mnt/data/out", seed=1):
-    """설정을 읽고 시뮬레이션을 구축한 뒤 실행하고 요약을 반환한다."""
-    cfg = load_config(cfg_path)                         # 1) 설정 읽기
-    sim = Sim(seed=seed)                                # 2) 시뮬레이터 생성
-    med = Medium(sim, topology=cfg["topology"])       # 3) 매체 생성(토폴로지 설정)
+# ---- simple terminal progress bar (no deps) ----
+def _install_progress(sim, total_us, label="", step_pct=1):
+    step_us = max(1, int(total_us * step_pct / 100))
+    state = {"last_pct": -1, "bar_len": 30}
+    def tick():
+        now = sim.now()
+        pct = min(100, int(now * 100 / max(1, total_us)))
+        if pct != state["last_pct"]:
+            filled = int(pct * state["bar_len"] / 100)
+            bar = "█" * filled + "·" * (state["bar_len"] - filled)
+            msg = f"\r{label} [{bar}] {pct:3d}%  t={now/1e6:.2f}s"
+            print(msg, end="", flush=True)
+            state["last_pct"] = pct
+        if now < total_us:
+            sim.at(min(step_us, total_us - now), tick)
+        else:
+            bar = "█" * state["bar_len"]
+            print(f"\r{label} [{bar}] 100%  t={total_us/1e6:.2f}s", flush=True)
+    sim.at(0, tick)
 
-    # 메트릭을 먼저 생성/연결(비콘/PRS 제어 오버헤드 집계용)
-    metrics = Metrics(sim, out_dir)                     # 4) 메트릭 핸들
-    med.metrics = metrics
+def _finalize_and_return(metrics, sim_time_us, out_dir):
+    # finalize summaries and write all artifacts (csv/md/png)
+    s = metrics.summary(sim_time_us)
+    metrics.dump()
+    metrics.dump_per_node(sim_time_us)
+    metrics.dump_summary_csv(s)
+    metrics.write_report(s)          # report.md
+    metrics.write_plots(sim_time_us) # PNGs (incl. per-node efficiency)
+    return s, os.path.abspath(out_dir)
 
-    # Stage-2 타이밍 구성: PRS/Beacon/IFS 등
+def build_and_run(cfg_path, out_dir="/mnt/data/out", seed=1, *,
+                  progress=False, progress_label=""):
+    cfg = load_config(cfg_path)
+    sim = Sim(seed=seed)
+    os.makedirs(out_dir, exist_ok=True)
+
+    # medium/metrics
+    med = Medium(sim, topology=cfg["topology"])
+    metrics = Metrics(sim, out_dir); med.metrics = metrics
+
+    # session timeout → metrics
+    tt_s = cfg.get("traffic", {}).get("slac_session", {}).get("TT_session_s", None)
+    if tt_s is not None and hasattr(metrics, "set_session_timeout_us"):
+        metrics.set_session_timeout_us(int(float(tt_s) * 1e6))
+
+    # timing (PRS/Beacon)
     timing = cfg["mac"].get("timing", {})
-    prs_cfg = timing.get("prs", {"symbols":3, "symbol_us":10})
+    prs_cfg = timing.get("prs", {"symbols":2, "symbol_us":36})
     med.prs = PRSManager(sim, med,
-                         prs_symbols=prs_cfg.get("symbols",3),
-                         symbol_us=prs_cfg.get("symbol_us",10))
+                         prs_symbols=prs_cfg.get("symbols",2),
+                         symbol_us=prs_cfg.get("symbol_us",36))
     beacon_cfg = timing.get("beacon", {"period_us":100000, "duration_us":2000})
     med.beacon = BeaconScheduler(sim, med,
                                  period_us=beacon_cfg.get("period_us",100000),
@@ -47,7 +82,7 @@ def build_and_run(cfg_path, out_dir="/mnt/data/out", seed=1):
     if timing.get("beacon_enable", True):
         med.beacon.start()
 
-    # 채널 생성
+    # channel
     ch  = GEChannel(sim,
         p_bg=cfg["channel"]["p_bg"],
         p_bb=cfg["channel"]["p_bb"],
@@ -57,55 +92,86 @@ def build_and_run(cfg_path, out_dir="/mnt/data/out", seed=1):
         periodic=cfg["channel"].get("periodic", None)
     )
 
-    # === 공유 버스 모드: 노드 수(nodes)만큼 자동 구성 ===
-    nodes = cfg.get("nodes", 2)                       # 기본 2
+    # post-SLAC config
+    post_slac = cfg.get("traffic", {}).get("post_slac", {})
+    rate_mean_pps = float(post_slac.get("rate_mean_pps", 50))
+    bytes_min     = int(post_slac.get("bytes_min", 300))
+    bytes_max     = int(post_slac.get("bytes_max", 1500))
+    start_delay_us= int(post_slac.get("start_delay_us", 0))
+    peer_offset   = int(cfg.get("traffic", {}).get("slac_peer_offset_us", 5000))
+
+    # detailed SLAC params
+    slac_detail = cfg.get("traffic", {}).get("slac_detail", {})
+    N_start_atten = int(slac_detail.get("start_atten_count", 3))
+    N_msound      = int(slac_detail.get("msound_count", 10))
+    gap_start_us  = int(slac_detail.get("start_atten_gap_us", 2000))
+    gap_msound_us = int(slac_detail.get("msound_gap_us",     2000))
+    delay_evse_rsp_us = int(slac_detail.get("evse_resp_delay_us", 1000))
+    gap_attn_us   = int(slac_detail.get("attn_gap_us", 2000))
+    gap_match_us  = int(slac_detail.get("match_gap_us", 2000))
+
+    sim_time_us = int(cfg["sim_time_s"] * 1e6)
+
+    # ===== shared_bus =====
+    nodes = cfg.get("nodes", 2)
     if cfg["topology"] == "shared_bus":
-        macs = []
         apps = []
         for i in range(nodes):
-            node_id = f"N{i}"                         # 노드 ID
-            mac = HPGPMac(sim, med, ch, node_id, cfg["mac"], metrics)  # MAC 생성/등록
-            macs.append(mac)
-            app = App15118(sim, mac, role="NODE", timers=cfg["traffic"]["slac_timers"], metrics=metrics, app_id=node_id)
+            node_id = f"N{i}"
+            mac = HPGPMac(sim, med, ch, node_id, cfg["mac"], metrics)
+            role = "EVSE" if i == 0 else "EV"
+            app = App15118(sim, mac, role=role,
+                           timers=cfg["traffic"].get("slac_timers", None),
+                           metrics=metrics, app_id=node_id)
+            # configure detailed SLAC and post-SLAC traffic
+            app.configure_slac_detail(N_start_atten, N_msound, gap_start_us, gap_msound_us,
+                                      delay_evse_rsp_us, gap_attn_us, gap_match_us)
+            app.configure_post_slac_traffic(rate_mean_pps=rate_mean_pps,
+                                            bytes_min=bytes_min, bytes_max=bytes_max,
+                                            cap_choices=[Priority.CAP0, Priority.CAP1, Priority.CAP2],
+                                            start_delay_us=start_delay_us)
             apps.append(app)
-            # SLAC 시작 시점 시차 부여(혼잡 패턴 생성)
-            app.start_slac(start_us=i*cfg["traffic"].get("slac_peer_offset_us", 5000))
-            # 배경 트래픽 주입 (노드별 동일 부하)
-            if cfg["traffic"]["background"]["rate_pps"]>0:
-                app.start_background(rate_pps=cfg["traffic"]["background"]["rate_pps"],
-                                     bits=cfg["traffic"]["background"]["bits"],
-                                     prio=Priority[cfg["traffic"]["background"]["prio"]])
 
-        sim_time_us = int(cfg["sim_time_s"] * 1e6)     # 실행 시간(us)
-        sim.run(until=sim_time_us)                       # 실행
-        s = metrics.summary(sim_time_us)                 # 요약 산출
-        metrics.dump()                                   # CSV 저장
-        metrics.dump_per_node(sim_time_us)               # 노드별 요약 저장
-        return s, os.path.abspath(out_dir)
+        # wire peers (all EVs point to EVSE N0)
+        evse_app = apps[0]
+        for i in range(1, nodes):
+            apps[i].set_peer(evse_app)
 
-    # === 1:1(cp_point_to_point) 모드: EV–EVSE 2노드 구성 ===
-    macA = HPGPMac(sim, med, ch, "EV",   cfg["mac"], metrics)  # EV
-    macB = HPGPMac(sim, med, ch, "EVSE", cfg["mac"], metrics)  # EVSE
+        # start SLAC for EVs only (sequential offsets)
+        for i in range(1, nodes):
+            apps[i].start_slac(start_us=(i-1)*peer_offset)
 
-    appA = App15118(sim, macA, role="EV",   timers=cfg["traffic"]["slac_timers"], metrics=metrics, app_id="EV")
-    appB = App15118(sim, macB, role="EVSE", timers=cfg["traffic"]["slac_timers"], metrics=metrics, app_id="EVSE")
+        # progress bar
+        if progress or os.environ.get("HPGP_PROGRESS", "") == "1":
+            _install_progress(sim, sim_time_us, label=(progress_label or "sim"))
 
-    # SLAC 유사 트랜잭션 시작
+        sim.run(until=sim_time_us)
+
+        if progress or os.environ.get("HPGP_PROGRESS", "") == "1":
+            print("")
+        return _finalize_and_return(metrics, sim_time_us, out_dir)
+
+    # ===== cp_point_to_point =====
+    macA = HPGPMac(sim, med, ch, "EV",   cfg["mac"], metrics)
+    macB = HPGPMac(sim, med, ch, "EVSE", cfg["mac"], metrics)
+    appA = App15118(sim, macA, role="EV",   timers=cfg["traffic"].get("slac_timers", None), metrics=metrics, app_id="EV")
+    appB = App15118(sim, macB, role="EVSE", timers=cfg["traffic"].get("slac_timers", None), metrics=metrics, app_id="EVSE")
+
+    appA.set_peer(appB); appB.set_peer(appA)
+
+    for app in (appA, appB):
+        app.configure_slac_detail(N_start_atten, N_msound, gap_start_us, gap_msound_us,
+                                  delay_evse_rsp_us, gap_attn_us, gap_match_us)
+        app.configure_post_slac_traffic(rate_mean_pps=rate_mean_pps,
+                                        bytes_min=bytes_min, bytes_max=bytes_max,
+                                        cap_choices=[Priority.CAP0, Priority.CAP1, Priority.CAP2],
+                                        start_delay_us=start_delay_us)
+
+    if progress or os.environ.get("HPGP_PROGRESS", "") == "1":
+        _install_progress(sim, sim_time_us, label=(progress_label or "sim"))
+
     appA.start_slac(start_us=0)
-    appB.start_slac(start_us=cfg["traffic"].get("slac_peer_offset_us", 5_000))
-
-    # 배경 트래픽(선택)
-    if cfg["traffic"]["background"]["rate_pps"]>0:
-        appA.start_background(rate_pps=cfg["traffic"]["background"]["rate_pps"],
-                              bits=cfg["traffic"]["background"]["bits"],
-                              prio=Priority[cfg["traffic"]["background"]["prio"]])
-        appB.start_background(rate_pps=cfg["traffic"]["background"]["rate_pps"],
-                              bits=cfg["traffic"]["background"]["bits"],
-                              prio=Priority[cfg["traffic"]["background"]["prio"]])
-
-    sim_time_us = int(cfg["sim_time_s"] * 1e6)         # 실행 시간(us)
-    sim.run(until=sim_time_us)                           # 시뮬레이션 실행
-    s = metrics.summary(sim_time_us)                     # 요약 계산
-    metrics.dump()                                       # 로그 저장
-    metrics.dump_per_node(sim_time_us)                   # 노드별 요약 저장
-    return s, os.path.abspath(out_dir)                   # 결과 반환
+    sim.run(until=sim_time_us)
+    if progress or os.environ.get("HPGP_PROGRESS", "") == "1":
+        print("")
+    return _finalize_and_return(metrics, sim_time_us, out_dir)

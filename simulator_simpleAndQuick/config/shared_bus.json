@@ -56,12 +56,23 @@
       "MEAS_TO": 60000,
       "MATCH_TO": 80000
     },
+    "slac_session": { "TT_session_s": 0.5 },
     "slac_peer_offset_us": 5000,
-    "background": {
-      "rate_pps": 200,
-      "bits": 12000,
-      "prio": "CAP0",
-      "full_load_rate_pps": 200
+    "slac_detail": {
+      "start_atten_count": 3,
+      "start_atten_gap_us": 2000,
+      "msound_count": 10,
+      "msound_gap_us": 2000,
+      "evse_resp_delay_us": 1000,
+      "attn_gap_us": 2000,
+      "match_gap_us": 2000
+    },
+    "post_slac": {
+      "rate_mean_pps": 40,
+      "bytes_min": 300,
+      "bytes_max": 1500,
+      "start_delay_us": 0
     }
-  }
+  },
+  "nodes": 5
 }
