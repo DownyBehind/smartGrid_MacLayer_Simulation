@@ -80,11 +80,6 @@
     }
   },
   "traffic": {
-    "slac_timers": {
-      "DISCOVERY_TO": 50000,
-      "MEAS_TO": 60000,
-      "MATCH_TO": 80000
-    },
     "slac_session": {
       "TT_session_s": 0.5
     },
@@ -98,11 +93,48 @@
       "attn_gap_us": 2000,
       "match_gap_us": 2000
     },
+    "dc_loop": {
+      "enabled": true,
+      "period_ms": 100,
+      "deadline_ms": 100,
+      "rsp_delay_us": 1500,
+      "rsp_jitter_us": 0
+    },
+    "dc_flow": {
+      "enable": true,
+      "assume_cap": "CAP0",
+      "shares_percent": {
+        "init": 1.5,
+        "safety": 0.5,
+        "charging": 97.0,
+        "end": 1.0
+      },
+      "timeouts_s": {
+        "SAP": 2.0,
+        "SessionSetup": 2.0,
+        "ChargeParameterDiscovery": 2.0,
+        "PowerDeliveryStart": 5.0,
+        "CableCheck": 2.0,
+        "PreCharge": 2.0,
+        "CurrentDemand": 0.25,
+        "PowerDeliveryStop": 5.0,
+        "MeteringReceipt": 2.0,
+        "WeldingDetection": 2.0,
+        "SessionStop": 2.0
+      },
+      "periods_ms": {
+        "safety_retry": 150,
+        "current_demand": 100
+      },
+      "retry_backoff_us": 100000,
+      "evse_perf_fraction": 0.2,
+      "restart_from_sap": true
+    },
     "post_slac": {
-      "rate_mean_pps": 40,
       "bytes_min": 300,
       "bytes_max": 1500,
-      "start_delay_us": 0
+      "start_delay_us": 0,
+      "rate_mean_pps": 50
     }
   },
   "nodes": 85
