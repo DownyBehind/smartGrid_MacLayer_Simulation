@@ -17,6 +17,7 @@ mac_hpgp.py
 import math
 from enum import Enum
 from dataclasses import dataclass
+from typing import Optional
 
 from .utils import Sim                # 시뮬레이터
 from .medium import Medium            # 매체
@@ -31,7 +32,7 @@ class Frame:
     dst: str
     bits: int
     prio: Priority
-    deadline_us: int|None = None
+    deadline_us: Optional[int] = None
     born_t: int = 0
     kind: str = "DATA"
     app_id: str = "default"

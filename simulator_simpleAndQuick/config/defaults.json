@@ -5,13 +5,9 @@
     "W0": 16,
     "m": 3,
     "CWmax": 1024,
-    "sigma_us": 20,
-    "phy_bps": 10000000,
-    "DC_thresh": [
-      2,
-      3,
-      4
-    ],
+    "sigma_us": 36,
+    "phy_bps": 14000000,
+    "DC_thresh": [2, 3, 4],
     "ifs_us": {
       "CAP0": 60,
       "CAP1": 40,
@@ -25,42 +21,26 @@
         "duration_us": 2000
       },
       "prs": {
-        "symbols": 3,
-        "symbol_us": 10
-      }
+        "symbols": 2,
+        "symbol_us": 36
+      },
+      "cifs_us": 36,
+      "rifs_us": 26,
+      "ack_us": 72
     },
     "retry_limit": 7,
     "cw_table": {
-      "CAP0": [
-        8,
-        16,
-        32,
-        64
-      ],
-      "CAP1": [
-        8,
-        16,
-        32,
-        64
-      ],
-      "CAP2": [
-        8,
-        16,
-        16,
-        32
-      ],
-      "CAP3": [
-        8,
-        16,
-        16,
-        32
-      ]
-    }
+      "CAP0": [8, 16, 32, 64],
+      "CAP1": [8, 16, 32, 64],
+      "CAP2": [8, 16, 16, 32],
+      "CAP3": [8, 16, 16, 32]
+    },
+    "max_bpc": 4
   },
   "channel": {
-    "p_bg": 5e-05,
+    "p_bg": 5e-5,
     "p_bb": 0.97,
-    "per_good": 1e-06,
+    "per_good": 1e-6,
     "per_bad": 0.02,
     "step_us": 1000,
     "periodic": {

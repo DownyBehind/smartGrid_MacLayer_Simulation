@@ -6,7 +6,8 @@
 # - 효율(η)과 DMR 그래프/CSV 저장
 
 import sys, json, os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))  # .. (프로젝트 루트) 추가
+# Add the parent directory (simulator_simpleAndQuick) to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from hpgp_sim.sim import build_and_run
 
 import matplotlib.pyplot as plt

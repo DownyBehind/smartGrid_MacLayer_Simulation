@@ -6,3 +6,14 @@
 *.elog
 *.png
 *.bak
+
+# Exclude output directories from sweep scripts
+out_sweep_N*/
+out_sweep_*
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
