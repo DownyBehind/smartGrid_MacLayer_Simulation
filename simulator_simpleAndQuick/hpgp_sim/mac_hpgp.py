@@ -5,8 +5,8 @@ mac_hpgp.py
 - HomePlug Green PHY(HPGP) MAC의 핵심 동작 간이 모델
 - HPGP/IEEE1901 스타일의 **CAP별 CW 테이블**을 사용해 백오프 폭을 결정
 - **BPC(Backoff Procedure Counter)**: 디퍼럴/실패 시 증가, 성공 시 0으로 리셋
-- **DC(Deferral Counter)**: 매체 busy 감지 누적 → 임계 초과 시 BPC++
-- **CAP0~3 + PRS(우선순위 해상)** 타이밍, **CAP별 IFS/MAIFS** 반영
+- **DC(Deferral Counter)**: (논문 정합 옵션) BPC 단계별 초기값을 사용
+- **CAP0~3 + PRS(우선순위 해상)** 타이밍, (옵션) CAP별 IFS 가중치
 - Retry limit & Drop 집계 지원
 
 주의
@@ -47,8 +47,8 @@ class HPGPMac:
 
         # HPGP 절차 상태
         self.BC = 0                   # Backoff Counter
-        self.DC = 0                   # Deferral Counter (busy 감지 누적)
-        self.BPC = 0                  # Backoff Procedure Counter (절차 단계: CW 테이블 인덱스)
+        self.DC = 0                   # Deferral Counter
+        self.BPC = 0                  # Backoff Procedure Counter (CW 단계 인덱스)
         self.tx_queue:list[Frame] = []
 
         self.medium.subscribe(self)
@@ -60,9 +60,16 @@ class HPGPMac:
         # 예시 기본(HPGP 근사): CA0/1: [8,16,32,64], CA2/3: [8,16,16,32]
         self.cw_table = self.p.get("cw_table", None)
 
-        # 디퍼럴 임계 (BPC 단계별)
-        # 예: [2,3,4] → BPC=0/1/2 구간에서 DC가 임계 초과하면 BPC 증가
+        # (구 방식) 디퍼럴 임계: 누적이 임계 초과하면 단계 상승
         self.dc_thresh = self.p.get("DC_thresh", [2,3,4])
+
+        # (신 방식) 논문 정합: BPC 단계별 DC 초기값 테이블
+        # 존재 시 이를 우선 사용 (busy 슬롯마다 DC -= 1; DC<0 => BPC++, DC 재초기화)
+        self.dc_init_table = self.p.get("dc_init_per_bpc", None)
+        self.use_dc_init_mode = self.dc_init_table is not None
+
+        if self.use_dc_init_mode:
+            self.DC = self._dc_init_value(0)  # BPC=0 단계의 DC 초기값으로 설정
 
         # 첫 틱 예약
         self.sim.at(self.slot_time(), self._tick)
@@ -78,7 +85,7 @@ class HPGPMac:
         return self.tx_queue[0].prio if self.tx_queue else Priority.CAP0
 
     def ifs_us(self):
-        """CAP별 IFS/MAIFS 시간(us)"""
+        """CAP별 IFS/MAIFS 시간(us). 논문 정합 시엔 모두 0으로 둘 것을 권장(PRS-only)."""
         tbl = self.p.get("ifs_us", {"CAP0":0,"CAP1":0,"CAP2":0,"CAP3":0})
         return int(tbl.get(self.head_prio().name, 0))
 
@@ -112,6 +119,16 @@ class HPGPMac:
         cw = self._cw_from_table()
         return cw if cw is not None else self._cw_fallback()
 
+    def _dc_init_value(self, bpc:int) -> int:
+        """BPC 단계별 DC 초기값을 반환. 테이블 길이를 넘으면 마지막 값을 사용."""
+        arr = self.dc_init_table or [0,1,3,15]
+        idx = min(max(bpc, 0), len(arr)-1)
+        return int(arr[idx])
+
+    def _cap_bpc_limit(self) -> int:
+        """최대 BPC 단계 인덱스(0 기반). max_bpc=4이면 0..3."""
+        return max(0, int(self.p.get("max_bpc", 4)) - 1)
+
     # ---- 외부 API ----
     def enqueue(self, fr:Frame):
         fr.born_t = self.sim.now()
@@ -124,13 +141,23 @@ class HPGPMac:
             self.sim.at(self.slot_time(), self._tick)
             return
 
-        # 2) 매체 busy → DC 누적/임계 시 BPC 증가(충돌 없어도 CW 증가)
+        # 2) 매체 busy 처리
         if not self.medium.is_idle():
-            self.DC += 1
-            idx = min(self.BPC, len(self.dc_thresh)-1)
-            if self.DC >= self.dc_thresh[idx]:
-                self.BPC += 1    # 절차 단계 상승
-                self.DC = 0
+            if self.use_dc_init_mode:
+                # 논문 정합: busy마다 DC -= 1; DC<0면 단계 상승 및 DC 재초기화
+                self.DC -= 1
+                if self.DC < 0:
+                    self.BPC = min(self.BPC + 1, self._cap_bpc_limit())
+                    self.DC = self._dc_init_value(self.BPC)
+                    # 단계가 바뀌면 CW도 바뀌므로 백오프 카운터 재샘플
+                    self.BC = int(self.sim.rng.randrange(0, self.CW()))
+            else:
+                # 폴백: 누적 임계 기반
+                self.DC += 1
+                idx = min(self.BPC, len(self.dc_thresh)-1)
+                if self.DC >= self.dc_thresh[idx]:
+                    self.BPC += 1
+                    self.DC = 0
             self.sim.at(self.slot_time(), self._tick)
             return
 
@@ -256,11 +283,11 @@ class HPGPMac:
         if success:
             # 성공: 절차 단계/디퍼럴/BO 리셋
             self.BPC = 0
-            self.DC = 0
+            self.DC = self._dc_init_value(0) if self.use_dc_init_mode else 0
             self.BC = 0
         else:
             # 실패(충돌/프레임에러): 절차 단계 상승 + 재시도/백오프
-            self.BPC += 1
+            self.BPC = min(self.BPC + 1, self._cap_bpc_limit())
             frame.attempts += 1
             # 재시도 한계 초과 시 드롭
             if self.retry_limit is not None and frame.attempts > int(self.retry_limit):
@@ -270,6 +297,8 @@ class HPGPMac:
             else:
                 # 재전송 위해 헤드에 재삽입
                 self.tx_queue.insert(0, frame)
+                # NEW: 단계 상승에 따른 DC 재초기화 + BC 재샘플
+                self.DC = self._dc_init_value(self.BPC) if self.use_dc_init_mode else 0
                 self.BC = int(self.sim.rng.randrange(0, self.CW()))
 
         if start_t is not None:
