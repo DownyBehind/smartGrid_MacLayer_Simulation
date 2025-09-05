@@ -17,7 +17,7 @@ mac_hpgp.py
 import math
 from enum import Enum
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Callable
 
 from .utils import Sim                # 시뮬레이터
 from .medium import Medium            # 매체
@@ -37,6 +37,9 @@ class Frame:
     kind: str = "DATA"
     app_id: str = "default"
     attempts: int = 0                 # 재시도 횟수
+    # (NEW) 앱 콜백 훅: MAC 성공/최종드롭 시 호출
+    on_success: Optional[Callable[[], None]] = None
+    on_drop: Optional[Callable[[], None]] = None
 
 class HPGPMac:
     def __init__(self, sim:Sim, medium:Medium, channel:GEChannel, node_id:str, params:dict, metrics):
@@ -279,7 +282,9 @@ class HPGPMac:
         self.sim.at(air_time, end_tx)
 
     def _on_tx_done(self, success, frame:Frame, start_t=None, air_time=None):
-        """전송 종료 후 MAC 상태 갱신 및 메트릭 기록."""
+        """전송 종료 후 MAC 상태 갱신 및 메트릭 기록 + (NEW) 앱 콜백."""
+        dropped = False
+
         if success:
             # 성공: 절차 단계/디퍼럴/BO 리셋
             self.BPC = 0
@@ -288,19 +293,30 @@ class HPGPMac:
         else:
             # 실패(충돌/프레임에러): 절차 단계 상승 + 재시도/백오프
             self.BPC = min(self.BPC + 1, self._cap_bpc_limit())
-            frame.attempts += 1
+            frame.attempts = int(getattr(frame, "attempts", 0)) + 1
             # 재시도 한계 초과 시 드롭
             if self.retry_limit is not None and frame.attempts > int(self.retry_limit):
+                dropped = True
                 if getattr(self.metrics, 'on_drop', None):
                     self.metrics.on_drop(self.id, frame, frame.attempts)
                 # 드롭: 큐 재삽입 없음
             else:
-                # 재전송 위해 헤드에 재삽입
+                # 재전송 위해 헤드에 재삽입 + 단계별 DC 재초기화 + BC 재샘플
                 self.tx_queue.insert(0, frame)
-                # NEW: 단계 상승에 따른 DC 재초기화 + BC 재샘플
                 self.DC = self._dc_init_value(self.BPC) if self.use_dc_init_mode else 0
                 self.BC = int(self.sim.rng.randrange(0, self.CW()))
 
+        # 메트릭 기록
         if start_t is not None:
             end_t = start_t + (air_time or 0)
             self.metrics.on_tx(frame, success, start_t, end_t, self.id, self.medium)
+
+        # (NEW) 앱 레벨 콜백
+        try:
+            if success and getattr(frame, "on_success", None):
+                self.sim.at(0, frame.on_success)
+            elif dropped and getattr(frame, "on_drop", None):
+                self.sim.at(0, frame.on_drop)
+        except Exception:
+            # 앱 콜백에서 예외가 나더라도 MAC 루프는 계속
+            pass

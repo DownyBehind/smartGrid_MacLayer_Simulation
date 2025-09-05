@@ -21,7 +21,8 @@ class App15118:
         self.ddl_parm  = int(self.timers.get("DISCOVERY_TO", 50_000))
         self.ddl_meas  = int(self.timers.get("MEAS_TO",      60_000))
         self.ddl_match = int(self.timers.get("MATCH_TO",     80_000))
-        # --- Baseline timeouts per SLAC modeling guide ---
+
+        # Baseline timeouts per SLAC modeling guide
         self.msg_to_us   = int(self.timers.get("V2G_EVCC_Msg_Timeout_ms", 2000)) * 1000   # default 2000 ms
         self.proc_to_us  = int(self.timers.get("TT_EV_SLAC_matching_ms", 60000)) * 1000   # default 60000 ms
         self.max_retries = int(self.timers.get("SLAC_MAX_RETRY", 3))
@@ -32,7 +33,7 @@ class App15118:
         self._slac_done = False
         self._retry_count = 0
         self._proc_timer_armed = False
-
+        self._slac_rx = set()       # (NEW) 실제 성공 전파된 응답 kind 집합
 
         # --- SLAC 상세 파라미터 ---
         self.N_start_atten   = 3
@@ -54,7 +55,6 @@ class App15118:
         self.dc_rsp_jitter_us  = 0
 
         # 상태
-        self._slac_done    = False
         self._peer         = None
         self._dc_started   = False
         self._dc_req_seq   = 0
@@ -101,29 +101,40 @@ class App15118:
             self._reset_for_retry()
             self._slac_sequence()
         self.sim.at(start_us, _go)
-    # -------- sequence helpers --------
+
+    # -------- 공통 헬퍼 --------
     def _enqueue(self, bits, prio, kind, ddl_us=None):
         fr = Frame(src=self.mac.id, dst="peer", bits=bits,
                    prio=prio, deadline_us=ddl_us, kind=kind, app_id=self.app_id)
         self.mac.enqueue(fr)
 
+    # (NEW) EVSE 응답을 실제 MAC 경합을 통해 성공 전파시킨 뒤에만 EV 상위에 도달로 처리
     def _evse_rsp_cap3(self, kind, bits, ddl_us):
-        if self._peer is None: 
+        if self._peer is None:
             return
+        # 응답 프레임은 SECC 쪽 MAC 큐를 통해 송신
         fr = Frame(src=self._peer.mac.id, dst="peer", bits=bits,
                    prio=Priority.CAP3, deadline_us=ddl_us, kind=kind, app_id=self._peer.app_id)
-        self._peer.mac.enqueue(fr)
-        # Baseline: consider the response 'received' at the app right after enqueue (no contention path)
-        self.sim.at(0, lambda k=kind: self._on_rx_msg(k))
 
-    # -------- whole SLAC sequence --------
-    
+        def _delivered(k=kind):
+            # 실제 성공 전파된 시점에서만 EV 상위에 수신 처리 + 대기 해제
+            self._on_slac_rsp_delivered(k)
+
+        def _dropped(k=kind):
+            if hasattr(self.metrics, "debug"):
+                self.metrics.debug("SLAC_RSP_DROPPED", node=self.mac.id, kind=k)
+
+        fr.on_success = _delivered
+        fr.on_drop    = _dropped
+
+        self._peer.mac.enqueue(fr)
+
     # -------- SLAC-process helpers for timeouts/retry --------
     def _await_response(self, kind, timeout_us):
         """Arm a message-level timeout for the given expected response kind."""
         self._awaiting = kind
         def _check(kind=kind):
-            if self._slac_done: 
+            if self._slac_done:
                 return
             if self._awaiting == kind:
                 if hasattr(self.metrics, "debug"):
@@ -131,12 +142,15 @@ class App15118:
                 self._fail_and_maybe_retry(reason=f"msg:{kind}")
         self.sim.at(timeout_us, _check)
 
-    def _on_rx_msg(self, kind):
-        """Mark the expected response as received (baseline assumes immediate app delivery)."""
+    def _on_slac_rsp_delivered(self, kind):
+        """(NEW) SECC 응답이 실제 성공 전파되어 EV가 수신했다고 기록 + 대기 해제."""
+        self._slac_rx.add(str(kind).upper())
         if self._awaiting == kind:
             self._awaiting = None
             if hasattr(self.metrics, "debug"):
                 self.metrics.debug("SLAC_MSG_OK", node=self.mac.id, kind=kind)
+        if hasattr(self.metrics, "debug"):
+            self.metrics.debug("SLAC_RX", node=self.mac.id, kind=kind)
 
     def _arm_process_timeout(self):
         if self._proc_timer_armed:
@@ -154,6 +168,7 @@ class App15118:
         self._awaiting = None
         self._slac_done = False
         self._proc_timer_armed = False
+        self._slac_rx.clear()
 
     def _fail_and_maybe_retry(self, reason=""):
         if self._slac_done:
@@ -172,11 +187,14 @@ class App15118:
                 self._slac_sequence()
             self.sim.at(backoff, _again)
         # else give up (no DC)
+
+    # -------- whole SLAC sequence --------
     def _slac_sequence(self):
         # 1) Parm
         if hasattr(self.metrics, "debug"):
             self.metrics.debug("SLAC_SEQ_START", node=self.mac.id, role=self.role)
         self._arm_process_timeout()
+
         self._enqueue(bits=300*8, prio=Priority.CAP3, kind="SLAC_PARM_REQ", ddl_us=self.ddl_parm)
         self._await_response("SLAC_PARM_CNF", self.msg_to_us)
         self.sim.at(self.delay_evse_rsp, lambda: self._evse_rsp_cap3(kind="SLAC_PARM_CNF", bits=300*8, ddl_us=self.ddl_parm))
@@ -205,11 +223,18 @@ class App15118:
         self._await_response("SLAC_MATCH_CNF", self.msg_to_us)
         self.sim.at(match_t + self.delay_evse_rsp, lambda: self._evse_rsp_cap3(kind="SLAC_MATCH_CNF", bits=200*8, ddl_us=self.ddl_match))
 
-        self.sim.at(match_t + self.delay_evse_rsp + self.gap_match_us, lambda: self._on_slac_done(success=True))
+        # (NEW) 최종 성공 판정: 필수 응답 3종이 실제로 전파되었는지 확인
+        final_t = match_t + self.delay_evse_rsp + self.gap_match_us
+        def _check_and_finish():
+            required = {"SLAC_PARM_CNF", "ATTEN_CHAR_IND", "SLAC_MATCH_CNF"}
+            ok = required.issubset(self._slac_rx)
+            self._on_slac_done(success=ok)
+        self.sim.at(final_t, _check_and_finish)
 
     # -------- SLAC done -> start DC loop --------
     def _on_slac_done(self, success=True):
-        if self._slac_done: return
+        if self._slac_done:
+            return
         self._slac_done = True
         if hasattr(self.metrics, "debug"):
             self.metrics.debug("SLAC_DONE", node=self.mac.id, role=self.role, ok=int(success))

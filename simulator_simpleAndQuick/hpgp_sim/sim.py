@@ -8,6 +8,7 @@ sim.py
 - cp_point_to_point: EV <-> EVSE peers
 - 터미널 진행바(옵션), 세션 타임아웃 메트릭 전달
 - DC 진입/주기/타임아웃 CSV & PNG 생성
+- SLAC 타임라인 PNG 생성(메시지 5종 색상 간트)
 """
 
 import json, os
@@ -17,6 +18,7 @@ from .channel import GEChannel
 from .mac_hpgp import HPGPMac, Priority
 from .app_15118 import App15118
 from .metrics import Metrics
+from .plot_slac import write_slac_timeline
 
 # ---- 진행바 ----
 def _install_progress(sim, total_us, label="", step_pct=1):
@@ -129,6 +131,15 @@ def _write_all_reports(metrics: Metrics, sim_time_us: int, out_dir: str):
     metrics.write_report(s)
     metrics.write_plots(sim_time_us)         # 효율 PNG (옵션)
     _write_dc_artifacts(metrics, sim_time_us, out_dir)  # DC 관련 CSV/PNG
+
+    # --- 추가: SLAC 타임라인 생성 (메시지 5종 색상 간트) ---
+    try:
+        write_slac_timeline(out_dir, sim_time_us=sim_time_us)  # x축 [0..sim_time_s] 고정 slac_timeline.png
+    except Exception as e:
+        # 실패해도 전체 플로우에 영향 없도록 로그만 남김
+        with open(os.path.join(out_dir, "plot_error.log"), "a", encoding="utf-8") as f:
+            f.write(f"slac_timeline plot error: {e}\n")
+
     return s
 
 def _finalize_and_return(cfg, metrics, sim_time_us, out_dir):

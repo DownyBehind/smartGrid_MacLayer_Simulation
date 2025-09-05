@@ -90,7 +90,7 @@
       "SLAC_RETRY_BACKOFF_us": 150000
     },
     "dc_loop": {
-      "enabled": true,
+      "enabled": false,
       "period_ms": 100,
       "deadline_ms": 100,
       "rsp_delay_us": 1500,
