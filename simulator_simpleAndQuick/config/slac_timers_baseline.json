@@ -1,0 +1,11 @@
+{
+  "traffic": {
+    "slac_session": { "TT_session_s": 60.0 },
+    "slac_timers": {
+      "V2G_EVCC_Msg_Timeout_ms": 2000,
+      "TT_EV_SLAC_matching_ms": 60000,
+      "SLAC_MAX_RETRY": 3,
+      "SLAC_RETRY_BACKOFF_us": 150000
+    }
+  }
+}

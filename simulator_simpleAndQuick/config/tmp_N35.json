@@ -81,17 +81,13 @@
   },
   "traffic": {
     "slac_session": {
-      "TT_session_s": 0.5
+      "TT_session_s": 60.0
     },
-    "slac_peer_offset_us": 5000,
-    "slac_detail": {
-      "start_atten_count": 3,
-      "start_atten_gap_us": 2000,
-      "msound_count": 10,
-      "msound_gap_us": 2000,
-      "evse_resp_delay_us": 1000,
-      "attn_gap_us": 2000,
-      "match_gap_us": 2000
+    "slac_timers": {
+      "V2G_EVCC_Msg_Timeout_ms": 2000,
+      "TT_EV_SLAC_matching_ms": 60000,
+      "SLAC_MAX_RETRY": 3,
+      "SLAC_RETRY_BACKOFF_us": 150000
     },
     "dc_loop": {
       "enabled": true,
@@ -129,12 +125,6 @@
       "retry_backoff_us": 100000,
       "evse_perf_fraction": 0.2,
       "restart_from_sap": true
-    },
-    "post_slac": {
-      "bytes_min": 300,
-      "bytes_max": 1500,
-      "start_delay_us": 0,
-      "rate_mean_pps": 50
     }
   },
   "nodes": 35
