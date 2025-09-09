@@ -1,0 +1,11 @@
+Batch run started: 2025-09-09 16:48:45.778257
+Mode: scale
+INET_DIR: /home/kimdawoon/study/workspace/research/inet_plc/inet
+TimeSlot: enabled
+Runs: [5]
+
+N=5 SCALE base_ms=1.5 eff_ms~=1.5000
+N=5 SUCCESS
+
+Batch completed: 2025-09-09 16:48:52.597550
+Successful: 1, Failed: 0

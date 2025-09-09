@@ -12,7 +12,7 @@ It also covers where results go and how to analyze them.
 ## Prerequisites
 
 * OMNeT++ 6.1 available as `opp_run` in your PATH
-* INET built (e.g., `~/study/workspace/research/inet`)
+* INET PLC built (e.g., `~/study/workspace/research/inet_plc/inet`)
 * TimeSlot shared library built (you already did this earlier)
 * Repository layout (relevant parts):
 
@@ -33,10 +33,10 @@ csma_ca_test_for_Ayar_Paper/
 
 ## Environment variables (optional)
 
-If your INET path is different, set:
+If your INET PLC path is different, set:
 
 ```bash
-export INET_DIR=/home/kimdawoon/study/workspace/research/inet
+export INET_DIR=/home/kimdawoon/study/workspace/research/inet_plc/inet
 ```
 
 If `INET_DIR` is not set, the script defaults to the path above.

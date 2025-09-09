@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for $(LIB_PREFIX)timeslot
 #
 # This file was generated with the command:
-#  opp_makemake -f -O out -I/home/kimdawoon/study/workspace/research/inet/src -L/home/kimdawoon/study/workspace/research/inet/out/clang-release/src -lINET -s -o timeslot
+#  opp_makemake -f -O out -I/home/kimdawoon/study/workspace/research/inet_plc/inet/src -L/home/kimdawoon/study/workspace/research/inet_plc/inet/out/clang-release/src -lINET -s -o timeslot
 #
 
 # Name of target to be created (-o option)
@@ -14,13 +14,13 @@ TARGET_IMPDEF = $(TARGET_NAME)$(IMPDEF_SUFFIX)
 TARGET_FILES = $(TARGET_DIR)/$(TARGET)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I/home/kimdawoon/study/workspace/research/inet/src
+INCLUDE_PATH = -I/home/kimdawoon/study/workspace/research/inet_plc/inet/src
 
 # Additional object and library files to link with
 EXTRA_OBJS =
 
 # Additional libraries (-L, -l options)
-LIBS = $(LDFLAG_LIBPATH)/home/kimdawoon/study/workspace/research/inet/out/clang-release/src  -lINET
+LIBS = $(LDFLAG_LIBPATH)/home/kimdawoon/study/workspace/research/inet_plc/inet/out/clang-release/src  -lINET
 
 # Output directory
 PROJECT_OUTPUT_DIR = out
@@ -55,7 +55,7 @@ include $(CONFIGFILE)
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS = -loppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
 ifneq ($(PLATFORM),win32)
-LIBS += -Wl,-rpath,$(abspath /home/kimdawoon/study/workspace/research/inet/out/clang-release/src)
+LIBS += -Wl,-rpath,$(abspath /home/kimdawoon/study/workspace/research/inet_plc/inet/out/clang-release/src)
 endif
 
 COPTS = $(CFLAGS) $(IMPORT_DEFINES)  $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)

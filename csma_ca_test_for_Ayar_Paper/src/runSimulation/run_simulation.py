@@ -21,6 +21,7 @@ import pathlib
 import datetime
 import os
 import re
+import sys
 from typing import List
 
 # ─────── 경로 설정 ───────
@@ -29,7 +30,7 @@ PROJECT    = SCRIPT_DIR.parent.parent   # …/csma_ca_test_for_Ayar_Paper
 
 INET_DIR   = pathlib.Path(os.environ.get(
     "INET_DIR",
-    "/home/kimdawoon/study/workspace/research/inet"
+    "/home/kimdawoon/study/workspace/research/inet_plc/inet"
 ))
 INET_SRC   = INET_DIR / "src"
 
@@ -38,14 +39,38 @@ TIME_SLOT  = PROJECT.parent / "TimeSlot"
 NED_FILE   = PROJECT / "ned" / "csma_ca_test_for_Ayar_Paper" / "FakeWireCsmaCaNetwork.ned"
 BACKUP_NED = NED_FILE.with_suffix(".ned.bak")
 
-NED_PATH   = f"{INET_SRC};{PROJECT/'ned'};{TIME_SLOT}"
-
 INI_FILE   = PROJECT / "ini" / "omnetpp.ini"
 RESULT_DIR = PROJECT / "ini" / "results"
 CONFIG     = "Paper_Baseline"
 OMNET_BIN  = "opp_run"
 
 DEFAULT_RUNS = list(range(5, 101, 5))
+
+def check_prerequisites():
+    """필요한 파일과 경로들이 존재하는지 확인"""
+    missing = []
+    
+    if not INET_DIR.exists():
+        missing.append(f"INET directory: {INET_DIR}")
+    
+    if not INET_SRC.exists():
+        missing.append(f"INET src directory: {INET_SRC}")
+    
+    if not TIME_SLOT.exists():
+        missing.append(f"TimeSlot directory: {TIME_SLOT}")
+    
+    if not NED_FILE.exists():
+        missing.append(f"NED file: {NED_FILE}")
+    
+    if not INI_FILE.exists():
+        missing.append(f"INI file: {INI_FILE}")
+    
+    if missing:
+        print("ERROR: Missing required files/directories:")
+        for item in missing:
+            print(f"  - {item}")
+        print("\nPlease check your setup and try again.")
+        sys.exit(1)
 
 def ensure_backup():
     if not BACKUP_NED.exists():
@@ -92,16 +117,31 @@ def set_cfg_base_interval_seconds(sec: float):
     NED_FILE.write_text(new_text)
     print(f"  → cfg.baseInterval = {secs_str}")
 
-def run_one(n: int):
+def run_one(n: int, use_timeslot: bool = True):
+    """단일 시뮬레이션 실행"""
     print(f"▶ N={n} simulation start")
+    
+    # NED 경로 구성
+    if use_timeslot:
+        ned_path = f"{INET_SRC};{PROJECT/'ned'};{TIME_SLOT}"
+    else:
+        ned_path = f"{INET_SRC};{PROJECT/'ned'}"
+    
     cmd = [
         OMNET_BIN, "-u", "Cmdenv",
-        "-n", NED_PATH,
+        "-n", ned_path,
         "-c", CONFIG,
         str(INI_FILE),
     ]
-    subprocess.run(cmd, check=True)
-    print("  ↳ finished")
+    
+    try:
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        print("  ↳ finished successfully")
+    except subprocess.CalledProcessError as e:
+        print(f"  ↳ simulation failed with exit code {e.returncode}")
+        if e.stderr:
+            print(f"  ↳ stderr: {e.stderr[:200]}...")
+        raise RuntimeError(f"Simulation failed: exit code {e.returncode}")
 
     dest = RESULT_DIR / f"n{n}"
     dest.mkdir(exist_ok=True)
@@ -127,14 +167,31 @@ def main():
                         help=f"List of node counts. Default={DEFAULT_RUNS[0]}..{DEFAULT_RUNS[-1]} step 5")
     parser.add_argument("--restore-ned", action="store_true",
                         help="Restore NED to original backup after all runs")
+    parser.add_argument("--no-timeslot", action="store_true",
+                        help="Skip TimeSlot library (for debugging segfaults)")
     args = parser.parse_args()
+
+    # 사전 검사
+    check_prerequisites()
+    
+    if args.no_timeslot:
+        print("[WARNING] Running without TimeSlot library")
 
     ensure_backup()
     RESULT_DIR.mkdir(parents=True, exist_ok=True)
 
     ts = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     log_path = RESULT_DIR / f"batch-{args.mode}-{ts}.txt"
+    successful_runs = 0
+    failed_runs = 0
+    
     with log_path.open("w") as log:
+        log.write(f"Batch run started: {datetime.datetime.now()}\n")
+        log.write(f"Mode: {args.mode}\n")
+        log.write(f"INET_DIR: {INET_DIR}\n")
+        log.write(f"TimeSlot: {'disabled' if args.no_timeslot else 'enabled'}\n")
+        log.write(f"Runs: {args.runs}\n\n")
+        
         for n in args.runs:
             try:
                 set_num_hosts(n)
@@ -154,13 +211,20 @@ def main():
                     print(f"  → [fixed] effective={args.fixed_ms} ms (by base={base_ms:.6f} ms for N={n})")
                     log.write(f"N={n} FIXED eff_ms={args.fixed_ms} base_ms_for_N={base_ms:.6f}\n")
 
-                run_one(n)
+                run_one(n, use_timeslot=not args.no_timeslot)
+                successful_runs += 1
+                log.write(f"N={n} SUCCESS\n")
 
             except Exception as e:
+                failed_runs += 1
                 log.write(f"N={n} FAIL {e}\n")
                 print(f"  ↳ ERROR at N={n}: {e}. Continue...\n")
 
+        log.write(f"\nBatch completed: {datetime.datetime.now()}\n")
+        log.write(f"Successful: {successful_runs}, Failed: {failed_runs}\n")
+
     print(f"[i] Batch log saved → {log_path}")
+    print(f"[i] Summary: {successful_runs} successful, {failed_runs} failed")
 
     if args.restore_ned:
         shutil.copy(BACKUP_NED, NED_FILE)

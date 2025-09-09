@@ -1,0 +1,11 @@
+Batch run started: 2025-09-09 16:41:41.400195
+Mode: scale
+INET_DIR: /home/kimdawoon/study/workspace/research/inet_plc/inet
+TimeSlot: disabled
+Runs: [5]
+
+N=5 SCALE base_ms=1.5 eff_ms~=1.5000
+N=5 FAIL Simulation failed: exit code -11
+
+Batch completed: 2025-09-09 16:41:42.036172
+Successful: 0, Failed: 1
