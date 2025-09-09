@@ -74,18 +74,24 @@ void SlacApplication::handleMessage(cMessage* msg)
         }
         delete msg;
     }
-    else {
-        // Handle incoming SLAC message
-        cPacket* slacMsg = check_and_cast<cPacket*>(msg);
-        // For now, assume message type 1 (SLAC_PARM_CNF)
-        handleSlacResponse(SLAC_PARM_CNF);
-        delete msg;
-    }
+        else {
+            // Handle incoming SLAC message
+            if (cPacket* slacMsg = dynamic_cast<cPacket*>(msg)) {
+                // Broadcast to all other nodes (simulate shared bus)
+                cPacket* broadcastMsg = slacMsg->dup();
+                send(broadcastMsg, "out");
+                
+                // For now, assume message type 1 (SLAC_PARM_CNF)
+                handleSlacResponse(SLAC_PARM_CNF);
+            }
+            delete msg;
+        }
 }
 
 void SlacApplication::startSlac()
 {
-    EV << "Starting SLAC sequence" << endl;
+    EV << "[" << simTime() << "] Node " << nodeId << " (" << nodeType << "): Starting SLAC sequence" << endl;
+    printf("[%.3f] Node %d (%s): Starting SLAC sequence\n", simTime().dbl(), nodeId, nodeType.c_str());
     
     slacStartTime = simTime();
     retryCount = 0;
@@ -126,6 +132,20 @@ void SlacApplication::sendSlacMessage(SlacMessageType type, int bits)
 {
     cPacket* msg = new cPacket("slacMsg");
     msg->setBitLength(bits);
+    
+    EV << "[" << simTime() << "] Node " << nodeId << " (" << nodeType << "): Sending SLAC message type " << type << " (bits: " << bits << ")" << endl;
+    printf("[%.3f] Node %d (%s): Sending SLAC message type %d (bits: %d)\n", simTime().dbl(), nodeId, nodeType.c_str(), type, bits);
+    
+    // 파일 로그 출력
+    FILE* logFile = fopen("results/slac_messages.log", "a");
+    if (logFile) {
+        fprintf(logFile, "%.3f,Node_%d_%s,SLAC_MSG_TYPE_%d,%d\n", 
+                simTime().dbl(), nodeId, nodeType.c_str(), type, bits);
+        fclose(logFile);
+    }
+    
+    // 통계 수집
+    emit(slacCompleteSignal, simTime());
     
     // Send to lower layer (would be connected to MAC layer)
     send(msg, "out");
@@ -250,6 +270,7 @@ void SlacApplication::scheduleMessageTimeout(SlacMessageType expectedType)
 {
     awaitingResponse = true;
     awaitingMessageType = expectedType;
+    cancelMessageTimeout(); // Cancel any existing timeout
     scheduleAt(simTime() + slacMsgTimeout, messageTimeout);
 }
 
@@ -263,6 +284,7 @@ void SlacApplication::cancelMessageTimeout()
 
 void SlacApplication::scheduleProcessTimeout()
 {
+    cancelProcessTimeout(); // Cancel any existing timeout
     scheduleAt(simTime() + slacProcTimeout, processTimeout);
 }
 
@@ -295,10 +317,6 @@ void SlacApplication::emitSlacTimeout()
 
 void SlacApplication::finish()
 {
-    if (processTimeout) {
-        cancelAndDelete(processTimeout);
-    }
-    if (messageTimeout) {
-        cancelAndDelete(messageTimeout);
-    }
+    // Don't delete messages in finish() to avoid segmentation fault
+    // OMNeT++ will handle cleanup automatically
 }

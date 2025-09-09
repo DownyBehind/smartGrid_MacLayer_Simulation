@@ -20,6 +20,7 @@ def parse_args():
     p.add_argument("--config", default=os.path.join(ROOT, "config", "defaults.json"))
     p.add_argument("--nodes", type=int, default=5, help="number of nodes (default: 5)")
     p.add_argument("--target-eta", type=float, default=0.90, help="target efficiency eta (0..1)")
+    p.add_argument("--sim-time-s", type=float, default=None, help="override sim_time_s for all runs")
     # 후보 생성 방식
     p.add_argument("--pps", type=str, help="comma-separated list, e.g., 2,4,6,8,10,20,50,100,150,200")
     p.add_argument("--min-pps", type=int, default=2)
@@ -63,12 +64,14 @@ def build_candidates(args):
     step = max(1, args.step)
     return list(range(min_pps, max_pps + 1, step))
 
-def run_once(base_cfg_path, nodes, pps, out_dir, label):
+def run_once(base_cfg_path, nodes, pps, out_dir, label, sim_time_s: float | None = None):
     with open(base_cfg_path, "r") as f:
         cfg = json.load(f)
 
     cfg["topology"] = cfg.get("topology", "shared_bus")
     cfg["nodes"] = nodes
+    if sim_time_s is not None:
+        cfg["sim_time_s"] = float(sim_time_s)
 
     traffic = cfg.setdefault("traffic", {})
     ps = traffic.setdefault("post_slac", {})
@@ -97,14 +100,14 @@ def main():
     for i, pps in enumerate(candidates, 1):
         out_dir = os.path.join(ROOT, f"{args.out_prefix}_N{args.nodes}_pps{pps}")
         label = f"pps={pps} ({i}/{total})"
-        s = run_once(args.config, args.nodes, pps, out_dir, label)
-        eta  = s.get("efficiency_eta", 0.0)
-        dmr  = s.get("deadline_miss_ratio", 0.0)
-        util = s.get("utilization", 0.0)
-        coll = s.get("collision_ratio", 0.0)
-        thr  = s.get("throughput_mbps", 0.0)
-        print(f"pps={pps:>4}  eta={eta:.3f}  DMR={dmr:.3f}  util={util:.3f}  coll={coll:.3f}  thr={thr:.3f} Mbps")
-        rows.append((pps, eta, dmr, util, coll, thr))
+    s = run_once(args.config, args.nodes, pps, out_dir, label, sim_time_s=args.sim_time_s)
+    eta  = s.get("efficiency_eta", 0.0)
+    dmr  = s.get("deadline_miss_ratio", 0.0)
+    util = s.get("utilization", 0.0)
+    coll = s.get("collision_ratio", 0.0)
+    thr  = s.get("throughput_mbps", 0.0)
+    print(f"pps={pps:>4}  eta={eta:.3f}  DMR={dmr:.3f}  util={util:.3f}  coll={coll:.3f}  thr={thr:.3f} Mbps")
+    rows.append((pps, eta, dmr, util, coll, thr))
 
     TARGET_ETA = max(0.0, min(1.0, args.target_eta))
     feasible = [r for r in rows if r[1] >= TARGET_ETA]

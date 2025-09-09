@@ -199,6 +199,13 @@ def build_and_run(cfg_path, out_dir="/mnt/data/out", seed=1, progress=False, pro
     dc_rsp_delay_us  = int(dc_loop.get("rsp_delay_us", 1500))
     dc_rsp_jitter_us = int(dc_loop.get("rsp_jitter_us", 0))
 
+    # Optional global override via environment variable
+    try:
+        _env_sim_time = os.environ.get("SIM_TIME_S", None)
+        if _env_sim_time is not None:
+            cfg["sim_time_s"] = float(_env_sim_time)
+    except Exception:
+        pass
     sim_time_us = int(cfg["sim_time_s"] * 1e6)
 
     # --- 토폴로지별 빌드 ---

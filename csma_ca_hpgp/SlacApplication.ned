@@ -35,3 +35,4 @@ simple SlacApplication
         input in;
         output out;
 }
+

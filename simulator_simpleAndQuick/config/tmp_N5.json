@@ -1,6 +1,6 @@
 {
   "topology": "shared_bus",
-  "sim_time_s": 10.0,
+  "sim_time_s": 60.0,
   "mac": {
     "W0": 16,
     "m": 3,

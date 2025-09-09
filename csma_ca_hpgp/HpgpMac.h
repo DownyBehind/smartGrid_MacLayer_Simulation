@@ -4,6 +4,7 @@
 #include <omnetpp.h>
 #include <vector>
 #include <map>
+#include <queue>
 
 using namespace omnetpp;
 
@@ -38,7 +39,7 @@ class HpgpMac : public cSimpleModule
     int backoffCounter;
     int deferralCounter;
     int backoffProcedureCounter;
-    std::vector<cMessage*> txQueue;
+    std::queue<cMessage*> txQueue;
     cMessage* pendingTx;
     cMessage* backoffTimer;
     cMessage* deferralTimer;
@@ -52,6 +53,8 @@ class HpgpMac : public cSimpleModule
     // Channel state
     bool channelBusy;
     simtime_t lastChannelActivity;
+    bool waitingForChannelResponse;
+    cMessage* currentFrame;
 
   protected:
     virtual void initialize() override;
@@ -82,3 +85,4 @@ class HpgpMac : public cSimpleModule
 };
 
 #endif
+

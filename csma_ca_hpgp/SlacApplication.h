@@ -106,3 +106,4 @@ class SlacApplication : public cSimpleModule
 };
 
 #endif
+

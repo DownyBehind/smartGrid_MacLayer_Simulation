@@ -14,6 +14,14 @@ Research-friendly discrete-event simulator for HomePlug Green PHY (HPGP) MAC ove
 python /mnt/data/scripts/run_demo.py
 ```
 
+### Override simulation time without editing JSON
+- Use CLI on scripts:
+	- `scripts/run_demo.py --sim-time-s 60`
+	- `scripts/sweep_nodes.py --sim-time-s 60`
+	- `scripts/sweep_rate_eta90.py --sim-time-s 60`
+- Or set env var for any entry point:
+	- `SIM_TIME_S=60` (respected inside `hpgp_sim/sim.py`)
+
 ## Files
 - `hpgp_sim/utils.py` – discrete-event engine
 - `hpgp_sim/medium.py` – medium model, PRS helper

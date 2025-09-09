@@ -5,7 +5,7 @@
 # - 루트에 out_sweep_summary.csv + report_sweep.md + dctiming_vs_nodes.png 생성
 # - 각 run 진행률 바 출력 + 한 줄 요약
 
-import os, sys, json
+import os, sys, json, argparse
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(ROOT)
 
@@ -32,7 +32,7 @@ def _write_overall_plots(rows, out_dir):
     except Exception as e:
         with open(os.path.join(out_dir, "plot_error.log"), "a", encoding="utf-8") as f: f.write(f"efficiency_vs_nodes plot error: {e}\n")
 
-def run_sweep(base_cfg_path, out_csv_path, nodes_list):
+def run_sweep(base_cfg_path, out_csv_path, nodes_list, sim_time_s: float | None = None):
     with open(base_cfg_path, "r") as f:
         base = json.load(f)
 
@@ -44,6 +44,8 @@ def run_sweep(base_cfg_path, out_csv_path, nodes_list):
 
         cfg["topology"] = "shared_bus"
         cfg["nodes"] = n
+        if sim_time_s is not None:
+            cfg["sim_time_s"] = float(sim_time_s)
 
         # DC 루프(100ms) 켜기
         cfg.setdefault("traffic", {})
@@ -87,10 +89,19 @@ def run_sweep(base_cfg_path, out_csv_path, nodes_list):
 
     return out_csv_path, md_path
 
+def _parse_args():
+    p = argparse.ArgumentParser(description="Sweep N (nodes) and summarize results")
+    p.add_argument("--config", default=os.path.join(ROOT, "config", "defaults.json"))
+    p.add_argument("--out-csv", default=os.path.join(ROOT, "out_sweep_summary.csv"))
+    p.add_argument("--min-n", type=int, default=5)
+    p.add_argument("--max-n", type=int, default=100)
+    p.add_argument("--step", type=int, default=5)
+    p.add_argument("--sim-time-s", type=float, default=None, help="override sim_time_s for all runs")
+    return p.parse_args()
+
 if __name__ == "__main__":
-    base_cfg = os.path.join(ROOT, "config", "defaults.json")
-    out_csv  = os.path.join(ROOT, "out_sweep_summary.csv")
-    nodes    = list(range(5, 101, 5))
-    csv_path, md_path = run_sweep(base_cfg, out_csv, nodes)
+    args = _parse_args()
+    nodes = list(range(max(1, args.min_n), max(args.min_n, args.max_n) + 1, max(1, args.step)))
+    csv_path, md_path = run_sweep(args.config, args.out_csv, nodes, sim_time_s=args.sim_time_s)
     print("Wrote:", csv_path)
     print("Wrote:", md_path)

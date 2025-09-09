@@ -29,6 +29,8 @@ void HpgpMac::initialize()
     backoffProcedureCounter = 0;
     channelBusy = false;
     lastChannelActivity = 0;
+    waitingForChannelResponse = false;
+    currentFrame = nullptr;
     
     // Create timers
     backoffTimer = new cMessage("backoffTimer");
@@ -52,14 +54,38 @@ void HpgpMac::handleMessage(cMessage* msg)
         }
     }
     else {
-        // Handle incoming frame
-        enqueueFrame(msg);
+        // Handle incoming messages
+        if (strcmp(msg->getName(), "txConfirm") == 0) {
+            // Transmission confirmed by channel manager
+            onTransmissionComplete(true);
+        }
+        else if (strcmp(msg->getName(), "collision") == 0) {
+            // Collision detected by channel manager
+            onTransmissionComplete(false);
+        }
+        else if (strcmp(msg->getName(), "channelIdle") == 0) {
+            // Channel became idle
+            if (!txQueue.empty() && !backoffTimer->isScheduled() && !deferralTimer->isScheduled()) {
+                processTxQueue();
+            }
+        }
+        else {
+            // Handle incoming frame
+            enqueueFrame(msg);
+            // Don't delete msg here - enqueueFrame will handle it
+        }
     }
 }
 
 void HpgpMac::enqueueFrame(cMessage* frame)
 {
-    txQueue.push_back(frame);
+    // Create a copy of the frame for the queue
+    cMessage* frameCopy = frame->dup();
+    txQueue.push(frameCopy);
+    
+    // Delete the original frame
+    delete frame;
+    
     EV << "Enqueued frame, queue size: " << txQueue.size() << endl;
     
     if (!backoffTimer->isScheduled() && !deferralTimer->isScheduled()) {
@@ -120,34 +146,44 @@ void HpgpMac::attemptTransmission()
         return;
     }
     
-    if (!isChannelIdle()) {
-        startDeferral();
+    if (waitingForChannelResponse) {
+        // Already waiting for channel response
         return;
     }
     
     cMessage* frame = txQueue.front();
-    txQueue.erase(txQueue.begin());
+    txQueue.pop();
+    
+    if (frame == nullptr) {
+        EV << "Error: frame is nullptr" << endl;
+        return;
+    }
     
     emitTxAttempt();
     
-    // Simulate transmission
-    simtime_t duration = getFrameDuration(frame);
-    updateChannelState(true);
+    // Send frame to Channel Manager (duplicate to avoid ownership issues)
+    cMessage* frameCopy = frame->dup();
+    if (frameCopy == nullptr) {
+        EV << "Error: frameCopy is nullptr" << endl;
+        delete frame;
+        return;
+    }
     
-    EV << "Attempting transmission for " << duration << "s" << endl;
+    currentFrame = frameCopy;
+    waitingForChannelResponse = true;
     
-    // Schedule transmission completion
-    cMessage* endTx = new cMessage("endTx");
-    endTx->setContextPointer(frame);
-    scheduleAt(simTime() + duration, endTx);
+    send(frameCopy, "out");
     
-    // Send frame to physical layer
-    send(frame, "out");
+    // Delete original frame
+    delete frame;
+    
+    EV << "[" << simTime() << "] HpgpMac: Sent frame to Channel Manager for transmission" << endl;
 }
 
 void HpgpMac::onTransmissionComplete(bool success)
 {
-    updateChannelState(false);
+    waitingForChannelResponse = false;
+    currentFrame = nullptr;
     
     if (success) {
         emitTxSuccess();
@@ -177,8 +213,8 @@ void HpgpMac::onCollision()
     else {
         // Re-queue frame and retry
         cMessage* frame = txQueue.front();
-        txQueue.erase(txQueue.begin());
-        txQueue.push_back(frame);
+        txQueue.pop();
+        txQueue.push(frame);
         
         // Start new backoff
         startBackoff();
@@ -200,7 +236,7 @@ HpgpMac::Priority HpgpMac::getFramePriority(cMessage* frame)
 simtime_t HpgpMac::getFrameDuration(cMessage* frame)
 {
     // Calculate duration based on frame size and bitrate
-    int bitrate = par("bitrate");
+    double bitrate = par("bitrate");
     int bits = 1000; // Default frame size
     if (cPacket* packet = dynamic_cast<cPacket*>(frame)) {
         bits = packet->getBitLength();
@@ -243,10 +279,6 @@ void HpgpMac::emitTxDrop()
 
 void HpgpMac::finish()
 {
-    if (backoffTimer) {
-        cancelAndDelete(backoffTimer);
-    }
-    if (deferralTimer) {
-        cancelAndDelete(deferralTimer);
-    }
+    // Don't delete messages in finish() to avoid segmentation fault
+    // OMNeT++ will handle cleanup automatically
 }
