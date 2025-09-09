@@ -103,6 +103,9 @@ class SlacApplication : public cSimpleModule
     void emitSlacComplete(simtime_t completionTime);
     void emitSlacRetries(int retryCount);
     void emitSlacTimeout();
+    
+    // Message priority
+    int getMessagePriority(SlacMessageType type);
 };
 
 #endif

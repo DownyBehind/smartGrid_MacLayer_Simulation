@@ -1,32 +1,22 @@
 //
-// HPGP MAC Module
-// Implements CSMA/CA with priority-based access
+// HomePlug 1.0 MAC Layer
+// Implements Priority Resolution + BPC/DC/BC based CSMA/CA
+// Based on Table I parameters from Jung et al. (2005)
 //
 
 simple HpgpMac
 {
     parameters:
-        int cwMin = default(8);
-        int cwMax = default(1024);
-        int maxRetries = default(3);
-        double slotTime @unit(s) = default(20us);
-        double sifs @unit(s) = default(10us);
-        double difs @unit(s) = default(50us);
-        
-        // Priority-specific parameters
-        int cap0CwMin = default(8);
-        int cap0CwMax = default(64);
-        int cap1CwMin = default(8);
-        int cap1CwMax = default(64);
-        int cap2CwMin = default(8);
-        int cap2CwMax = default(32);
-        int cap3CwMin = default(8);
-        int cap3CwMax = default(32);
-        
-        double bitrate @unit(bps) = default(10Mbps);
+        // HomePlug 1.0 standard timing parameters
+        double cifs @unit(s) = default(35.84us);
+        double rifs @unit(s) = default(26us);
+        double prs0 @unit(s) = default(35.84us);
+        double prs1 @unit(s) = default(35.84us);
+        double slotTime @unit(s) = default(35.84us);
+        int bpcMax = default(4);
+        string priorityGroup = default("CA23"); // "CA23" or "CA01"
         
     gates:
         input in;
         output out;
 }
-

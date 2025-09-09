@@ -40,20 +40,12 @@ void ChannelManager::handleMessage(cMessage* msg)
 
 void ChannelManager::processTransmissionRequest(int nodeId, cMessage* frame)
 {
-    EV << "Received transmission request from node " << nodeId << endl;
+    EV << "[" << simTime() << "] ChannelManager: Received transmission request from node " << nodeId << endl;
+    printf("[%.3f] ChannelManager: Received transmission request from node %d\n", simTime().dbl(), nodeId);
     
     // Check if nodeId is within valid range
     if (nodeId >= gateSize("nodeOut")) {
         EV << "Error: nodeId " << nodeId << " out of range (max: " << gateSize("nodeOut")-1 << ")" << endl;
-        delete frame;
-        return;
-    }
-    
-    // Check if channel is idle
-    if (!isChannelIdle()) {
-        // Channel busy, defer transmission
-        EV << "Channel busy, deferring transmission from node " << nodeId << endl;
-        // For now, just drop the frame (could implement queuing)
         delete frame;
         return;
     }
@@ -63,9 +55,19 @@ void ChannelManager::processTransmissionRequest(int nodeId, cMessage* frame)
     
     // Check for collision with ongoing transmissions
     if (!activeTransmitters.empty()) {
-        // Collision detected
-        EV << "Collision detected with ongoing transmissions" << endl;
+        // Collision detected - multiple nodes trying to transmit simultaneously
+        EV << "[" << simTime() << "] ChannelManager: Collision detected! Node " << nodeId << " collided with ongoing transmissions" << endl;
+        printf("[%.3f] ChannelManager: Collision detected! Node %d collided with ongoing transmissions\n", simTime().dbl(), nodeId);
         detectCollision();
+        delete frame;
+        return;
+    }
+    
+    // Check if channel is idle (DIFS period)
+    if (!isChannelIdle()) {
+        // Channel busy, defer transmission
+        EV << "[" << simTime() << "] ChannelManager: Channel busy, deferring transmission from node " << nodeId << endl;
+        printf("[%.3f] ChannelManager: Channel busy, deferring transmission from node %d\n", simTime().dbl(), nodeId);
         delete frame;
         return;
     }
@@ -95,7 +97,8 @@ void ChannelManager::processTransmissionRequest(int nodeId, cMessage* frame)
     cMessage* confirm = new cMessage("txConfirm");
     send(confirm, "nodeOut", nodeId);
     
-    EV << "Transmission started from node " << nodeId << " for " << duration << "s" << endl;
+    EV << "[" << simTime() << "] ChannelManager: Transmission started from node " << nodeId << " for " << duration << "s" << endl;
+    printf("[%.3f] ChannelManager: Transmission started from node %d for %.6fs\n", simTime().dbl(), nodeId, duration.dbl());
 }
 
 void ChannelManager::processTransmissionEnd(int nodeId)

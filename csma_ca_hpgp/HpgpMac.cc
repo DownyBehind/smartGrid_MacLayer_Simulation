@@ -4,75 +4,103 @@ Define_Module(HpgpMac);
 
 void HpgpMac::initialize()
 {
-    // Get parameters
-    cwMin = par("cwMin");
-    cwMax = par("cwMax");
-    maxRetries = par("maxRetries");
+    // Get HomePlug 1.0 standard parameters
+    cifs = par("cifs");
+    rifs = par("rifs");
+    prs0 = par("prs0");
+    prs1 = par("prs1");
     slotTime = par("slotTime");
-    sifs = par("sifs");
-    difs = par("difs");
+    bpcMax = par("bpcMax");
     
-    // Initialize priority-specific parameters
-    capCwMin[CAP0] = par("cap0CwMin");
-    capCwMin[CAP1] = par("cap1CwMin");
-    capCwMin[CAP2] = par("cap2CwMin");
-    capCwMin[CAP3] = par("cap3CwMin");
+    // Priority group
+    std::string groupStr = par("priorityGroup");
+    priorityGroup = (groupStr == "CA23") ? CA23 : CA01;
     
-    capCwMax[CAP0] = par("cap0CwMax");
-    capCwMax[CAP1] = par("cap1CwMax");
-    capCwMax[CAP2] = par("cap2CwMax");
-    capCwMax[CAP3] = par("cap3CwMax");
+    // Initialize Table I parameters
+    initializeTableI();
     
     // Initialize state
-    backoffCounter = 0;
-    deferralCounter = 0;
-    backoffProcedureCounter = 0;
+    bpc = 0;
+    dc = 0;
+    bc = 0;
+    cw = 0;
     channelBusy = false;
     lastChannelActivity = 0;
     waitingForChannelResponse = false;
     currentFrame = nullptr;
     
+    // Priority Resolution state
+    inPriorityResolution = false;
+    priorityResolutionSlot = 0;
+    currentPriority = CAP0;
+    
     // Create timers
-    backoffTimer = new cMessage("backoffTimer");
-    deferralTimer = new cMessage("deferralTimer");
+    slotTimer = new cMessage("slotTimer");
+    priorityResolutionTimer = new cMessage("priorityResolutionTimer");
+    
+    // Initialize with BPC=0
+    setStageByBpc(0);
     
     // Register signals
     txAttemptsSignal = registerSignal("txAttempts");
     txSuccessSignal = registerSignal("txSuccess");
     txCollisionSignal = registerSignal("txCollision");
     txDropSignal = registerSignal("txDrop");
+    
+    // Start with PRS0 + PRS1 delay
+    scheduleAt(simTime() + prs0 + prs1, slotTimer);
 }
 
 void HpgpMac::handleMessage(cMessage* msg)
 {
     if (msg->isSelfMessage()) {
-        if (msg == backoffTimer) {
-            attemptTransmission();
+        if (msg == slotTimer) {
+            // Main slot processing
+            bool busy = senseChannelBusy();
+            
+            if (busy) {
+                if (bc > 0) bc--;
+                if (dc > 0) dc--;
+                if (dc == 0 && busy) {
+                    setStageByBpc(bpc + 1); // Congestion estimation
+                }
+            } else {
+                if (bc > 0) bc--;
+            }
+            
+            if (bc == 0) {
+                bool success = tryTransmitFrame();
+                if (success) {
+                    setStageByBpc(0); // Reset on success
+                    // PRS + RIFS + CIFS delay before next competition
+                    scheduleAt(simTime() + rifs + cifs + prs0 + prs1, slotTimer);
+                    return;
+                } else {
+                    setStageByBpc(bpc + 1); // Collision - increase BPC
+                }
+            }
+            
+            scheduleAt(simTime() + slotTime, slotTimer);
         }
-        else if (msg == deferralTimer) {
-            processTxQueue();
+        else if (msg == priorityResolutionTimer) {
+            processPriorityResolution();
         }
     }
     else {
         // Handle incoming messages
         if (strcmp(msg->getName(), "txConfirm") == 0) {
-            // Transmission confirmed by channel manager
             onTransmissionComplete(true);
         }
         else if (strcmp(msg->getName(), "collision") == 0) {
-            // Collision detected by channel manager
             onTransmissionComplete(false);
         }
         else if (strcmp(msg->getName(), "channelIdle") == 0) {
-            // Channel became idle
-            if (!txQueue.empty() && !backoffTimer->isScheduled() && !deferralTimer->isScheduled()) {
-                processTxQueue();
+            if (!txQueue.empty() && !slotTimer->isScheduled()) {
+                scheduleAt(simTime() + prs0 + prs1, slotTimer);
             }
         }
         else {
-            // Handle incoming frame
             enqueueFrame(msg);
-            // Don't delete msg here - enqueueFrame will handle it
         }
     }
 }
@@ -88,8 +116,8 @@ void HpgpMac::enqueueFrame(cMessage* frame)
     
     EV << "Enqueued frame, queue size: " << txQueue.size() << endl;
     
-    if (!backoffTimer->isScheduled() && !deferralTimer->isScheduled()) {
-        processTxQueue();
+    if (!slotTimer->isScheduled()) {
+        scheduleAt(simTime() + prs0 + prs1, slotTimer);
     }
 }
 
@@ -100,7 +128,7 @@ void HpgpMac::processTxQueue()
     }
     
     if (isChannelIdle()) {
-        startBackoff();
+        startPriorityResolution();
     }
     else {
         startDeferral();
@@ -117,16 +145,16 @@ void HpgpMac::startBackoff()
     Priority priority = getFramePriority(frame);
     
     // Calculate backoff counter
-    int cw = getCw(priority);
-    backoffCounter = intuniform(0, cw - 1);
+    int cw = getTableIParams(bpc).cw;
+    bc = intuniform(0, cw - 1);
     
-    EV << "Starting backoff with counter: " << backoffCounter << endl;
+    EV << "Starting backoff with counter: " << bc << endl;
     
-    if (backoffCounter == 0) {
+    if (bc == 0) {
         attemptTransmission();
     }
     else {
-        scheduleAt(simTime() + slotTime, backoffTimer);
+        scheduleAt(simTime() + slotTime, slotTimer);
     }
 }
 
@@ -137,7 +165,7 @@ void HpgpMac::startDeferral()
     }
     
     // Defer transmission until channel is idle
-    scheduleAt(simTime() + slotTime, deferralTimer);
+    scheduleAt(simTime() + slotTime, slotTimer);
 }
 
 void HpgpMac::attemptTransmission()
@@ -190,8 +218,7 @@ void HpgpMac::onTransmissionComplete(bool success)
         EV << "Transmission successful" << endl;
         
         // Reset backoff procedure
-        backoffProcedureCounter = 0;
-        deferralCounter = 0;
+        setStageByBpc(0);
     }
     else {
         onCollision();
@@ -204,39 +231,147 @@ void HpgpMac::onCollision()
     EV << "Transmission collision" << endl;
     
     // Increase backoff procedure counter
-    backoffProcedureCounter++;
+    setStageByBpc(bpc + 1);
+}
+
+void HpgpMac::startPriorityResolution()
+{
+    if (txQueue.empty()) {
+        return;
+    }
     
-    if (backoffProcedureCounter >= maxRetries) {
-        emitTxDrop();
-        EV << "Max retries exceeded, dropping frame" << endl;
+    cMessage* frame = txQueue.front();
+    currentPriority = getFramePriority(frame);
+    
+    inPriorityResolution = true;
+    priorityResolutionSlot = 0;
+    
+    EV << "[" << simTime() << "] HpgpMac: Starting Priority Resolution for priority " << currentPriority << endl;
+    printf("[%.3f] HpgpMac: Starting Priority Resolution for priority %d\n", simTime().dbl(), currentPriority);
+    
+    // Schedule first priority resolution slot
+    scheduleAt(simTime() + slotTime, priorityResolutionTimer);
+}
+
+void HpgpMac::processPriorityResolution()
+{
+    if (!inPriorityResolution) {
+        return;
+    }
+    
+    priorityResolutionSlot++;
+    
+    EV << "[" << simTime() << "] HpgpMac: Processing Priority Resolution slot " << priorityResolutionSlot << endl;
+    printf("[%.3f] HpgpMac: Processing Priority Resolution slot %d\n", simTime().dbl(), priorityResolutionSlot);
+    
+    if (priorityResolutionSlot >= 2) {
+        // Priority resolution complete
+        onPriorityResolutionComplete();
     }
     else {
-        // Re-queue frame and retry
-        cMessage* frame = txQueue.front();
-        txQueue.pop();
-        txQueue.push(frame);
-        
-        // Start new backoff
-        startBackoff();
+        // Continue to next slot
+        scheduleAt(simTime() + slotTime, priorityResolutionTimer);
     }
 }
 
-int HpgpMac::getCw(Priority priority)
+void HpgpMac::onPriorityResolutionComplete()
 {
-    int cw = capCwMin[priority] * (1 << backoffProcedureCounter);
-    return std::min(cw, capCwMax[priority]);
+    inPriorityResolution = false;
+    priorityResolutionSlot = 0;
+    
+    EV << "[" << simTime() << "] HpgpMac: Priority Resolution complete, starting backoff" << endl;
+    printf("[%.3f] HpgpMac: Priority Resolution complete, starting backoff\n", simTime().dbl());
+    
+    // Now start the actual backoff procedure
+    startBackoff();
+}
+
+void HpgpMac::initializeTableI()
+{
+    // Table I parameters for CA0, CA1 (저우선순위 그룹)
+    tableICA01[0] = {0, 7};   // BPC=0 → DC=0, W0=7
+    tableICA01[1] = {1, 15};  // BPC=1 → DC=1, W1=15
+    tableICA01[2] = {3, 31};  // BPC=2 → DC=3, W2=31
+    tableICA01[3] = {15, 63}; // BPC>2 → DC=15, W3+=63
+    
+    // Table I parameters for CA2, CA3 (고우선순위 그룹)
+    tableICA23[0] = {0, 7};   // BPC=0 → DC=0, W0=7
+    tableICA23[1] = {1, 15};  // BPC=1 → DC=1, W1=15
+    tableICA23[2] = {3, 15};  // BPC=2 → DC=3, W2=15
+    tableICA23[3] = {15, 31}; // BPC>2 → DC=15, W3+=31
+}
+
+void HpgpMac::setStageByBpc(int newBpc)
+{
+    bpc = std::min(newBpc, bpcMax);
+    TableIParams params = getTableIParams(bpc);
+    dc = params.dc;
+    cw = params.cw;
+    bc = intuniform(0, cw); // [0, W] random
+    
+    EV << "[" << simTime() << "] HpgpMac: BPC=" << bpc << ", DC=" << dc << ", CW=" << cw << ", BC=" << bc << endl;
+    printf("[%.3f] HpgpMac: BPC=%d, DC=%d, CW=%d, BC=%d\n", simTime().dbl(), bpc, dc, cw, bc);
+}
+
+HpgpMac::TableIParams HpgpMac::getTableIParams(int bpc)
+{
+    if (priorityGroup == CA23) {
+        return tableICA23[bpc];
+    } else {
+        return tableICA01[bpc];
+    }
+}
+
+bool HpgpMac::senseChannelBusy()
+{
+    // Simple channel sensing - can be enhanced with actual channel state
+    return channelBusy;
+}
+
+bool HpgpMac::tryTransmitFrame()
+{
+    if (txQueue.empty()) {
+        return false;
+    }
+    
+    cMessage* frame = txQueue.front();
+    txQueue.pop();
+    
+    emitTxAttempt();
+    
+    // Send frame to Channel Manager
+    cMessage* frameCopy = frame->dup();
+    currentFrame = frameCopy;
+    waitingForChannelResponse = true;
+    
+    send(frameCopy, "out");
+    delete frame;
+    
+    EV << "[" << simTime() << "] HpgpMac: Attempting transmission" << endl;
+    printf("[%.3f] HpgpMac: Attempting transmission\n", simTime().dbl());
+    
+    return true; // Assume success for now
 }
 
 HpgpMac::Priority HpgpMac::getFramePriority(cMessage* frame)
 {
-    // Default to CAP0, could be enhanced to read from frame
-    return CAP0;
+    // Get priority from frame's kind field
+    int priority = frame->getKind();
+    
+    // Map to Priority enum
+    switch (priority) {
+        case 0: return CAP0;
+        case 1: return CAP1;
+        case 2: return CAP2;
+        case 3: return CAP3;
+        default: return CAP0;
+    }
 }
 
 simtime_t HpgpMac::getFrameDuration(cMessage* frame)
 {
     // Calculate duration based on frame size and bitrate
-    double bitrate = par("bitrate");
+    double bitrate = 14e6; // 14 Mbps
     int bits = 1000; // Default frame size
     if (cPacket* packet = dynamic_cast<cPacket*>(frame)) {
         bits = packet->getBitLength();
@@ -246,7 +381,7 @@ simtime_t HpgpMac::getFrameDuration(cMessage* frame)
 
 bool HpgpMac::isChannelIdle()
 {
-    return !channelBusy && (simTime() - lastChannelActivity) >= difs;
+    return !channelBusy && (simTime() - lastChannelActivity) >= cifs;
 }
 
 void HpgpMac::updateChannelState(bool busy)

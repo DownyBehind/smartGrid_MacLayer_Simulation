@@ -58,21 +58,13 @@ module SlacNode
         }
         
         hpgpMac: HpgpMac {
-            cwMin = 8;
-            cwMax = 1024;
-            maxRetries = 3;
-            slotTime = 20us;
-            sifs = 10us;
-            difs = 50us;
-            cap0CwMin = 8;
-            cap0CwMax = 64;
-            cap1CwMin = 8;
-            cap1CwMax = 64;
-            cap2CwMin = 8;
-            cap2CwMax = 32;
-            cap3CwMin = 8;
-            cap3CwMax = 32;
-            bitrate = 10Mbps;
+            cifs = 35.84us;
+            rifs = 26us;
+            prs0 = 35.84us;
+            prs1 = 35.84us;
+            slotTime = 35.84us;
+            bpcMax = 4;
+            priorityGroup = "CA23";
         }
         
     connections:

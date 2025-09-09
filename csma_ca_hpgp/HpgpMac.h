@@ -9,8 +9,9 @@
 using namespace omnetpp;
 
 /**
- * HomePlug Green PHY (HPGP) MAC Layer
- * Implements CSMA/CA with priority-based access
+ * HomePlug 1.0 MAC Layer
+ * Implements Priority Resolution + BPC/DC/BC based CSMA/CA
+ * Based on Table I parameters from Jung et al. (2005)
  */
 class HpgpMac : public cSimpleModule
 {
@@ -21,28 +22,45 @@ class HpgpMac : public cSimpleModule
         CAP2 = 2,
         CAP3 = 3
     };
+    
+    enum PriorityGroup {
+        CA01 = 0,  // CA0, CA1 (저우선순위 그룹)
+        CA23 = 1   // CA2, CA3 (고우선순위 그룹)
+    };
 
   protected:
-    // MAC parameters
-    int cwMin;
-    int cwMax;
-    int maxRetries;
-    simtime_t slotTime;
-    simtime_t sifs;
-    simtime_t difs;
+    // MAC parameters - HomePlug 1.0 standard
+    simtime_t cifs;      // 35.84us
+    simtime_t rifs;      // 26us
+    simtime_t prs0;      // 35.84us
+    simtime_t prs1;      // 35.84us
+    simtime_t slotTime;  // 35.84us
+    int bpcMax;          // 4
     
-    // Priority-specific parameters
-    std::map<Priority, int> capCwMin;
-    std::map<Priority, int> capCwMax;
+    // Priority group
+    PriorityGroup priorityGroup;
     
-    // MAC state
-    int backoffCounter;
-    int deferralCounter;
-    int backoffProcedureCounter;
+    // Table I parameters (BPC -> DC, CW)
+    struct TableIParams {
+        int dc;
+        int cw;
+    };
+    std::map<int, TableIParams> tableICA01;  // CA0, CA1 group
+    std::map<int, TableIParams> tableICA23;  // CA2, CA3 group
+    
+    // MAC state - HomePlug 1.0 BPC/DC/BC model
+    int bpc;             // Backoff Procedure Counter
+    int dc;              // Deferral Counter
+    int bc;              // Backoff Counter
+    int cw;              // Current contention window
     std::queue<cMessage*> txQueue;
-    cMessage* pendingTx;
-    cMessage* backoffTimer;
-    cMessage* deferralTimer;
+    cMessage* slotTimer; // Main slot timer
+    
+    // Priority Resolution state
+    bool inPriorityResolution;
+    int priorityResolutionSlot;
+    Priority currentPriority;
+    cMessage* priorityResolutionTimer;
     
     // Statistics
     simsignal_t txAttemptsSignal;
@@ -70,11 +88,22 @@ class HpgpMac : public cSimpleModule
     void onTransmissionComplete(bool success);
     void onCollision();
     
+    // Priority Resolution methods
+    void startPriorityResolution();
+    void processPriorityResolution();
+    void onPriorityResolutionComplete();
+    
+    // HomePlug 1.0 Table I methods
+    void setStageByBpc(int newBpc);
+    TableIParams getTableIParams(int bpc);
+    void initializeTableI();
+    
     // Helper methods
-    int getCw(Priority priority);
     Priority getFramePriority(cMessage* frame);
     simtime_t getFrameDuration(cMessage* frame);
     bool isChannelIdle();
+    bool senseChannelBusy();
+    bool tryTransmitFrame();
     void updateChannelState(bool busy);
     
     // Statistics
@@ -85,4 +114,3 @@ class HpgpMac : public cSimpleModule
 };
 
 #endif
-

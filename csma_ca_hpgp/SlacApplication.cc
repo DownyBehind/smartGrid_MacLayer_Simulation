@@ -133,14 +133,18 @@ void SlacApplication::sendSlacMessage(SlacMessageType type, int bits)
     cPacket* msg = new cPacket("slacMsg");
     msg->setBitLength(bits);
     
-    EV << "[" << simTime() << "] Node " << nodeId << " (" << nodeType << "): Sending SLAC message type " << type << " (bits: " << bits << ")" << endl;
-    printf("[%.3f] Node %d (%s): Sending SLAC message type %d (bits: %d)\n", simTime().dbl(), nodeId, nodeType.c_str(), type, bits);
+    // Set priority based on message type
+    int priority = getMessagePriority(type);
+    msg->setKind(priority); // Use kind field to store priority
+    
+    EV << "[" << simTime() << "] Node " << nodeId << " (" << nodeType << "): Sending SLAC message type " << type << " (bits: " << bits << ", priority: " << priority << ")" << endl;
+    printf("[%.3f] Node %d (%s): Sending SLAC message type %d (bits: %d, priority: %d)\n", simTime().dbl(), nodeId, nodeType.c_str(), type, bits, priority);
     
     // 파일 로그 출력
     FILE* logFile = fopen("results/slac_messages.log", "a");
     if (logFile) {
-        fprintf(logFile, "%.3f,Node_%d_%s,SLAC_MSG_TYPE_%d,%d\n", 
-                simTime().dbl(), nodeId, nodeType.c_str(), type, bits);
+        fprintf(logFile, "%.3f,Node_%d_%s,SLAC_MSG_TYPE_%d,%d,PRIORITY_%d\n", 
+                simTime().dbl(), nodeId, nodeType.c_str(), type, bits, priority);
         fclose(logFile);
     }
     
@@ -313,6 +317,32 @@ void SlacApplication::emitSlacRetries(int retryCount)
 void SlacApplication::emitSlacTimeout()
 {
     emit(slacTimeoutSignal, 1);
+}
+
+int SlacApplication::getMessagePriority(SlacMessageType type)
+{
+    // Assign CAP based on message type and urgency
+    switch (type) {
+        case SLAC_PARM_REQ:
+        case SLAC_PARM_CNF:
+            return 3; // CAP3 - Highest priority for parameter negotiation
+            
+        case START_ATTEN:
+        case MNBC_SOUND:
+        case ATTEN_CHAR_IND:
+            return 2; // CAP2 - High priority for attenuation characterization
+            
+        case SLAC_MATCH_REQ:
+        case SLAC_MATCH_CNF:
+            return 1; // CAP1 - Medium priority for matching
+            
+        case DC_CUR_DEM_REQ:
+        case DC_CUR_DEM_RSP:
+            return 0; // CAP0 - Lowest priority for DC loop
+            
+        default:
+            return 0; // Default to CAP0
+    }
 }
 
 void SlacApplication::finish()
