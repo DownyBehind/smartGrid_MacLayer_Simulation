@@ -1,3 +1,5 @@
+package csma_ca_hpgp;
+
 //
 // SLAC Application Module
 // Implements the SLAC protocol for PLC communication
@@ -30,6 +32,10 @@ simple SlacApplication
         double delayEvseRsp @unit(ms) = default(1ms);
         double gapAttn @unit(ms) = default(2ms);
         double gapMatch @unit(ms) = default(2ms);
+        
+        // Logging parameters
+        bool recordSlacMessages = default(false);
+        bool recordDcCycles = default(false);
         
     gates:
         input in;

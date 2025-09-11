@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for csma_ca_hpgp
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep
+#  opp_makemake -f --deep -I src -I ned
 #
 
 # Name of target to be created (-o option)
@@ -19,13 +19,13 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(QTENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I/home/kimdawoon/study/workspace/research/inet_plc/inet/src
+INCLUDE_PATH = -Isrc -Ined
 
 # Additional object and library files to link with
 EXTRA_OBJS =
 
 # Additional libraries (-L, -l options)
-LIBS = -L/home/kimdawoon/study/workspace/research/inet_plc/inet/out/clang-release/src -lINET
+LIBS =
 
 # Output directory
 PROJECT_OUTPUT_DIR = out
@@ -33,7 +33,7 @@ PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/SlacApplication.o $O/HpgpMac.o $O/ChannelManager.o
+OBJS = $O/src/ChannelManager.o $O/src/HpgpMac.o $O/src/register_classes.o $O/src/SlacApplication.o
 
 # Message files
 MSGFILES =

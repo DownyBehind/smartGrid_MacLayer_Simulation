@@ -1,3 +1,5 @@
+package csma_ca_hpgp;
+
 import SlacNode;
 import ChannelManager;
 

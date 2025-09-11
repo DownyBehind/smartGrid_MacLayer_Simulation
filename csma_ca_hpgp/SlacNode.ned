@@ -1,3 +1,5 @@
+package csma_ca_hpgp;
+
 //
 // SLAC Node for HPGP simulation
 // Simplified node without INET dependencies
@@ -36,27 +38,6 @@ module SlacNode
         output out;
         
     submodules:
-        slacApp: SlacApplication {
-            nodeType = parent.nodeType;
-            nodeId = parent.nodeId;
-            slacMsgTimeout = parent.slacMsgTimeout;
-            slacProcTimeout = parent.slacProcTimeout;
-            slacMaxRetry = parent.slacMaxRetry;
-            slacRetryBackoff = parent.slacRetryBackoff;
-            dcLoopEnabled = parent.dcLoopEnabled;
-            dcPeriod = parent.dcPeriod;
-            dcDeadline = parent.dcDeadline;
-            dcRspDelay = parent.dcRspDelay;
-            dcRspJitter = parent.dcRspJitter;
-            nStartAtten = parent.nStartAtten;
-            nMsound = parent.nMsound;
-            gapStart = parent.gapStart;
-            gapMsound = parent.gapMsound;
-            delayEvseRsp = parent.delayEvseRsp;
-            gapAttn = parent.gapAttn;
-            gapMatch = parent.gapMatch;
-        }
-        
         hpgpMac: HpgpMac {
             cifs = 35.84us;
             rifs = 26us;
@@ -65,10 +46,20 @@ module SlacNode
             slotTime = 35.84us;
             bpcMax = 4;
             priorityGroup = "CA23";
+            recordTxAttempts = true;
+            recordCollisions = true;
+            recordSlacMessages = true;
+            recordDcCycles = true;
+            nodeType = parent.nodeType;
+            nodeId = parent.nodeId;
+            dcLoopEnabled = parent.dcLoopEnabled;
+            dcPeriod = parent.dcPeriod;
+            dcDeadline = parent.dcDeadline;
+            dcRspDelay = parent.dcRspDelay;
+            dcRspJitter = parent.dcRspJitter;
         }
         
     connections:
-        in --> slacApp.in;
-        slacApp.out --> hpgpMac.in;
+        in --> hpgpMac.in;
         hpgpMac.out --> out;
 }
