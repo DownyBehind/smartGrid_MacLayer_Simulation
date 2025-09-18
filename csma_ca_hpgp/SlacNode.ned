@@ -57,6 +57,7 @@ module SlacNode
             dcDeadline = parent.dcDeadline;
             dcRspDelay = parent.dcRspDelay;
             dcRspJitter = parent.dcRspJitter;
+            looseResponseMatching = default(false);
         }
         
     connections:

@@ -19,11 +19,26 @@ private:
     std::vector<int> activeTransmitters;
     std::map<int, cMessage*> transmissionEndEvents;
     
+    // Arbitration window (global PRS)
+    struct PendingReq { int nodeId; cMessage* frame; };
+    std::vector<PendingReq> pendingRequests;
+    cMessage* arbitrationTimer = nullptr;
+    simtime_t prsWindow = 0;
+    
     // Parameters
     double slotTime;
     double sifs;
     double difs;
     double bitrate;
+    double prs0Param = 0;
+    double prs1Param = 0;
+    
+    // Beacon parameters/state
+    simtime_t beaconPeriodParam = 0;
+    double beaconDutyPctParam = 0;
+    bool beaconActive = false;
+    cMessage* beaconStartMsg = nullptr;
+    cMessage* beaconEndMsg = nullptr;
     
     // Channel model parameters
     double per;
@@ -54,6 +69,8 @@ protected:
     void processTransmissionEnd(int nodeId);
     void detectCollision();
     void updateChannelState();
+    void startArbitrationIfNeeded();
+    void runArbitration();
     
     // Utility functions
     simtime_t calculateFrameDuration(cMessage* frame);

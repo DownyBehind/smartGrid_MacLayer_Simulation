@@ -31,4 +31,3 @@ network SimpleNetworkNoChannel
             channelManager.nodeOut[i] --> node[i].in;
         }
 }
-
