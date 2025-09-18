@@ -77,8 +77,15 @@ class HpgpMac : public cSimpleModule
     // Channel state
     bool channelBusy;
     simtime_t lastChannelActivity;
+    
+    // DC job tracking for transmission completion
+    int lastTransmittedDcJobId;
     bool waitingForChannelResponse;
     cMessage* currentFrame;
+    enum LastTxType { TX_NONE = 0, TX_DC_REQ = 1, TX_DC_RSP = 2 };
+    LastTxType lastTxType;
+    void* lastTxCtx;   // For REQ: DcJob* (this module); For RSP: DcJob* (EV side) carried through
+    int lastTxSeq;
     
     // SLAC and DC functionality
     std::string nodeType;
@@ -90,13 +97,62 @@ class HpgpMac : public cSimpleModule
     simtime_t dcRspJitter;
     int dcReqSeq;
     bool dcStarted;
-    cMessage* dcTimer;
+    bool looseResponseMatching; // INI 토글: 느슨한 응답 매칭
+    
+    // SLAC state management
+    int slacStep;
+    bool slacCompleted;
+    // cMessage* dcTimer; // removed; deadlines handled via jobDeadline messages
+    
+    // DC Job Management System
+    enum JobState {
+        PENDING = 0,      // Job released but not yet transmitted
+        REQ_SENT = 1,     // Request transmitted successfully
+        RES_RECEIVED = 2, // Response received
+        MISSED = 3        // Job missed deadline
+    };
+    
+    enum MissType {
+        M0_NO_REQ = 0,    // No request sent in window
+        M1_REQ_FAIL = 1,  // Request transmission failed
+        M2_RES_MISS = 2,  // Response missed
+        M3_RES_LATE = 3   // Response late
+    };
+    
+    struct DcJob {
+        int jobId;                    // Job sequence number
+        simtime_t releaseTime;        // R_k^i = T_SLAC^i + k·100ms
+        simtime_t windowStart;        // Window start time
+        simtime_t windowEnd;          // Window end time
+        simtime_t deadline;           // Deadline time
+        JobState state;               // Current job state
+        int seq;                      // Request sequence number
+        simtime_t reqTime;            // Request transmission time
+        simtime_t resTime;            // Response reception time
+        MissType missType;            // Miss type if missed
+        simtime_t tardiness;          // Tardiness if late
+        
+        // MAC 경쟁 지연 반영을 위한 계측 포인트
+        simtime_t enq_req;            // Request enqueue time (큐 투입 시각)
+        simtime_t txStart_req;        // Request transmission start time (전송 시작 시각)
+        simtime_t txEnd_req;          // Request transmission end time (전송 종료 시각)
+        simtime_t rxStart_rsp;        // Response reception start time (수신 시작 시각)
+        simtime_t rxEnd_rsp;          // Response reception end time (수신 종료 시각)
+        simtime_t enq_rsp;            // Response enqueue time (응답 큐 투입 시각, 진단용)
+        int reqTxAttempts;            // 송신 시도 횟수 (성공/실패 포함)
+    };
+    
+    std::vector<DcJob> dcJobs;       // Job queue
+    int nextJobId;                   // Next job ID
+    simtime_t slacCompletionTime;    // T_SLAC^i
+    cMessage* jobTimer;              // Job processing timer
     
     // SLAC state
     bool slacStarted;
     int slacTryId;
     simtime_t slacStartTime;
     cMessage* slacTimer;
+    cMessage* startSlacMsg;
 
   protected:
     virtual void initialize() override;
@@ -131,16 +187,29 @@ class HpgpMac : public cSimpleModule
     void sendSlacMessage(const char* msgType);
     void sendDcRequest();
     void onSlacDone(bool success);
-    void onDcTimeout();
+    // void onDcTimeout(); // removed: deadlines handled by jobDeadline
     void handleDcRequest(cMessage* msg);
     void handleSlacMessage(cMessage* msg);
     void logMacTx(int kind, int bits, simtime_t startTime, simtime_t endTime, bool success, int attempts, int bpc, int bc);
     void logDcCycle(int seq, simtime_t reqTime, simtime_t rspTime, simtime_t rtt, bool missFlag, bool gapViolation, int retries, int segFrames);
     void logSlacAttempt(int tryId, simtime_t startTime, simtime_t endTime, bool success, simtime_t connTime, int msgTimeouts, bool procTimeout, int retries);
     
+    // DC Job Management System
+    void createDcJob(int jobId, simtime_t releaseTime);
+    void processDcJobs();
+    void processJob(DcJob& job);
+    void sendDcRequestForJob(DcJob& job);
+    void onDcRequestSent(DcJob& job);
+    void onDcResponseReceived(DcJob& job, simtime_t responseTime);
+    DcJob* findEarliestPendingReqSentJob();
+    void onJobMissed(DcJob& job, MissType missType);
+    void logJobEvent(const DcJob& job, const char* event);
+    void logJobMiss(const DcJob& job, MissType missType);
+    
     // Actual SLAC Protocol Implementation
     void startSlacSequence();
     void processSlacSequence();
+    bool isSlacMessage(const char* msgName);
     
     // HPGP MAC Protocol Implementation
     void processMacSlot();

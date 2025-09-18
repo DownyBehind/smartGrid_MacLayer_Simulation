@@ -33,6 +33,10 @@ simple HpgpMac
         double dcDeadline @unit(s) = default(100ms);
         double dcRspDelay @unit(s) = default(1.5ms);
         double dcRspJitter @unit(s) = default(0ms);
+        int dcReqBits = default(2400); // 비트 길이(기본 300B)
+        int dcRspBits = default(2400);
+        int dcSegFrames = default(1);  // 세그먼트 프레임 수(단순히 비트 길이 배수로 반영)
+        bool looseResponseMatching = default(false); // true: 응답을 seq 무시하고 가장 이른 REQ_SENT에 매칭
         
     gates:
         input in;
