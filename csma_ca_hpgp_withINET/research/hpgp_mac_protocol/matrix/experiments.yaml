@@ -1,0 +1,5 @@
+# Parameter matrix for batch experiments
+numEvs: [1]
+seedSet: [1, 2, 3]
+simTimeS: 100
+repeats: 3

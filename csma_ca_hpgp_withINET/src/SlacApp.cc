@@ -1,8 +1,11 @@
 #include <omnetpp.h>
 #include "inet/linklayer/plc/PLCFrame_m.h"
+#include <vector>
+#include <algorithm>
 
 using namespace omnetpp;
 using namespace inet;
+#include <set>
 
 class SlacApp : public cSimpleModule {
   private:
@@ -17,9 +20,14 @@ class SlacApp : public cSimpleModule {
     bool enableDcPriorityCycle = false; // legacy name
     bool enablePriorityCycle = false;   // new unified switch
     simtime_t dcRspDelay;
+    bool simulateNoEvse = false;        // observer-only switch
+    bool testJamOnMatchCnf = false;     // test-only: emulate jamming at match CNF
+    int msoundDropEveryK = 0;           // test-only: drop every K-th M_SOUND if >0
     cMessage* startMsg = nullptr;
     cMessage* dcTick = nullptr;
     cMessage* slacDone = nullptr;
+    cMessage* heartbeat = nullptr; // periodic scalar heartbeat
+    bool slacCompleted = false;
     int seq = 0;
     // stats
     int dcReqSent = 0;
@@ -33,6 +41,15 @@ class SlacApp : public cSimpleModule {
     simsignal_t dcReqSignal;
     simsignal_t dcRspSignal;
     simsignal_t dcLatencySignal;
+    std::vector<double> dcLatSamples;
+    // airtime / deadline metrics (observer-only, no behavior change)
+    simtime_t lastDcReqSentTime = SIMTIME_ZERO;
+    bool hasLastDcReq = false;
+    int dcDeadlineMissCount = 0; // airtime > 100ms
+    int dcReqIntervalCount = 0;  // number of intervals after SLAC_DONE
+    int dcReqIntervalDelayedCount = 0; // intervals > 100ms
+    // EVSE: track which EV IDs have already received SLAC_MATCH_CNF to avoid redundant emits
+    std::set<int> cnfSentTo;
   protected:
     virtual void initialize() override {
         role = par("role").stdstringValue();
@@ -47,14 +64,25 @@ class SlacApp : public cSimpleModule {
             enableDcPriorityCycle = par("enableDcPriorityCycle");
         if (hasPar("enablePriorityCycle"))
             enablePriorityCycle = par("enablePriorityCycle");
+        if (hasPar("simulateNoEvse"))
+            simulateNoEvse = par("simulateNoEvse");
+        if (hasPar("testJamOnMatchCnf"))
+            testJamOnMatchCnf = par("testJamOnMatchCnf");
+        if (hasPar("msoundDropEveryK"))
+            msoundDropEveryK = par("msoundDropEveryK");
         if (enablePriorityCycle || enableDcPriorityCycle) {
             EV_WARN << "This is Priority Cycle Mode!!! it is not a charging protocol environment!!" << endl;
             EV_INFO << "This is Priority Cycle Mode!!! it is not a charging protocol environment!!" << endl;
         }
         dcRspDelay = par("dcRspDelay");
         startMsg = new cMessage("start");
+        take(startMsg);
         // add small positive offset to avoid t=0 race/alloc issues
         scheduleAt(simTime() + startJitter + 0.0001, startMsg);
+        // Schedule periodic heartbeat scalar for recording pipeline verification (observer-only)
+        heartbeat = new cMessage("heartbeat");
+        take(heartbeat);
+        scheduleAt(simTime() + 0.5, heartbeat);
         dcReqSignal = registerSignal("dcReqSent");
         dcRspSignal = registerSignal("dcRspRecv");
         dcLatencySignal = registerSignal("dcLatency");
@@ -62,6 +90,7 @@ class SlacApp : public cSimpleModule {
         dcLatMax = 0.0;
         dcLatSum = 0.0;
         dcLatCount = 0;
+        slacCompleted = false;
     }
     virtual void handleMessage(cMessage* msg) override {
         if (msg->isSelfMessage()) {
@@ -80,32 +109,65 @@ class SlacApp : public cSimpleModule {
                         send(f, "out");
                     };
                     // SLAC sequence as burst with configured priority
-                    sendPlc(startPriority); // SLAC_PARM_REQ
-                    for (int i=0;i<numStartAtten;i++) sendPlc(startPriority);
-                    for (int i=0;i<numMsound;i++) sendPlc(startPriority);
+                    EV_INFO << "SLAC_LOG stage=START_ATTEN node=" << getParentModule()->getFullName() << " cap=" << startPriority << " t=" << simTime() << endl;
+                    sendPlc(startPriority); // SLAC_PARM_REQ (START_ATTEN)
+                    for (int i=0;i<numStartAtten;i++) {
+                        EV_INFO << "SLAC_LOG stage=START_ATTEN node=" << getParentModule()->getFullName() << " cap=" << startPriority << " t=" << simTime() << endl;
+                        sendPlc(startPriority);
+                    }
+                    for (int i=0;i<numMsound;i++) {
+                        int idx = i+1;
+                        bool drop = (msoundDropEveryK>0 && (idx % msoundDropEveryK)==0);
+                        EV_INFO << "SLAC_LOG stage=M_SOUND node=" << getParentModule()->getFullName() << " idx=" << idx << " cap=" << startPriority << " t=" << simTime() << (drop?" DROPPED":"") << endl;
+                        if (!drop) sendPlc(startPriority);
+                    }
+                    EV_INFO << "SLAC_LOG stage=ATTEN_CHAR node=" << getParentModule()->getFullName() << " cap=" << startPriority << " t=" << simTime() << endl;
                     sendPlc(startPriority); // ATTEN_CHAR_RSP
-                    sendPlc(startPriority); // SLAC_MATCH_REQ
+                    EV_INFO << "SLAC_LOG stage=VALIDATE node=" << getParentModule()->getFullName() << " cap=" << startPriority << " t=" << simTime() << endl;
+                    sendPlc(startPriority); // SLAC_MATCH_REQ (VALIDATE)
                 }
-                if (!slacDone) slacDone = new cMessage("slacDone");
-                scheduleAt(simTime(), slacDone);
-                dcTick = new cMessage("dcTick");
-                scheduleAt(simTime(), dcTick);
+                // NOTE: dcTick will be scheduled after SLAC completion (SLAC_MATCH_CNF)
                 // consume startMsg
                 startMsg = nullptr;
                 delete msg;
                 return;
+            } else if (!strcmp(msg->getName(), "heartbeat")) {
+                // Observer-only heartbeat scalar for result pipeline verification
+                recordScalar("heartbeat", 1);
+                scheduleAt(simTime() + 0.5, heartbeat);
+                return;
             } else if (!strcmp(msg->getName(), "dcTick")) {
                 if (role == "EV") {
+                    if (!slacCompleted) { // gate DC until SLAC is complete
+                        scheduleAt(simTime() + 0.01, dcTick);
+                        return;
+                    }
                     auto *req = new PLCFrame("DC_REQUEST");
                     req->setFrameType(2);
-                    req->setPriority((enablePriorityCycle||enableDcPriorityCycle)? dcPriority : 0);
+                    int pr = 0;
+                    if (hasPar("testDcUseCap3") && (bool)par("testDcUseCap3")) pr = 3; else pr = ((enablePriorityCycle||enableDcPriorityCycle)? dcPriority : 0);
+                    req->setPriority(pr);
                     req->setSrcAddr(nodeId);
-                    req->setDestAddr(0);
+                    // Diagnostic: optionally force unicast to EVSE to verify reception path
+                    int dest = 0;
+                    if (hasPar("testUnicastEvse") && (bool)par("testUnicastEvse")) {
+                        dest = hasPar("testTargetNodeId") ? (int)par("testTargetNodeId") : 1;
+                    }
+                    req->setDestAddr(dest);
                     req->setPayloadLength(300);
                     req->setByteLength(300);
                     req->setAckRequired(false);
                     req->setTimestamp();
+                    // Measure EV-side request pacing intervals
+                    if (hasLastDcReq) {
+                        simtime_t delta = simTime() - lastDcReqSentTime;
+                        dcReqIntervalCount++;
+                        if (delta > 0.1) dcReqIntervalDelayedCount++;
+                    }
+                    lastDcReqSentTime = simTime();
+                    hasLastDcReq = true;
                     EV_INFO << "CAP_LOG node=" << getParentModule()->getFullName() << " cap=" << req->getPriority() << " t=" << simTime() << endl;
+                    EV_INFO << "OBS EV_TX_DC_REQUEST node=" << getParentModule()->getFullName() << " dest=" << req->getDestAddr() << " t=" << simTime() << endl;
                     send(req, "out");
                     dcReqSent++;
                     emit(dcReqSignal, dcReqSent);
@@ -118,12 +180,25 @@ class SlacApp : public cSimpleModule {
                 // do NOT delete dcTick when rescheduling
                 return;
             } else if (!strcmp(msg->getName(), "dcRspEnq")) {
-                // EVSE delayed response enqueue
-                auto *rsp = static_cast<PLCFrame*>(msg->getContextPointer());
+                // EVSE delayed response enqueue: construct response now to avoid contextPointer ownership issues
+                int dest = (intptr_t)msg->getContextPointer();
+                auto *rsp = new PLCFrame("DC_RESPONSE");
+                rsp->setFrameType(2);
+                rsp->setPriority(3);
+                rsp->setSrcAddr(nodeId);
+                rsp->setDestAddr(dest);
+                rsp->setPayloadLength(300);
+                rsp->setByteLength(300);
+                rsp->setAckRequired(false);
+                EV_INFO << "OBS EVSE_TX_DC_RESPONSE node=" << getParentModule()->getFullName()
+                        << " dest=" << rsp->getDestAddr() << " t=" << simTime() << endl;
                 EV_INFO << "CAP_LOG node=" << getParentModule()->getFullName() << " cap=" << rsp->getPriority() << " t=" << simTime() << endl;
                 send(rsp, "out");
                 dcRspSent++;
                 delete msg;
+                return;
+            } else if (!strcmp(msg->getName(), "slacDone")) {
+                // One-shot marker; do nothing and keep message for possible future checks
                 return;
             }
             delete msg;
@@ -132,41 +207,81 @@ class SlacApp : public cSimpleModule {
             PLCFrame *f = dynamic_cast<PLCFrame*>(msg);
             if (!f) { delete msg; return; }
             if (role == "EVSE" && strcmp(f->getName(), "DC_REQUEST") == 0) {
+                EV_INFO << "OBS EVSE_RCV_DC_REQUEST node=" << getParentModule()->getFullName()
+                        << " src=" << f->getSrcAddr() << " t=" << simTime() << endl;
                 // schedule delayed response
-                auto *rsp = new PLCFrame("DC_RESPONSE");
-                rsp->setFrameType(2);
-                // EVSE ACK is fixed at CAP3 for responsiveness per requirement
-                rsp->setPriority(3);
-                rsp->setSrcAddr(nodeId);
-                rsp->setDestAddr(f->getSrcAddr());
-                rsp->setPayloadLength(300);
-                rsp->setByteLength(300);
-                rsp->setAckRequired(false);
-                // carry original timestamp to compute latency at EV side
-                rsp->setTimestamp(f->getTimestamp());
                 cMessage *enq = new cMessage("dcRspEnq");
-                enq->setContextPointer(rsp);
+                take(enq);
+                enq->setContextPointer((void*)(intptr_t)f->getSrcAddr());
                 scheduleAt(simTime() + dcRspDelay, enq);
                 delete f;
                 return;
             }
-            if (role == "EV" && strcmp(f->getName(), "DC_RESPONSE") == 0) {
-                dcRspRecv++;
-                emit(dcRspSignal, dcRspRecv);
-                simtime_t lat = simTime() - f->getTimestamp();
-                emit(dcLatencySignal, lat.dbl());
-                // latency aggregates
-                double l = lat.dbl();
-                if (dcLatCount == 0) {
-                    dcLatMin = l; dcLatMax = l;
-                } else {
-                    if (l < dcLatMin) dcLatMin = l;
-                    if (l > dcLatMax) dcLatMax = l;
+            // EVSE: respond to SLAC end with match CNF unless simulateNoEvse
+            if (role == "EVSE") {
+                if (!simulateNoEvse) {
+                    int evId = f->getSrcAddr();
+                    if (cnfSentTo.find(evId) == cnfSentTo.end()) {
+                        cnfSentTo.insert(evId);
+                        auto *cnf = new PLCFrame("SLAC_MATCH_CNF");
+                        cnf->setFrameType(2);
+                        cnf->setPriority(3);
+                        cnf->setSrcAddr(nodeId);
+                        cnf->setDestAddr(evId);
+                        cnf->setPayloadLength(100);
+                        cnf->setByteLength(100);
+                        cnf->setAckRequired(false);
+                        send(cnf, "out");
+                    }
                 }
-                dcLatSum += l;
-                dcLatCount++;
-                // consider matched if destAddr is this EV and src nonzero
-                dcRspMatch++;
+                delete f;
+                return;
+            }
+            if (role == "EV" && strcmp(f->getName(), "DC_RESPONSE") == 0) {
+                // Count only responses addressed to this EV (ignore broadcast copies to others)
+                if (f->getDestAddr() == nodeId) {
+                    dcRspRecv++;
+                    emit(dcRspSignal, dcRspRecv);
+                    // Airtime: EV request send -> EV response receive
+                    simtime_t lat = hasLastDcReq ? (simTime() - lastDcReqSentTime) : SIMTIME_ZERO;
+                    emit(dcLatencySignal, lat.dbl());
+                    // latency aggregates
+                    double l = lat.dbl();
+                    dcLatSamples.push_back(l);
+                    if (dcLatCount == 0) {
+                        dcLatMin = l; dcLatMax = l;
+                    } else {
+                        if (l < dcLatMin) dcLatMin = l;
+                        if (l > dcLatMax) dcLatMax = l;
+                    }
+                    dcLatSum += l;
+                    dcLatCount++;
+                    if (lat > 0.1) dcDeadlineMissCount++;
+                    // matched response
+                    dcRspMatch++;
+                }
+                delete f;
+                return;
+            }
+            // EV: SLAC complete upon receiving match CNF
+            if (role == "EV" && strcmp(f->getName(), "SLAC_MATCH_CNF") == 0) {
+                if (slacCompleted) { delete f; return; }
+                // If test jam switch is on, drop this CNF to emulate timed noise
+                if (testJamOnMatchCnf) {
+                    EV_WARN << "SLAC_LOG drop=SLAC_MATCH_CNF node=" << getParentModule()->getFullName() << " t=" << simTime() << endl;
+                    delete f;
+                    return;
+                }
+                // sanity log to confirm upper delivery path
+                EV_INFO << "OBS EV_RCV_MATCH_CNF node=" << getParentModule()->getFullName() << " src=" << f->getSrcAddr() << " t=" << simTime() << endl;
+                if (!slacDone) { slacDone = new cMessage("slacDone"); take(slacDone); }
+                if (slacDone->isScheduled()) cancelEvent(slacDone);
+                scheduleAt(simTime(), slacDone);
+                slacCompleted = true; // mark completion
+                // start DC ticking only after SLAC completed
+                if (!dcTick) { dcTick = new cMessage("dcTick"); take(dcTick); }
+                if (!dcTick->isScheduled()) scheduleAt(simTime(), dcTick);
+                EV_INFO << "SLAC_LOG stage=SLAC_DONE node=" << getParentModule()->getFullName() << " t=" << simTime() << endl;
                 delete f;
                 return;
             }
@@ -174,6 +289,7 @@ class SlacApp : public cSimpleModule {
         }
     }
     virtual void finish() override {
+        EV_INFO << "SlacApp::finish() called at t=" << simTime() << " node=" << getParentModule()->getFullName() << endl;
         if (startMsg && startMsg->isScheduled()) cancelEvent(startMsg);
         delete startMsg; startMsg=nullptr;
         if (dcTick) {
@@ -184,20 +300,41 @@ class SlacApp : public cSimpleModule {
             if (slacDone->isScheduled()) cancelEvent(slacDone);
             delete slacDone; slacDone=nullptr;
         }
+        if (heartbeat) {
+            if (heartbeat->isScheduled()) cancelEvent(heartbeat);
+            delete heartbeat; heartbeat=nullptr;
+        }
+        recordScalar("finished", 1);
         recordScalar("dcReqSent", dcReqSent);
         recordScalar("dcRspSent", dcRspSent);
         recordScalar("dcRspRecv", dcRspRecv);
+        // Derived counters for summary
+        recordScalar("DcReqCnt", dcReqSent);
+        recordScalar("DcResCnt", dcRspRecv);
+        recordScalar("DcDeadlineMissCount", dcDeadlineMissCount);
+        double reqDelayRate = (dcReqIntervalCount > 0) ? ((double)dcReqIntervalDelayedCount / dcReqIntervalCount) : 0.0;
+        recordScalar("dcReqDelayRate", reqDelayRate);
         double matchRate = (dcReqSent > 0) ? ((double)dcRspRecv / dcReqSent * 100.0) : 0.0;
         recordScalar("dcMatchRate(%)", matchRate);
         if (dcLatCount > 0) {
             double avg = dcLatSum / dcLatCount;
-            recordScalar("dcLatencyAvg(s)", avg);
+            recordScalar("DcAirtimeAvg(s)", avg);
             recordScalar("dcLatencyMin(s)", dcLatMin);
             recordScalar("dcLatencyMax(s)", dcLatMax);
+            // Compute P95 non-parametrically (no protocol behavior change)
+            std::vector<double> tmp = dcLatSamples;
+            std::sort(tmp.begin(), tmp.end());
+            size_t idx = (size_t)std::floor(0.95 * (tmp.size() - 1));
+            double p95 = tmp.empty() ? 0.0 : tmp[idx];
+            recordScalar("DcAirtimeP95(s)", p95);
+            double missRate = (dcReqSent > 0) ? ((double)dcDeadlineMissCount / dcReqSent) : 0.0;
+            recordScalar("DcDeadlineMissRate", missRate);
         } else {
-            recordScalar("dcLatencyAvg(s)", 0.0);
+            recordScalar("DcAirtimeAvg(s)", 0.0);
             recordScalar("dcLatencyMin(s)", 0.0);
             recordScalar("dcLatencyMax(s)", 0.0);
+            recordScalar("DcAirtimeP95(s)", 0.0);
+            recordScalar("DcDeadlineMissRate", 0.0);
         }
     }
 };
