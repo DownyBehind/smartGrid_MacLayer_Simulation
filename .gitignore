@@ -16,4 +16,8 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+ 
+# OMNeT++/runner outputs and large logs
+*.out
+**/sim.out
 .Python
