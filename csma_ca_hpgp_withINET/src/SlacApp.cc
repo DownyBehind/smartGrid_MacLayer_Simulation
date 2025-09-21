@@ -2,6 +2,8 @@
 #include "inet/linklayer/plc/PLCFrame_m.h"
 #include <vector>
 #include <algorithm>
+#include <map>
+#include <string>
 
 using namespace omnetpp;
 using namespace inet;
@@ -48,6 +50,9 @@ class SlacApp : public cSimpleModule {
     int dcDeadlineMissCount = 0; // airtime > 100ms
     int dcReqIntervalCount = 0;  // number of intervals after SLAC_DONE
     int dcReqIntervalDelayedCount = 0; // intervals > 100ms
+    // robust request/response matching by sequence id
+    int dcReqSeq = 0;
+    std::map<int, simtime_t> dcReqSendTimesBySeq;
     // EVSE: track which EV IDs have already received SLAC_MATCH_CNF to avoid redundant emits
     std::set<int> cnfSentTo;
   protected:
@@ -97,10 +102,11 @@ class SlacApp : public cSimpleModule {
             if (msg == startMsg) {
                 if (role == "EV") {
                     // Use PLCFrame directly so MAC can process it
-                    auto sendPlc = [&](int prio){
+                    auto sendPlc = [&](int /*prio*/){
                         auto *f = new PLCFrame("PLC");
                         f->setFrameType(2); // control-like
-                        f->setPriority(prio);
+                        // SLAC-related messages: force CA3
+                        f->setPriority(3);
                         f->setSrcAddr(nodeId);
                         f->setDestAddr(0);
                         f->setPayloadLength(300);
@@ -109,22 +115,22 @@ class SlacApp : public cSimpleModule {
                         send(f, "out");
                     };
                     // SLAC sequence as burst with configured priority
-                    EV_INFO << "SLAC_LOG stage=START_ATTEN node=" << getParentModule()->getFullName() << " cap=" << startPriority << " t=" << simTime() << endl;
-                    sendPlc(startPriority); // SLAC_PARM_REQ (START_ATTEN)
+                    EV_INFO << "SLAC_LOG stage=START_ATTEN node=" << getParentModule()->getFullName() << " cap=3 t=" << simTime() << endl;
+                    sendPlc(3); // SLAC_PARM_REQ (START_ATTEN)
                     for (int i=0;i<numStartAtten;i++) {
-                        EV_INFO << "SLAC_LOG stage=START_ATTEN node=" << getParentModule()->getFullName() << " cap=" << startPriority << " t=" << simTime() << endl;
-                        sendPlc(startPriority);
+                        EV_INFO << "SLAC_LOG stage=START_ATTEN node=" << getParentModule()->getFullName() << " cap=3 t=" << simTime() << endl;
+                        sendPlc(3);
                     }
                     for (int i=0;i<numMsound;i++) {
                         int idx = i+1;
                         bool drop = (msoundDropEveryK>0 && (idx % msoundDropEveryK)==0);
-                        EV_INFO << "SLAC_LOG stage=M_SOUND node=" << getParentModule()->getFullName() << " idx=" << idx << " cap=" << startPriority << " t=" << simTime() << (drop?" DROPPED":"") << endl;
-                        if (!drop) sendPlc(startPriority);
+                        EV_INFO << "SLAC_LOG stage=M_SOUND node=" << getParentModule()->getFullName() << " idx=" << idx << " cap=3 t=" << simTime() << (drop?" DROPPED":"") << endl;
+                        if (!drop) sendPlc(3);
                     }
-                    EV_INFO << "SLAC_LOG stage=ATTEN_CHAR node=" << getParentModule()->getFullName() << " cap=" << startPriority << " t=" << simTime() << endl;
-                    sendPlc(startPriority); // ATTEN_CHAR_RSP
-                    EV_INFO << "SLAC_LOG stage=VALIDATE node=" << getParentModule()->getFullName() << " cap=" << startPriority << " t=" << simTime() << endl;
-                    sendPlc(startPriority); // SLAC_MATCH_REQ (VALIDATE)
+                    EV_INFO << "SLAC_LOG stage=ATTEN_CHAR node=" << getParentModule()->getFullName() << " cap=3 t=" << simTime() << endl;
+                    sendPlc(3); // ATTEN_CHAR_RSP
+                    EV_INFO << "SLAC_LOG stage=VALIDATE node=" << getParentModule()->getFullName() << " cap=3 t=" << simTime() << endl;
+                    sendPlc(3); // SLAC_MATCH_REQ (VALIDATE)
                 }
                 // NOTE: dcTick will be scheduled after SLAC completion (SLAC_MATCH_CNF)
                 // consume startMsg
@@ -142,11 +148,14 @@ class SlacApp : public cSimpleModule {
                         scheduleAt(simTime() + 0.01, dcTick);
                         return;
                     }
-                    auto *req = new PLCFrame("DC_REQUEST");
+                    // generate sequence id and encode in name for robust matching
+                    dcReqSeq += 1;
+                    char reqName[64];
+                    sprintf(reqName, "DC_REQUEST:%d", dcReqSeq);
+                    auto *req = new PLCFrame(reqName);
                     req->setFrameType(2);
-                    int pr = 0;
-                    if (hasPar("testDcUseCap3") && (bool)par("testDcUseCap3")) pr = 3; else pr = ((enablePriorityCycle||enableDcPriorityCycle)? dcPriority : 0);
-                    req->setPriority(pr);
+                    // DC commands: force CA0
+                    req->setPriority(0);
                     req->setSrcAddr(nodeId);
                     // Diagnostic: optionally force unicast to EVSE to verify reception path
                     int dest = 0;
@@ -168,6 +177,8 @@ class SlacApp : public cSimpleModule {
                     hasLastDcReq = true;
                     EV_INFO << "CAP_LOG node=" << getParentModule()->getFullName() << " cap=" << req->getPriority() << " t=" << simTime() << endl;
                     EV_INFO << "OBS EV_TX_DC_REQUEST node=" << getParentModule()->getFullName() << " dest=" << req->getDestAddr() << " t=" << simTime() << endl;
+                    // store per-seq send time
+                    dcReqSendTimesBySeq[dcReqSeq] = simTime();
                     send(req, "out");
                     dcReqSent++;
                     emit(dcReqSignal, dcReqSent);
@@ -182,9 +193,13 @@ class SlacApp : public cSimpleModule {
             } else if (!strcmp(msg->getName(), "dcRspEnq")) {
                 // EVSE delayed response enqueue: construct response now to avoid contextPointer ownership issues
                 int dest = (intptr_t)msg->getContextPointer();
-                auto *rsp = new PLCFrame("DC_RESPONSE");
+                // echo seq id back if available
+                int reqSeq = msg->getKind();
+                char rspName[64];
+                if (reqSeq > 0) sprintf(rspName, "DC_RESPONSE:%d", reqSeq); else sprintf(rspName, "DC_RESPONSE");
+                auto *rsp = new PLCFrame(rspName);
                 rsp->setFrameType(2);
-                rsp->setPriority(3);
+                rsp->setPriority(0);
                 rsp->setSrcAddr(nodeId);
                 rsp->setDestAddr(dest);
                 rsp->setPayloadLength(300);
@@ -206,13 +221,23 @@ class SlacApp : public cSimpleModule {
             // incoming from MAC
             PLCFrame *f = dynamic_cast<PLCFrame*>(msg);
             if (!f) { delete msg; return; }
-            if (role == "EVSE" && strcmp(f->getName(), "DC_REQUEST") == 0) {
+            if (role == "EVSE" && strncmp(f->getName(), "DC_REQUEST", 10) == 0) {
                 EV_INFO << "OBS EVSE_RCV_DC_REQUEST node=" << getParentModule()->getFullName()
                         << " src=" << f->getSrcAddr() << " t=" << simTime() << endl;
-                // schedule delayed response
+                // schedule delayed response with echoed seq via kind
                 cMessage *enq = new cMessage("dcRspEnq");
                 take(enq);
+                // extract seq from request name if present (format: DC_REQUEST:<seq>)
+                int reqSeq = 0;
+                {
+                    std::string nm = f->getName();
+                    auto p = nm.find(':');
+                    if (p != std::string::npos) {
+                        try { reqSeq = std::stoi(nm.substr(p+1)); } catch (...) { reqSeq = 0; }
+                    }
+                }
                 enq->setContextPointer((void*)(intptr_t)f->getSrcAddr());
+                enq->setKind(reqSeq);
                 scheduleAt(simTime() + dcRspDelay, enq);
                 delete f;
                 return;
@@ -237,13 +262,27 @@ class SlacApp : public cSimpleModule {
                 delete f;
                 return;
             }
-            if (role == "EV" && strcmp(f->getName(), "DC_RESPONSE") == 0) {
+            if (role == "EV" && strncmp(f->getName(), "DC_RESPONSE", 11) == 0) {
                 // Count only responses addressed to this EV (ignore broadcast copies to others)
                 if (f->getDestAddr() == nodeId) {
+                    // parse seq id
+                    int rspSeq = 0; {
+                        std::string nm = f->getName();
+                        auto p = nm.find(':');
+                        if (p != std::string::npos) { try { rspSeq = std::stoi(nm.substr(p+1)); } catch (...) { rspSeq = 0; } }
+                    }
+                    // match send time by seq; fallback to last send
+                    simtime_t sendT = hasLastDcReq ? lastDcReqSentTime : SIMTIME_ZERO;
+                    if (rspSeq > 0) {
+                        auto it = dcReqSendTimesBySeq.find(rspSeq);
+                        if (it != dcReqSendTimesBySeq.end()) {
+                            sendT = it->second;
+                            dcReqSendTimesBySeq.erase(it);
+                        }
+                    }
                     dcRspRecv++;
                     emit(dcRspSignal, dcRspRecv);
-                    // Airtime: EV request send -> EV response receive
-                    simtime_t lat = hasLastDcReq ? (simTime() - lastDcReqSentTime) : SIMTIME_ZERO;
+                    simtime_t lat = (sendT == SIMTIME_ZERO) ? SIMTIME_ZERO : (simTime() - sendT);
                     emit(dcLatencySignal, lat.dbl());
                     // latency aggregates
                     double l = lat.dbl();
