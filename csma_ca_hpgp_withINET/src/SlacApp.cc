@@ -302,7 +302,7 @@ class SlacApp : public cSimpleModule {
                 delete f;
                 return;
             }
-            // EV: SLAC complete upon receiving match CNF
+            // EV: SLAC complete ONLY when CNF addressed to this EV
             if (role == "EV" && strcmp(f->getName(), "SLAC_MATCH_CNF") == 0) {
                 if (slacCompleted) { delete f; return; }
                 // If test jam switch is on, drop this CNF to emulate timed noise
@@ -313,16 +313,22 @@ class SlacApp : public cSimpleModule {
                 }
                 // sanity log to confirm upper delivery path
                 EV_INFO << "OBS EV_RCV_MATCH_CNF node=" << getParentModule()->getFullName() << " src=" << f->getSrcAddr() << " t=" << simTime() << endl;
-                if (!slacDone) { slacDone = new cMessage("slacDone"); take(slacDone); }
-                if (slacDone->isScheduled()) cancelEvent(slacDone);
-                scheduleAt(simTime(), slacDone);
-                slacCompleted = true; // mark completion
-                // start DC ticking only after SLAC completed
-                if (!dcTick) { dcTick = new cMessage("dcTick"); take(dcTick); }
-                if (!dcTick->isScheduled()) scheduleAt(simTime(), dcTick);
-                EV_INFO << "SLAC_LOG stage=SLAC_DONE node=" << getParentModule()->getFullName() << " t=" << simTime() << endl;
-                delete f;
-                return;
+                if (f->getDestAddr() == nodeId) {
+                    if (!slacDone) { slacDone = new cMessage("slacDone"); take(slacDone); }
+                    if (slacDone->isScheduled()) cancelEvent(slacDone);
+                    scheduleAt(simTime(), slacDone);
+                    slacCompleted = true; // mark completion
+                    recordScalar("slacDoneTime(s)", simTime().dbl());
+                    // start DC ticking only after SLAC completed
+                    if (!dcTick) { dcTick = new cMessage("dcTick"); take(dcTick); }
+                    if (!dcTick->isScheduled()) scheduleAt(simTime(), dcTick);
+                    EV_INFO << "SLAC_LOG stage=SLAC_DONE node=" << getParentModule()->getFullName() << " t=" << simTime() << endl;
+                    delete f;
+                    return;
+                } else {
+                    delete f;
+                    return;
+                }
             }
             delete f;
         }

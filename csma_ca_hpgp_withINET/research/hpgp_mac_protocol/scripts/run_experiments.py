@@ -172,6 +172,9 @@ def write_run_ini(base_ini: Path, out_ini: Path, num_evs: int, seed: int, sim_ti
     new_lines.append("**.slac.result-recording-modes = all")
     new_lines.append("**.plc.mac.result-recording-modes = all")
     new_lines.append("**.plc.phy.result-recording-modes = all")
+    # Optional: enable explicit collision model via ENV or default(false)
+    enable_collision = os.environ.get('ENABLE_COLLISION_MODEL', ENV.get('ENABLE_COLLISION_MODEL','false')).strip().lower() in ('1','true','yes','on')
+    new_lines.append(f"**.plc.phy.enableCollisionModel = {'true' if enable_collision else 'false'}")
     # Do not override output-scalar-file (avoid '#' comment confusion)
     # Add more concrete module paths for recording
     new_lines.append("TestBus.ev[*].slac.scalar-recording = true")
