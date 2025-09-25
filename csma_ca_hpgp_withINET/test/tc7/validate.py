@@ -1,11 +1,11 @@
 import pathlib, sys
 
 TC_DIR = pathlib.Path(__file__).resolve().parent
-simout = TC_DIR/"results"/"sim.out"
-lines = simout.read_text(errors='ignore').splitlines() if simout.exists() else []
+cmdenv = TC_DIR/"results"/"cmdenv.log"
+text = cmdenv.read_text(errors='ignore') if cmdenv.exists() else ""
 
-if not any('[BUSY_SLOT]' in ln for ln in lines):
-    print('No [BUSY_SLOT] evidence: FAIL')
+if '[BUSY_SLOT]' not in text:
+    print('No [BUSY_SLOT] evidence in cmdenv.log: FAIL')
     sys.exit(1)
-print('Busy-slot evidence present: PASS')
+print('[BUSY_SLOT] evidence present: PASS')
 sys.exit(0)

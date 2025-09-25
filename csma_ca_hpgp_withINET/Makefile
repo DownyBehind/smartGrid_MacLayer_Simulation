@@ -28,7 +28,9 @@ PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/src/SlacApp.o
+OBJS = $O/src/SlacApp.o \
+       $O/external/inet/linklayer/plc/IEEE1901Scheduler.o \
+       $O/external/inet/linklayer/plc/UpperRelay.o
 
 # Message files
 MSGFILES =
@@ -120,6 +122,18 @@ $O/%.o: %.cc $(COPTS_FILE) | msgheaders smheaders
 	@$(MKPATH) $(dir $@)
 	$(qecho) "$<"
 	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
+
+$O/external/inet/linklayer/plc/IEEE1901Scheduler.o: /home/kimdawoon/study/workspace/research/inet_plc/inet/src/inet/linklayer/plc/IEEE1901Scheduler.cc /home/kimdawoon/study/workspace/research/inet_plc/inet/src/inet/linklayer/plc/IEEE1901PrsTypes.h $(COPTS_FILE)
+	@$(MKPATH) $(dir $@)
+	$(qecho) "/home/kimdawoon/study/workspace/research/inet_plc/inet/src/inet/linklayer/plc/IEEE1901Scheduler.cc"
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ /home/kimdawoon/study/workspace/research/inet_plc/inet/src/inet/linklayer/plc/IEEE1901Scheduler.cc
+
+$O/external/inet/linklayer/plc/UpperRelay.o: /home/kimdawoon/study/workspace/research/inet_plc/inet/src/inet/linklayer/plc/UpperRelay.cc $(COPTS_FILE)
+	@$(MKPATH) $(dir $@)
+	$(qecho) "/home/kimdawoon/study/workspace/research/inet_plc/inet/src/inet/linklayer/plc/UpperRelay.cc"
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ /home/kimdawoon/study/workspace/research/inet_plc/inet/src/inet/linklayer/plc/UpperRelay.cc
+
+
 
 %_m.cc %_m.h: %.msg
 	$(qecho) MSGC: $<

@@ -827,12 +827,12 @@ Recording eventlog to file `results/General-#0.elog'...
 
 ## tc6
 - Conditions / 조건: timeout=500s, repeats=10
-- Runs Passed / 통과 회수: 0/10
-- Run Statuses / 실행 상태: [F, F, F, F, F, F, F, F, F, F]
-- Verdict / 판정: FAIL
+- Runs Passed / 통과 회수: 10/10
+- Run Statuses / 실행 상태: [P, P, P, P, P, P, P, P, P, P]
+- Verdict / 판정: PASS
 - Runner Output (first lines) / 실행 출력(일부):
 ```
---- run 1/10 [FAIL] ---
+--- run 1/10 [PASS] ---
 [run.sh] tc6 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -850,8 +850,8 @@ Redirecting output to file "/home/kimdawoon/study/workspace/research/project_sma
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 2/10 [FAIL] ---
+OK
+--- run 2/10 [PASS] ---
 [run.sh] tc6 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -869,8 +869,8 @@ Redirecting output to file "/home/kimdawoon/study/workspace/research/project_sma
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 3/10 [FAIL] ---
+OK
+--- run 3/10 [PASS] ---
 [run.sh] tc6 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -888,8 +888,8 @@ Redirecting output to file "/home/kimdawoon/study/workspace/research/project_sma
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 4/10 [FAIL] ---
+OK
+--- run 4/10 [PASS] ---
 [run.sh] tc6 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -907,8 +907,8 @@ Redirecting output to file "/home/kimdawoon/study/workspace/research/project_sma
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 5/10 [FAIL] ---
+OK
+--- run 5/10 [PASS] ---
 [run.sh] tc6 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -917,102 +917,102 @@ Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT 
 
 ## tc7
 - Conditions / 조건: timeout=500s, repeats=10
-- Runs Passed / 통과 회수: 0/10
-- Run Statuses / 실행 상태: [F, F, F, F, F, F, F, F, F, F]
-- Verdict / 판정: FAIL
+- Runs Passed / 통과 회수: 10/10
+- Run Statuses / 실행 상태: [P, P, P, P, P, P, P, P, P, P]
+- Verdict / 판정: PASS
 - Runner Output (first lines) / 실행 출력(일부):
 ```
---- run 1/10 [FAIL] ---
+--- run 1/10 [PASS] ---
 [run.sh] tc7 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
 See the license for distribution terms and warranty disclaimer
 
+Setting up Cmdenv...
 
-<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc7:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc7/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 2/10 [FAIL] ---
+OK
+--- run 2/10 [PASS] ---
 [run.sh] tc7 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
 See the license for distribution terms and warranty disclaimer
 
+Setting up Cmdenv...
 
-<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc7:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc7/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 3/10 [FAIL] ---
+OK
+--- run 3/10 [PASS] ---
 [run.sh] tc7 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
 See the license for distribution terms and warranty disclaimer
 
+Setting up Cmdenv...
 
-<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc7:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc7/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 4/10 [FAIL] ---
+OK
+--- run 4/10 [PASS] ---
 [run.sh] tc7 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
 See the license for distribution terms and warranty disclaimer
 
+Setting up Cmdenv...
 
-<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc7:  0
 
-End.
-[run.sh] validator start (timeout 500s)
-FAIL
---- run 5/10 [FAIL] ---
-[run.sh] tc7 sim start (timeout 500s)
-OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
-Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
-See the license for distribution terms and warranty disclaimer
-
-
-<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
-
-End.
-[run.sh] validator start (timeout 500s)
-FAIL
---- run 6/10 [FAIL] ---
-[run.sh] tc7 sim start (timeout 500s)
-OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
-Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
-See the license for distribution terms and warranty disclaimer
-
-
-<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
-
-End.
-[run.sh] validator start (timeout 500s)
-FAIL
---- run 7/10 [FAIL] ---
-[run.sh] tc7 sim start (timeout 500s)
-OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
-Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
-See the license for distribution terms and warranty disclaimer
-
-
-<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc7/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
 ... (truncated) ...
 ```
 
 ## tc8
 - Conditions / 조건: timeout=500s, repeats=10
-- Runs Passed / 통과 회수: 0/10
-- Run Statuses / 실행 상태: [F, F, F, F, F, F, F, F, F, F]
-- Verdict / 판정: FAIL
+- Runs Passed / 통과 회수: 10/10
+- Run Statuses / 실행 상태: [P, P, P, P, P, P, P, P, P, P]
+- Verdict / 판정: PASS
 - Runner Output (first lines) / 실행 출력(일부):
 ```
---- run 1/10 [FAIL] ---
+--- run 1/10 [PASS] ---
 [run.sh] tc8 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1032,8 +1032,8 @@ Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 2/10 [FAIL] ---
+OK
+--- run 2/10 [PASS] ---
 [run.sh] tc8 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1053,8 +1053,8 @@ Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 3/10 [FAIL] ---
+OK
+--- run 3/10 [PASS] ---
 [run.sh] tc8 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1074,8 +1074,8 @@ Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 4/10 [FAIL] ---
+OK
+--- run 4/10 [PASS] ---
 [run.sh] tc8 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1187,12 +1187,12 @@ Recording eventlog to file `results/General-#0.elog'...
 
 ## tc10
 - Conditions / 조건: timeout=500s, repeats=10
-- Runs Passed / 통과 회수: 0/10
-- Run Statuses / 실행 상태: [F, F, F, F, F, F, F, F, F, F]
-- Verdict / 판정: FAIL
+- Runs Passed / 통과 회수: 10/10
+- Run Statuses / 실행 상태: [P, P, P, P, P, P, P, P, P, P]
+- Verdict / 판정: PASS
 - Runner Output (first lines) / 실행 출력(일부):
 ```
---- run 1/10 [FAIL] ---
+--- run 1/10 [PASS] ---
 [run.sh] tc10 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1212,8 +1212,8 @@ Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 2/10 [FAIL] ---
+OK
+--- run 2/10 [PASS] ---
 [run.sh] tc10 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1233,8 +1233,8 @@ Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 3/10 [FAIL] ---
+OK
+--- run 3/10 [PASS] ---
 [run.sh] tc10 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1254,8 +1254,8 @@ Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 4/10 [FAIL] ---
+OK
+--- run 4/10 [PASS] ---
 [run.sh] tc10 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1277,12 +1277,12 @@ Recording eventlog to file `results/General-#0.elog'...
 
 ## tc11
 - Conditions / 조건: timeout=500s, repeats=10
-- Runs Passed / 통과 회수: 0/10
-- Run Statuses / 실행 상태: [F, F, F, F, F, F, F, F, F, F]
-- Verdict / 판정: FAIL
+- Runs Passed / 통과 회수: 10/10
+- Run Statuses / 실행 상태: [P, P, P, P, P, P, P, P, P, P]
+- Verdict / 판정: PASS
 - Runner Output (first lines) / 실행 출력(일부):
 ```
---- run 1/10 [FAIL] ---
+--- run 1/10 [PASS] ---
 [run.sh] tc11 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1302,8 +1302,8 @@ Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 2/10 [FAIL] ---
+OK
+--- run 2/10 [PASS] ---
 [run.sh] tc11 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1323,8 +1323,8 @@ Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 3/10 [FAIL] ---
+OK
+--- run 3/10 [PASS] ---
 [run.sh] tc11 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1344,8 +1344,8 @@ Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 4/10 [FAIL] ---
+OK
+--- run 4/10 [PASS] ---
 [run.sh] tc11 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1367,12 +1367,12 @@ Recording eventlog to file `results/General-#0.elog'...
 
 ## tc12
 - Conditions / 조건: timeout=500s, repeats=10
-- Runs Passed / 통과 회수: 0/10
-- Run Statuses / 실행 상태: [F, F, F, F, F, F, F, F, F, F]
-- Verdict / 판정: FAIL
+- Runs Passed / 통과 회수: 10/10
+- Run Statuses / 실행 상태: [P, P, P, P, P, P, P, P, P, P]
+- Verdict / 판정: PASS
 - Runner Output (first lines) / 실행 출력(일부):
 ```
---- run 1/10 [FAIL] ---
+--- run 1/10 [PASS] ---
 [run.sh] tc12 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1392,8 +1392,8 @@ Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 2/10 [FAIL] ---
+OK
+--- run 2/10 [PASS] ---
 [run.sh] tc12 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1413,8 +1413,8 @@ Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 3/10 [FAIL] ---
+OK
+--- run 3/10 [PASS] ---
 [run.sh] tc12 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1434,8 +1434,8 @@ Recording eventlog to file `results/General-#0.elog'...
 
 End.
 [run.sh] validator start (timeout 500s)
-FAIL
---- run 4/10 [FAIL] ---
+OK
+--- run 4/10 [PASS] ---
 [run.sh] tc12 sim start (timeout 500s)
 OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
 Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
@@ -1456,8 +1456,8 @@ Recording eventlog to file `results/General-#0.elog'...
 ```
 
 ## Summary / 요약
-- Passed / 통과: 6
-- Failed / 실패: 6
+- Passed / 통과: 12
+- Failed / 실패: 0
 
 ### Passed List / 통과 TC
 - tc1: PRS 지속시간/슬롯 간격 검증
@@ -1465,12 +1465,11 @@ Recording eventlog to file `results/General-#0.elog'...
 - tc3: 백오프 슬롯 평균≈slotTime
 - tc4: PRS→Backoff→TX→RIFS→CIFS 시퀀스
 - tc5: CAP 순환 동작
-- tc9: CA3 vs CA0 우선순위 우위
-
-### Failed List / 실패 TC
 - tc6: PRS 패배 시 defer 처리(삭제 금지)
 - tc7: Busy 슬롯 경로 동작
 - tc8: 충돌→MAC 재시도(BPC++)
+- tc9: CA3 vs CA0 우선순위 우위
 - tc10: DC==0 & busy에서 BPC++
 - tc11: 충돌 모델 ON 시 재시도 경로
 - tc12: Table I 백오프 매핑 증거
+

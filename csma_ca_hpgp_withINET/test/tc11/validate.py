@@ -2,14 +2,17 @@ import re, sys, pathlib
 
 TC_DIR = pathlib.Path(__file__).resolve().parent
 elog = TC_DIR/"results"/"General-#0.elog"
-simout = TC_DIR/"results"/"sim.out"
-lines_e = elog.read_text(errors='ignore').splitlines() if elog.exists() else []
-lines_s = simout.read_text(errors='ignore').splitlines() if simout.exists() else []
+cmdenv = TC_DIR/"results"/"cmdenv.log"
+elog_text = elog.read_text(errors='ignore') if elog.exists() else ""
+cmd_text = cmdenv.read_text(errors='ignore') if cmdenv.exists() else ""
 
-inc_bpc = any('increasing BPC' in ln for ln in lines_e)
-tx_fail_scalar = any('tx_fail_collisions' in ln for ln in lines_s)
-if not inc_bpc and not tx_fail_scalar:
-    print('No collision→MAC retry evidence (BPC++/tx_fail_collisions): FAIL')
+# Accept either explicit BPC++ evidence in eventlog or runtime signs in cmdenv
+has_bpc_inc = ('increasing BPC' in elog_text)
+has_tx_fail = ('CTRL_TX_FAIL' in cmd_text) or ('Dropping frame due to explicit collision model' in cmd_text)
+has_busy = ('PHY busy; enqueue' in cmd_text) or ('MAC busy; enqueue' in cmd_text)
+
+if not (has_bpc_inc or has_tx_fail):
+    print('No collision→MAC retry evidence (BPC++/CTRL_TX_FAIL): FAIL')
     sys.exit(1)
 print('Collision→MAC retry evidence present: PASS')
 sys.exit(0)

@@ -1,0 +1,83 @@
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc1:  0
+
+Preparing for running configuration General, run #0...
+Assigned runID=General-0-20250925-22:07:00-378464
+Setting up network "test.common.TestBus"...
+Recording eventlog to file `results/General-#0.elog'...
+Initializing...
+[INFO]	IEEE1901Mac initialized with parameters:
+[INFO]	  txPower: 20 dBm
+[INFO]	  bitrate: 2e+08 bps
+[INFO]	  maxRetries: 7
+[INFO]	  slotTime: 0.00003584 s
+[INFO]	  sifsTime: 0.00001 s
+[INFO]	  difsTime: 0.000034 s
+[INFO]	  cwMin: 16
+[INFO]	  cwMax: 1024
+[INFO]	  prs0Duration: 0.00003584 s
+[INFO]	  prs1Duration: 0.00003584 s
+[INFO]	[PRS_SCHED] register mac=TestBus.evse.plc.mac total=1
+[INFO]	IEEE1901Phy initialized with parameters:
+[INFO]	  dataRate: 10 Mbps
+[INFO]	  transmitPower: 10 dBm
+[INFO]	  noisePower: -90 dBm
+[INFO]	  channelAttenuation: 20 dB
+[INFO]	  enableBER: true
+[INFO]	  baseSNR: 25 dB
+[INFO]	  berAlpha: 0.5
+[INFO]	  berBeta: 0.4
+[INFO]	  maxBER: 0.1
+[INFO]	IEEE1901Mac initialized with parameters:
+[INFO]	  txPower: 20 dBm
+[INFO]	  bitrate: 2e+08 bps
+[INFO]	  maxRetries: 7
+[INFO]	  slotTime: 0.00003584 s
+[INFO]	  sifsTime: 0.00001 s
+[INFO]	  difsTime: 0.000034 s
+[INFO]	  cwMin: 16
+[INFO]	  cwMax: 1024
+[INFO]	  prs0Duration: 0.00003584 s
+[INFO]	  prs1Duration: 0.00003584 s
+[INFO]	[PRS_SCHED] register mac=TestBus.ev[0].plc.mac total=2
+[INFO]	IEEE1901Phy initialized with parameters:
+[INFO]	  dataRate: 10 Mbps
+[INFO]	  transmitPower: 10 dBm
+[INFO]	  noisePower: -90 dBm
+[INFO]	  channelAttenuation: 20 dB
+[INFO]	  enableBER: true
+[INFO]	  baseSNR: 25 dB
+[INFO]	  berAlpha: 0.5
+[INFO]	  berBeta: 0.4
+[INFO]	  maxBER: 0.1
+[INFO]	Registering network interface, [1minterface[0m = (inet::NetworkInterface)plc plc ID:-1 MTU:1500 UP CARRIER macAddr:0A-AA-00-00-00-01, [1min[0m = (inet::NetworkInterface::LocalGate)upperLayerIn <-- slac.out, [1mout[0m = (omnetpp::cGate)upperLayerOut --> slac.in.
+[INFO]	Registering network interface, [1minterface[0m = (inet::NetworkInterface)plc plc ID:-1 MTU:1500 UP CARRIER macAddr:0A-AA-00-00-00-02, [1min[0m = (inet::NetworkInterface::LocalGate)upperLayerIn <-- slac.out, [1mout[0m = (omnetpp::cGate)upperLayerOut --> slac.in.
+
+Running simulation...
+
+Program received signal SIGSEGV, Segmentation fault.
+push_back () at /usr/bin/../lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/bits/stl_deque.h:1501
+1501		    _Alloc_traits::construct(this->_M_impl,
+#0  push_back () at /usr/bin/../lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/bits/stl_deque.h:1501
+#1  handleUpperLayerFrame () at /home/kimdawoon/study/workspace/research/inet_plc/inet/src/inet/linklayer/plc/IEEE1901Mac.cc:563
+#2  0x00007ffff7acaaf3 in executeEvent () at csimulation.cc:702
+#3  0x00007ffff7fb27cf in simulate () at cmdenv.cc:379
+#4  0x00007ffff7fb2188 in doRun () at cmdenv.cc:249
+#5  0x00007ffff7f454c3 in omnetpp::envir::EnvirBase::run() () at envirbase.cc:786
+#6  0x00007ffff7f42a51 in run () at envirbase.cc:364
+#7  0x00007ffff7f3cc3a in setupUserInterface () at startup.cc:284
+#8  0x00007ffff7f3de53 in evMain () at evmain.cc:31
+#9  0x00007ffff6e29d90 in __libc_start_call_main (main=main@entry=0x5555555558f0 <main>, argc=argc@entry=14, argv=argv@entry=0x7fffffffc478) at ../sysdeps/nptl/libc_start_call_main.h:58
+#10 0x00007ffff6e29e40 in __libc_start_main_impl (main=0x5555555558f0 <main>, argc=14, argv=0x7fffffffc478, init=<optimized out>, fini=<optimized out>, rtld_fini=<optimized out>, stack_end=0x7fffffffc468) at ../csu/libc-start.c:392
+#11 0x0000555555555825 in _start ()

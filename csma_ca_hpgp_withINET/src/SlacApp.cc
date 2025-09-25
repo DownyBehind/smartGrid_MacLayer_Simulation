@@ -26,6 +26,7 @@ class SlacApp : public cSimpleModule {
     bool testJamOnMatchCnf = false;     // test-only: emulate jamming at match CNF
     int msoundDropEveryK = 0;           // test-only: drop every K-th M_SOUND if >0
     bool testInjectPostSlacMsgs = false; // test-only: emit CAP1-3 probes after SLAC
+    bool testAllowPreSlacSweep = false;  // test-only: allow CAP sweep before SLAC completion
     cMessage* postSlacSweep = nullptr;
     simtime_t testPostSlacPeriod = SIMTIME_ZERO;
     bool testSyncStart = false;        // test-only: align START/PRS across nodes
@@ -85,6 +86,8 @@ class SlacApp : public cSimpleModule {
             msoundDropEveryK = par("msoundDropEveryK");
         if (hasPar("testInjectPostSlacMsgs"))
             testInjectPostSlacMsgs = par("testInjectPostSlacMsgs");
+        if (hasPar("testAllowPreSlacSweep"))
+            testAllowPreSlacSweep = par("testAllowPreSlacSweep");
         if (hasPar("testSyncStart"))
             testSyncStart = par("testSyncStart");
         if (hasPar("testDisableDc"))
@@ -110,6 +113,9 @@ class SlacApp : public cSimpleModule {
         if (testInjectPostSlacMsgs) {
             postSlacSweep = new cMessage("postSlacSweep");
             take(postSlacSweep);
+            // If explicitly allowed, start CAP sweep even before SLAC completion
+            if (testAllowPreSlacSweep)
+                scheduleAt(simTime() + 0.001, postSlacSweep);
         }
         // Schedule periodic heartbeat scalar for recording pipeline verification (observer-only)
         heartbeat = new cMessage("heartbeat");
@@ -123,6 +129,21 @@ class SlacApp : public cSimpleModule {
         dcLatSum = 0.0;
         dcLatCount = 0;
         slacCompleted = false;
+
+        // Debug: verify gate connectivity at startup
+        cGate *outg = hasGate("out") ? gate("out") : nullptr;
+        if (!outg) {
+            EV_ERROR << "[UL_DBG] SlacApp has no 'out' gate" << endl;
+        } else {
+            if (!outg->isConnected()) {
+                EV_ERROR << "[UL_DBG] SlacApp.out NOT connected" << endl;
+            } else {
+                cGate *endg = outg->getPathEndGate();
+                EV_INFO << "[UL_DBG] SlacApp.out -> "
+                        << (endg ? endg->getOwnerModule()->getFullPath() : std::string("(null)"))
+                        << "." << (endg ? endg->getName() : "") << endl;
+            }
+        }
     }
     virtual void handleMessage(cMessage* msg) override {
         if (msg->isSelfMessage()) {
@@ -139,6 +160,8 @@ class SlacApp : public cSimpleModule {
                         f->setPayloadLength(300);
                         f->setByteLength(300);
                         f->setAckRequired(false);
+                        EV_INFO << "[UL_TX] SlacApp.send gate=out msgClass=" << f->getClassName()
+                                << " name=" << f->getName() << " t=" << simTime() << endl;
                         send(f, "out");
                     };
                     // SLAC sequence as burst with configured priority
@@ -210,6 +233,8 @@ class SlacApp : public cSimpleModule {
                     EV_INFO << "OBS EV_TX_DC_REQUEST node=" << getParentModule()->getFullName() << " dest=" << req->getDestAddr() << " t=" << simTime() << endl;
                     // store per-seq send time
                     dcReqSendTimesBySeq[dcReqSeq] = simTime();
+                    EV_INFO << "[UL_TX] SlacApp.send gate=out msgClass=" << req->getClassName()
+                            << " name=" << req->getName() << " t=" << simTime() << endl;
                     send(req, "out");
                     dcReqSent++;
                     emit(dcReqSignal, dcReqSent);
@@ -239,12 +264,14 @@ class SlacApp : public cSimpleModule {
                 EV_INFO << "OBS EVSE_TX_DC_RESPONSE node=" << getParentModule()->getFullName()
                         << " dest=" << rsp->getDestAddr() << " t=" << simTime() << endl;
                 EV_INFO << "CAP_LOG node=" << getParentModule()->getFullName() << " cap=" << rsp->getPriority() << " t=" << simTime() << endl;
+                EV_INFO << "[UL_TX] SlacApp.send gate=out msgClass=" << rsp->getClassName()
+                        << " name=" << rsp->getName() << " t=" << simTime() << endl;
                 send(rsp, "out");
                 dcRspSent++;
                 delete msg;
                 return;
             } else if (!strcmp(msg->getName(), "postSlacSweep")) {
-                if (!slacCompleted) {
+                if (!slacCompleted && !testAllowPreSlacSweep) {
                     scheduleAt(simTime() + 0.001, msg);
                     return;
                 }
@@ -446,6 +473,10 @@ class SlacApp : public cSimpleModule {
             probe->setPayloadLength(64);
             probe->setByteLength(64);
             probe->setAckRequired(false);
+            EV_INFO << "OBS POST_SLAC_PROBE node=" << getParentModule()->getFullName()
+                    << " cap=CA" << probe->getPriority() << " t=" << simTime() << endl;
+            EV_INFO << "[UL_TX] SlacApp.send gate=out msgClass=" << probe->getClassName()
+                    << " name=" << probe->getName() << " t=" << simTime() << endl;
             send(probe, "out");
             capCycleIndex++;
         } else {
@@ -458,6 +489,10 @@ class SlacApp : public cSimpleModule {
                 probe->setPayloadLength(64);
                 probe->setByteLength(64);
                 probe->setAckRequired(false);
+                EV_INFO << "OBS POST_SLAC_PROBE node=" << getParentModule()->getFullName()
+                        << " cap=CA" << probe->getPriority() << " t=" << simTime() << endl;
+                EV_INFO << "[UL_TX] SlacApp.send gate=out msgClass=" << probe->getClassName()
+                        << " name=" << probe->getName() << " t=" << simTime() << endl;
                 send(probe, "out");
             }
         }
