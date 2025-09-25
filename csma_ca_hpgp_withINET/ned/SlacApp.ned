@@ -21,6 +21,10 @@ simple SlacApp
         bool testUnicastEvse = default(false); // Test-only: force unicast DC_REQUEST to EVSE
         int testTargetNodeId = default(1);
         bool testDcUseCap3 = default(false); // Test-only: send DC at CAP3 for diagnostics
+        bool testInjectPostSlacMsgs = default(false); // Test-only: send CAP1/2/3 probes after SLAC
+        bool testSyncStart = default(false); // Test-only: override jitter to align start across nodes
+        bool testDisableDc = default(false); // Test-only: suppress DC request generation
+        double testPostSlacPeriod @unit(s) = default(0s); // Test-only: CAP sweep interval when >0
         @display("i=block/app");
     gates:
         input in;

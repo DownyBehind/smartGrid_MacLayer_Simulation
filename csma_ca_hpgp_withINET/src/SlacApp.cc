@@ -25,6 +25,14 @@ class SlacApp : public cSimpleModule {
     bool simulateNoEvse = false;        // observer-only switch
     bool testJamOnMatchCnf = false;     // test-only: emulate jamming at match CNF
     int msoundDropEveryK = 0;           // test-only: drop every K-th M_SOUND if >0
+    bool testInjectPostSlacMsgs = false; // test-only: emit CAP1-3 probes after SLAC
+    cMessage* postSlacSweep = nullptr;
+    simtime_t testPostSlacPeriod = SIMTIME_ZERO;
+    bool testSyncStart = false;        // test-only: align START/PRS across nodes
+    bool testDisableDc = false;       // test-only: suppress DC_REQUEST generation
+    bool testForceCap0Only = false;  // test-only: force all DC traffic to CAP0
+    bool testCycleCap123 = false;    // test-only: rotate CAP1/2/3 probes
+    int capCycleIndex = 0;
     cMessage* startMsg = nullptr;
     cMessage* dcTick = nullptr;
     cMessage* slacDone = nullptr;
@@ -75,6 +83,18 @@ class SlacApp : public cSimpleModule {
             testJamOnMatchCnf = par("testJamOnMatchCnf");
         if (hasPar("msoundDropEveryK"))
             msoundDropEveryK = par("msoundDropEveryK");
+        if (hasPar("testInjectPostSlacMsgs"))
+            testInjectPostSlacMsgs = par("testInjectPostSlacMsgs");
+        if (hasPar("testSyncStart"))
+            testSyncStart = par("testSyncStart");
+        if (hasPar("testDisableDc"))
+            testDisableDc = par("testDisableDc");
+        if (hasPar("testForceCap0Only"))
+            testForceCap0Only = par("testForceCap0Only");
+        if (hasPar("testCycleCap123"))
+            testCycleCap123 = par("testCycleCap123");
+        if (hasPar("testPostSlacPeriod"))
+            testPostSlacPeriod = par("testPostSlacPeriod");
         if (enablePriorityCycle || enableDcPriorityCycle) {
             EV_WARN << "This is Priority Cycle Mode!!! it is not a charging protocol environment!!" << endl;
             EV_INFO << "This is Priority Cycle Mode!!! it is not a charging protocol environment!!" << endl;
@@ -82,8 +102,15 @@ class SlacApp : public cSimpleModule {
         dcRspDelay = par("dcRspDelay");
         startMsg = new cMessage("start");
         take(startMsg);
-        // add small positive offset to avoid t=0 race/alloc issues
-        scheduleAt(simTime() + startJitter + 0.0001, startMsg);
+        // add small positive offset; optionally align with test sync flag
+        simtime_t launchOffset = startJitter + 0.0001;
+        if (testSyncStart)
+            launchOffset = 0.0001; // ignore per-node jitter for synchronized tests
+        scheduleAt(simTime() + launchOffset, startMsg);
+        if (testInjectPostSlacMsgs) {
+            postSlacSweep = new cMessage("postSlacSweep");
+            take(postSlacSweep);
+        }
         // Schedule periodic heartbeat scalar for recording pipeline verification (observer-only)
         heartbeat = new cMessage("heartbeat");
         take(heartbeat);
@@ -148,14 +175,18 @@ class SlacApp : public cSimpleModule {
                         scheduleAt(simTime() + 0.01, dcTick);
                         return;
                     }
+                    if (testDisableDc) {
+                        return; // stop DC generation entirely
+                    }
                     // generate sequence id and encode in name for robust matching
                     dcReqSeq += 1;
                     char reqName[64];
                     sprintf(reqName, "DC_REQUEST:%d", dcReqSeq);
                     auto *req = new PLCFrame(reqName);
                     req->setFrameType(2);
-                    // DC commands: force CA0
-                    req->setPriority(0);
+                    // DC commands: force CA0 unless overridden
+                    int dcPrio = testForceCap0Only ? 0 : dcPriority;
+                    req->setPriority(dcPrio);
                     req->setSrcAddr(nodeId);
                     // Diagnostic: optionally force unicast to EVSE to verify reception path
                     int dest = 0;
@@ -211,6 +242,17 @@ class SlacApp : public cSimpleModule {
                 send(rsp, "out");
                 dcRspSent++;
                 delete msg;
+                return;
+            } else if (!strcmp(msg->getName(), "postSlacSweep")) {
+                if (!slacCompleted) {
+                    scheduleAt(simTime() + 0.001, msg);
+                    return;
+                }
+                emitCapSweep();
+                if (testPostSlacPeriod <= SIMTIME_ZERO)
+                    scheduleAt(simTime() + dcPeriod, msg);
+                else
+                    scheduleAt(simTime() + testPostSlacPeriod, msg);
                 return;
             } else if (!strcmp(msg->getName(), "slacDone")) {
                 // One-shot marker; do nothing and keep message for possible future checks
@@ -322,6 +364,8 @@ class SlacApp : public cSimpleModule {
                     // start DC ticking only after SLAC completed
                     if (!dcTick) { dcTick = new cMessage("dcTick"); take(dcTick); }
                     if (!dcTick->isScheduled()) scheduleAt(simTime(), dcTick);
+                    if (testInjectPostSlacMsgs && postSlacSweep && !postSlacSweep->isScheduled())
+                        emitCapSweep(), startPeriodicCapSweep();
                     EV_INFO << "SLAC_LOG stage=SLAC_DONE node=" << getParentModule()->getFullName() << " t=" << simTime() << endl;
                     delete f;
                     return;
@@ -345,9 +389,10 @@ class SlacApp : public cSimpleModule {
             if (slacDone->isScheduled()) cancelEvent(slacDone);
             delete slacDone; slacDone=nullptr;
         }
-        if (heartbeat) {
-            if (heartbeat->isScheduled()) cancelEvent(heartbeat);
-            delete heartbeat; heartbeat=nullptr;
+        if (postSlacSweep) {
+            if (postSlacSweep->isScheduled()) cancelEvent(postSlacSweep);
+            delete postSlacSweep;
+            postSlacSweep=nullptr;
         }
         recordScalar("finished", 1);
         recordScalar("dcReqSent", dcReqSent);
@@ -381,6 +426,49 @@ class SlacApp : public cSimpleModule {
             recordScalar("DcAirtimeP95(s)", 0.0);
             recordScalar("DcDeadlineMissRate", 0.0);
         }
+    }
+
+    void scheduleNextDcTick(simtime_t delay) {
+        if (!dcTick) { dcTick = new cMessage("dcTick"); take(dcTick); }
+        if (!dcTick->isScheduled()) scheduleAt(simTime() + delay, dcTick);
+    }
+
+    void emitCapSweep() {
+        static const int caps[] = {1, 2, 3};
+        static const char* names[] = {"TST_MSG_CAP1", "TST_MSG_CAP2", "TST_MSG_CAP3"};
+        if (testCycleCap123) {
+            int idx = capCycleIndex % 3;
+            auto *probe = new PLCFrame(names[idx]);
+            probe->setFrameType(2);
+            probe->setPriority(caps[idx]);
+            probe->setSrcAddr(nodeId);
+            probe->setDestAddr(0);
+            probe->setPayloadLength(64);
+            probe->setByteLength(64);
+            probe->setAckRequired(false);
+            send(probe, "out");
+            capCycleIndex++;
+        } else {
+            for (int i = 0; i < 3; ++i) {
+                auto *probe = new PLCFrame(names[i]);
+                probe->setFrameType(2);
+                probe->setPriority(caps[i]);
+                probe->setSrcAddr(nodeId);
+                probe->setDestAddr(0);
+                probe->setPayloadLength(64);
+                probe->setByteLength(64);
+                probe->setAckRequired(false);
+                send(probe, "out");
+            }
+        }
+    }
+
+    void startPeriodicCapSweep() {
+        if (!postSlacSweep) return;
+        simtime_t period = (testPostSlacPeriod <= SIMTIME_ZERO) ? dcPeriod : testPostSlacPeriod;
+        if (period <= SIMTIME_ZERO) return;
+        if (!postSlacSweep->isScheduled())
+            scheduleAt(simTime() + period, postSlacSweep);
     }
 };
 

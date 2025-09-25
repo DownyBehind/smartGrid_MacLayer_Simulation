@@ -29,21 +29,34 @@ def run_tc(tc: str):
     outputs = []
     passes = 0
     status_list = []
+    simout_cache = []
     for r in range(1, REPEAT+1):
         try:
             out = subprocess.check_output(['bash','-lc', f'timeout {TIMEOUT}s {shlex.quote(str(runsh))}'], cwd=str(tcdir), stderr=subprocess.STDOUT)
             passes += 1
-            outputs.append((r, 'PASS', out.decode(errors='ignore')))
+            text = out.decode(errors='ignore')
+            outputs.append((r, 'PASS', text))
             status_list.append('P')
+            simout_cache.append(text)
         except subprocess.CalledProcessError as e:
-            outputs.append((r, 'FAIL', (e.output or b'').decode(errors='ignore')))
+            text = (e.output or b'').decode(errors='ignore')
+            outputs.append((r, 'FAIL', text))
             status_list.append('F')
+            simout_cache.append(text)
     status = 'PASS' if passes==REPEAT else ('PARTIAL' if passes>0 else 'FAIL')
     merged_out = []
     for r, st, text in outputs:
         merged_out.append(f'--- run {r}/{REPEAT} [{st}] ---')
         merged_out.extend(text.splitlines())
-    return tc, status, '\n'.join(merged_out), tcdir, passes, status_list
+    combined = '\n'.join(merged_out)
+    if tcdir:
+        sim_out_path = tcdir / 'results' / 'sim.out'
+        try:
+            sim_out_path.parent.mkdir(parents=True, exist_ok=True)
+            sim_out_path.write_text(combined)
+        except Exception:
+            pass
+    return tc, status, combined, tcdir, passes, status_list
 
 # Detail parsers
 def read_lines(p: Path):
@@ -306,6 +319,8 @@ def parse_tc4(elog: Path):
 
 rep=["# Test Report (Detailed / 상세 리포트)", "", f"- Timeout / 타임아웃: {TIMEOUT}s", f"- Repetitions / 반복횟수: {REPEAT}", ""]
 pass_n=fail_n=0
+passed_list=[]
+failed_list=[]
 for tc in TESTS:
     name, status, output, tcdir, passes, status_list = run_tc(tc)
     rep.append(f"## {name}")
@@ -466,12 +481,54 @@ for tc in TESTS:
         rep.append("... (truncated) ...")
     rep.append("```")
     rep.append("")
-    if status=='PASS': pass_n+=1
-    else: fail_n+=1
+    if status=='PASS':
+        pass_n+=1
+        passed_list.append(name)
+    else:
+        fail_n+=1
+        failed_list.append(name)
 
 rep.append("## Summary / 요약")
 rep.append(f"- Passed / 통과: {pass_n}")
 rep.append(f"- Failed / 실패: {fail_n}")
+rep.append("")
+if passed_list:
+    rep.append("### Passed List / 통과 TC")
+    for n in passed_list:
+        desc = {
+            'tc1': 'PRS 지속시간/슬롯 간격 검증',
+            'tc2': 'PRS 윈도우 경쟁자 vs 승자 일치',
+            'tc3': '백오프 슬롯 평균≈slotTime',
+            'tc4': 'PRS→Backoff→TX→RIFS→CIFS 시퀀스',
+            'tc5': 'CAP 순환 동작',
+            'tc6': 'PRS 패배 시 defer 처리(삭제 금지)',
+            'tc7': 'Busy 슬롯 경로 동작',
+            'tc8': '충돌→MAC 재시도(BPC++)',
+            'tc9': 'CA3 vs CA0 우선순위 우위',
+            'tc10': 'DC==0 & busy에서 BPC++',
+            'tc11': '충돌 모델 ON 시 재시도 경로',
+            'tc12': 'Table I 백오프 매핑 증거'
+        }.get(n, '')
+        rep.append(f"- {n}: {desc}")
+    rep.append("")
+if failed_list:
+    rep.append("### Failed List / 실패 TC")
+    for n in failed_list:
+        desc = {
+            'tc1': 'PRS 지속시간/슬롯 간격 검증',
+            'tc2': 'PRS 윈도우 경쟁자 vs 승자 일치',
+            'tc3': '백오프 슬롯 평균≈slotTime',
+            'tc4': 'PRS→Backoff→TX→RIFS→CIFS 시퀀스',
+            'tc5': 'CAP 순환 동작',
+            'tc6': 'PRS 패배 시 defer 처리(삭제 금지)',
+            'tc7': 'Busy 슬롯 경로 동작',
+            'tc8': '충돌→MAC 재시도(BPC++)',
+            'tc9': 'CA3 vs CA0 우선순위 우위',
+            'tc10': 'DC==0 & busy에서 BPC++',
+            'tc11': '충돌 모델 ON 시 재시도 경로',
+            'tc12': 'Table I 백오프 매핑 증거'
+        }.get(n, '')
+        rep.append(f"- {n}: {desc}")
 
 (BASE/'testReport.md').write_text('\n'.join(rep)+'\n')
 print(str(BASE/'testReport.md'))

@@ -29,22 +29,10 @@ Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCha
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc1:  0
 
 Preparing for running configuration General, run #0...
-Assigned runID=General-0-20250919-11:23:35-616554
-Setting up network "test.common.TestBus"...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc1/results/cmdenv.log"...
 Recording eventlog to file `results/General-#0.elog'...
-Initializing...
 
-Running simulation...
-** Event #0   t=0   Elapsed: 8e-06s (0m 00s)  0% completed  (0% total)
-     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
-     Messages:  created: 18   present: 18   in FES: 3
-** Event #339   t=5   Elapsed: 0.003176s (0m 00s)  100% completed  (100% total)
-     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
-     Messages:  created: 67   present: 18   in FES: 2
-
-<!> Simulation time limit reached -- at t=5s, event #339
-
-Calling finish() at end of Run #0...
+End.
 [run.sh] validator start (timeout 500s)
 OK
 --- run 2/10 [PASS] ---
@@ -62,22 +50,10 @@ Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCha
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc1:  0
 
 Preparing for running configuration General, run #0...
-Assigned runID=General-0-20250919-11:23:36-616575
-Setting up network "test.common.TestBus"...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc1/results/cmdenv.log"...
 Recording eventlog to file `results/General-#0.elog'...
-Initializing...
 
-Running simulation...
-** Event #0   t=0   Elapsed: 7e-06s (0m 00s)  0% completed  (0% total)
-     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
-     Messages:  created: 18   present: 18   in FES: 3
-** Event #339   t=5   Elapsed: 0.003065s (0m 00s)  100% completed  (100% total)
-     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
-     Messages:  created: 67   present: 18   in FES: 2
-
-<!> Simulation time limit reached -- at t=5s, event #339
-
-Calling finish() at end of Run #0...
+End.
 [run.sh] validator start (timeout 500s)
 OK
 --- run 3/10 [PASS] ---
@@ -94,6 +70,30 @@ Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/sr
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc1:  0
 
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc1/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+OK
+--- run 4/10 [PASS] ---
+[run.sh] tc1 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc1:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc1/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
 ... (truncated) ...
 ```
 
@@ -118,209 +118,153 @@ Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCha
     - Contenders / 경쟁자:
       - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
       - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(10)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
-    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3), reason=smallest backoffSlots
-  - Window 2 @ t0=5.594000e-04
-    - Contenders / 경쟁자:
-      - MAC ID(20), Node(evse), CAP(3), backoffSlots(4)
-    - Winner / 승자: MAC ID(20), Node(evse), CAP(3), reason=smallest backoffSlots
-  - Window 3 @ t0=2.001717e-01
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(8)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(4)
-    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3), reason=smallest backoffSlots
-  - Window 4 @ t0=4.001717e-01
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 5 @ t0=6.001717e-01
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(6)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(12)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 6 @ t0=8.001717e-01
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(12)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(6)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
-    - Winner / 승자: MAC ID(36), Node(ev[3]), CAP(3), reason=smallest backoffSlots
-  - Window 7 @ t0=1.000172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(12)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(6)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(10)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
-    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3), reason=smallest backoffSlots
-  - Window 8 @ t0=1.200172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(8)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 9 @ t0=1.400172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(8)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(12)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(8)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 10 @ t0=1.600172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(8)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(8)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 11 @ t0=1.800172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(12)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(8)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 12 @ t0=2.000172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(4)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(10)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(10)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(10)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 13 @ t0=2.200172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(10)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 14 @ t0=2.400172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(10)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(12)
-    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3), reason=smallest backoffSlots
-  - Window 15 @ t0=2.600172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 16 @ t0=2.800172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(4)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(10)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
-    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3), reason=smallest backoffSlots
-  - Window 17 @ t0=3.000172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(4)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(10)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
-    - Winner / 승자: MAC ID(36), Node(ev[3]), CAP(3), reason=smallest backoffSlots
-  - Window 18 @ t0=3.200172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(10)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(4)
-    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3), reason=smallest backoffSlots
-  - Window 19 @ t0=3.400172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(4)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(6)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 20 @ t0=3.600172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(4)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(12)
-    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3), reason=smallest backoffSlots
-  - Window 21 @ t0=3.800172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(12)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(6)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 22 @ t0=4.000172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(4)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(12)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(6)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 23 @ t0=4.200172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(6)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(12)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 24 @ t0=4.400172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
       - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
       - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 25 @ t0=4.600172e+00
+    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3), reason=smallest backoffSlots
+  - Window 2 @ t0=3.360000e-04
     - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(4)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(12)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(6)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
-    - Winner / 승자: MAC ID(36), Node(ev[3]), CAP(3), reason=smallest backoffSlots
-  - Window 26 @ t0=4.800172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(6)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
-    - Winner / 승자: MAC ID(36), Node(ev[3]), CAP(3), reason=smallest backoffSlots
-  - Window 27 @ t0=5.000172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(12)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
       - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(12)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 28 @ t0=5.200172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(12)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
     - Winner / 승자: MAC ID(32), Node(ev[2]), CAP(3), reason=smallest backoffSlots
-  - Window 29 @ t0=5.400172e+00
+  - Window 3 @ t0=4.076800e-04
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(None)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 4 @ t0=4.435200e-04
     - Contenders / 경쟁자:
       - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(8)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(10)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
-  - Window 30 @ t0=5.600172e+00
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 5 @ t0=4.793600e-04
     - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(12)
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
+  - Window 6 @ t0=5.003200e-04
+    - Contenders / 경쟁자:
       - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(10)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(32), Node(ev[2]), CAP(3), reason=smallest backoffSlots
+  - Window 7 @ t0=5.594000e-04
+    - Contenders / 경쟁자:
+      - MAC ID(20), Node(evse), CAP(3), backoffSlots(2)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(36), Node(ev[3]), CAP(3), reason=smallest backoffSlots
+  - Window 8 @ t0=6.078400e-04
+    - Contenders / 경쟁자:
+      - MAC ID(20), Node(evse), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 9 @ t0=6.436800e-04
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 10 @ t0=6.646400e-04
+    - Contenders / 경쟁자:
+      - MAC ID(20), Node(evse), CAP(3), backoffSlots(2)
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(0)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(0)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(20), Node(evse), CAP(3), reason=smallest backoffSlots
+  - Window 11 @ t0=7.153600e-04
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(4)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
       - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(4)
     - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3), reason=smallest backoffSlots
+  - Window 12 @ t0=8.080000e-04
+    - Contenders / 경쟁자:
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 13 @ t0=8.648000e-04
+    - Contenders / 경쟁자:
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(None)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 14 @ t0=8.796800e-04
+    - Contenders / 경쟁자:
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(0)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(32), Node(ev[2]), CAP(3), reason=smallest backoffSlots
+  - Window 15 @ t0=9.155200e-04
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
+  - Window 16 @ t0=1.008160e-03
+    - Contenders / 경쟁자:
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(None)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 17 @ t0=1.044000e-03
+    - Contenders / 경쟁자:
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 18 @ t0=1.079840e-03
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 19 @ t0=1.100800e-03
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(8)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(8)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(36), Node(ev[3]), CAP(3), reason=smallest backoffSlots
+  - Window 20 @ t0=1.244160e-03
+    - Contenders / 경쟁자:
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(None)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 21 @ t0=1.265120e-03
+    - Contenders / 경쟁자:
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(4)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 22 @ t0=1.351680e-03
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(0)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
+    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3), reason=smallest backoffSlots
+  - Window 23 @ t0=1.501120e-03
+    - Contenders / 경쟁자:
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(None)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 24 @ t0=1.516000e-03
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3), reason=smallest backoffSlots
+  - Window 25 @ t0=1.551840e-03
+    - Contenders / 경쟁자:
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(36), Node(ev[3]), CAP(3), reason=smallest backoffSlots
+  - Window 26 @ t0=1.659360e-03
+    - Contenders / 경쟁자:
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 27 @ t0=1.665440e-03
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A), reason=smallest backoffSlots
+  - Window 28 @ t0=1.716160e-03
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(4)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(4)
+    - Winner / 승자: MAC ID(32), Node(ev[2]), CAP(3), reason=smallest backoffSlots
+  - Window 29 @ t0=1.859520e-03
+    - Contenders / 경쟁자:
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3), reason=smallest backoffSlots
+  - Window 30 @ t0=1.895360e-03
+    - Contenders / 경쟁자:
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(32), Node(ev[2]), CAP(3), reason=smallest backoffSlots
 
 - Evidence / 증거: see `/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc2/results/General-#0.elog`
 - Runs Passed / 통과 회수: 10/10
@@ -343,22 +287,10 @@ Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCha
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc2:  0
 
 Preparing for running configuration General, run #0...
-Assigned runID=General-0-20250919-11:23:39-616815
-Setting up network "test.common.TestBus"...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc2/results/cmdenv.log"...
 Recording eventlog to file `results/General-#0.elog'...
-Initializing...
 
-Running simulation...
-** Event #0   t=0   Elapsed: 9e-06s (0m 00s)  0% completed  (0% total)
-     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
-     Messages:  created: 45   present: 45   in FES: 6
-** Event #1550   t=6.2   Elapsed: 0.014138s (0m 00s)  100% completed  (100% total)
-     Speed:     ev/sec=109711   simsec/sec=424.717   ev/simsec=258.316
-     Messages:  created: 271   present: 45   in FES: 5
-
-<!> Simulation time limit reached -- at t=6.2s, event #1550
-
-Calling finish() at end of Run #0...
+End.
 [run.sh] validator start (timeout 500s)
 OK
 --- run 2/10 [PASS] ---
@@ -376,22 +308,10 @@ Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCha
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc2:  0
 
 Preparing for running configuration General, run #0...
-Assigned runID=General-0-20250919-11:23:39-616834
-Setting up network "test.common.TestBus"...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc2/results/cmdenv.log"...
 Recording eventlog to file `results/General-#0.elog'...
-Initializing...
 
-Running simulation...
-** Event #0   t=0   Elapsed: 8e-06s (0m 00s)  0% completed  (0% total)
-     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
-     Messages:  created: 45   present: 45   in FES: 6
-** Event #1550   t=6.2   Elapsed: 0.013944s (0m 00s)  100% completed  (100% total)
-     Speed:     ev/sec=111215   simsec/sec=430.538   ev/simsec=258.316
-     Messages:  created: 271   present: 45   in FES: 5
-
-<!> Simulation time limit reached -- at t=6.2s, event #1550
-
-Calling finish() at end of Run #0...
+End.
 [run.sh] validator start (timeout 500s)
 OK
 --- run 3/10 [PASS] ---
@@ -408,6 +328,30 @@ Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/sr
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc2:  0
 
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc2/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+OK
+--- run 4/10 [PASS] ---
+[run.sh] tc2 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc2:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc2/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
 ... (truncated) ...
 ```
 
@@ -437,22 +381,10 @@ Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCha
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc3:  0
 
 Preparing for running configuration General, run #0...
-Assigned runID=General-0-20250919-11:23:42-617073
-Setting up network "test.common.TestBus"...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc3/results/cmdenv.log"...
 Recording eventlog to file `results/General-#0.elog'...
-Initializing...
 
-Running simulation...
-** Event #0   t=0   Elapsed: 8e-06s (0m 00s)  0% completed  (0% total)
-     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
-     Messages:  created: 18   present: 18   in FES: 3
-** Event #2038   t=5   Elapsed: 0.016711s (0m 00s)  100% completed  (100% total)
-     Speed:     ev/sec=122007   simsec/sec=298.148   ev/simsec=409.215
-     Messages:  created: 209   present: 18   in FES: 2
-
-<!> Simulation time limit reached -- at t=5s, event #2038
-
-Calling finish() at end of Run #0...
+End.
 [run.sh] validator start (timeout 500s)
 OK
 --- run 2/10 [PASS] ---
@@ -470,22 +402,10 @@ Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCha
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc3:  0
 
 Preparing for running configuration General, run #0...
-Assigned runID=General-0-20250919-11:23:42-617091
-Setting up network "test.common.TestBus"...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc3/results/cmdenv.log"...
 Recording eventlog to file `results/General-#0.elog'...
-Initializing...
 
-Running simulation...
-** Event #0   t=0   Elapsed: 7e-06s (0m 00s)  0% completed  (0% total)
-     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
-     Messages:  created: 18   present: 18   in FES: 3
-** Event #2038   t=5   Elapsed: 0.01634s (0m 00s)  100% completed  (100% total)
-     Speed:     ev/sec=124763   simsec/sec=304.883   ev/simsec=409.215
-     Messages:  created: 209   present: 18   in FES: 2
-
-<!> Simulation time limit reached -- at t=5s, event #2038
-
-Calling finish() at end of Run #0...
+End.
 [run.sh] validator start (timeout 500s)
 OK
 --- run 3/10 [PASS] ---
@@ -502,6 +422,30 @@ Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/sr
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc3:  0
 
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc3/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+OK
+--- run 4/10 [PASS] ---
+[run.sh] tc3 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc3:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc3/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
 ... (truncated) ...
 ```
 
@@ -510,7 +454,7 @@ Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCha
 - Objective / 목적: Validate full sequence PRS0→PRS1→Backoff→TX→RIFS→CIFS→next PRS0 / 전체 MAC 시퀀스 검증
 - Method / 방법: Check ES timers order and durations (PRS≈slot, RIFS/CIFS presence) / PRS≈슬롯시간, RIFS/CIFS 존재 확인
 - Expected / 기대값: PRS0≈3.584000e-05s, PRS1≈3.584000e-05s, backoffExists=True, rifsExists=True, cifsExists=True; counts>0
-- Actual / 실제값: d0=3.584000e-05s, d1=3.584000e-05s, backoffExists=True, rifsExists=True, cifsExists=True, counts(PRS1,TX)=(751,751)
+- Actual / 실제값: d0=3.584000e-05s, d1=3.584000e-05s, backoffExists=True, rifsExists=True, cifsExists=True, counts(PRS1,TX)=(1561,1561)
 - Runs Passed / 통과 회수: 10/10
 - Run Statuses / 실행 상태: [P, P, P, P, P, P, P, P, P, P]
 - Verdict / 판정: PASS
@@ -531,22 +475,10 @@ Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCha
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc4:  0
 
 Preparing for running configuration General, run #0...
-Assigned runID=General-0-20250919-11:23:46-617301
-Setting up network "test.common.TestBus"...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc4/results/cmdenv.log"...
 Recording eventlog to file `results/General-#0.elog'...
-Initializing...
 
-Running simulation...
-** Event #0   t=0   Elapsed: 7e-06s (0m 00s)  0% completed  (0% total)
-     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
-     Messages:  created: 63   present: 63   in FES: 8
-** Event #8736   t=5   Elapsed: 0.073049s (0m 00s)  100% completed  (100% total)
-     Speed:     ev/sec=119601   simsec/sec=67.9108   ev/simsec=1761.15
-     Messages:  created: 977   present: 63   in FES: 7
-
-<!> Simulation time limit reached -- at t=5s, event #8736
-
-Calling finish() at end of Run #0...
+End.
 [run.sh] validator start (timeout 500s)
 OK
 --- run 2/10 [PASS] ---
@@ -564,22 +496,10 @@ Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCha
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc4:  0
 
 Preparing for running configuration General, run #0...
-Assigned runID=General-0-20250919-11:23:46-617319
-Setting up network "test.common.TestBus"...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc4/results/cmdenv.log"...
 Recording eventlog to file `results/General-#0.elog'...
-Initializing...
 
-Running simulation...
-** Event #0   t=0   Elapsed: 1e-05s (0m 00s)  0% completed  (0% total)
-     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
-     Messages:  created: 63   present: 63   in FES: 8
-** Event #8736   t=5   Elapsed: 0.073985s (0m 00s)  100% completed  (100% total)
-     Speed:     ev/sec=118092   simsec/sec=67.0543   ev/simsec=1761.15
-     Messages:  created: 977   present: 63   in FES: 7
-
-<!> Simulation time limit reached -- at t=5s, event #8736
-
-Calling finish() at end of Run #0...
+End.
 [run.sh] validator start (timeout 500s)
 OK
 --- run 3/10 [PASS] ---
@@ -596,6 +516,30 @@ Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/sr
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc4:  0
 
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc4/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+OK
+--- run 4/10 [PASS] ---
+[run.sh] tc4 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc4:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc4/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
 ... (truncated) ...
 ```
 
@@ -620,1512 +564,177 @@ Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCha
     - Contenders / 경쟁자:
       - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
       - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(10)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
       - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
     - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3)
     - Losers / 탈락자:
       - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(10)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
       - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
     - Non-contenders / 불참자:
       - MAC ID(20), Node(evse), CAP(3)
-  - Window 2 @ t0=5.594000e-04
+  - Window 2 @ t0=3.360000e-04
     - Contenders / 경쟁자:
-      - MAC ID(20), Node(evse), CAP(3), backoffSlots(4)
-    - Winner / 승자: MAC ID(20), Node(evse), CAP(3)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(32), Node(ev[2]), CAP(3)
+    - Losers / 탈락자:
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
+    - Non-contenders / 불참자:
+      - MAC ID(20), Node(evse), CAP(3)
+      - MAC ID(24), Node(ev[0]), CAP(3)
+      - MAC ID(36), Node(ev[3]), CAP(3)
+  - Window 3 @ t0=4.076800e-04
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(None)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A)
+    - Losers / 탈락자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(None)
+    - Non-contenders / 불참자:
+      - MAC ID(20), Node(evse), CAP(3)
+      - MAC ID(28), Node(ev[1]), CAP(3)
+      - MAC ID(32), Node(ev[2]), CAP(3)
+      - MAC ID(36), Node(ev[3]), CAP(3)
+  - Window 4 @ t0=4.435200e-04
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A)
+    - Losers / 탈락자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
+    - Non-contenders / 불참자:
+      - MAC ID(20), Node(evse), CAP(3)
+      - MAC ID(28), Node(ev[1]), CAP(3)
+      - MAC ID(32), Node(ev[2]), CAP(3)
+      - MAC ID(36), Node(ev[3]), CAP(3)
+  - Window 5 @ t0=4.793600e-04
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3)
+    - Losers / 탈락자:
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
+    - Non-contenders / 불참자:
+      - MAC ID(20), Node(evse), CAP(3)
+      - MAC ID(28), Node(ev[1]), CAP(3)
+      - MAC ID(32), Node(ev[2]), CAP(3)
+  - Window 6 @ t0=5.003200e-04
+    - Contenders / 경쟁자:
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(32), Node(ev[2]), CAP(3)
+    - Losers / 탈락자:
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
+    - Non-contenders / 불참자:
+      - MAC ID(20), Node(evse), CAP(3)
+      - MAC ID(24), Node(ev[0]), CAP(3)
+  - Window 7 @ t0=5.594000e-04
+    - Contenders / 경쟁자:
+      - MAC ID(20), Node(evse), CAP(3), backoffSlots(2)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(36), Node(ev[3]), CAP(3)
+    - Losers / 탈락자:
+      - MAC ID(20), Node(evse), CAP(3), backoffSlots(2)
+    - Non-contenders / 불참자:
+      - MAC ID(24), Node(ev[0]), CAP(3)
+      - MAC ID(28), Node(ev[1]), CAP(3)
+      - MAC ID(32), Node(ev[2]), CAP(3)
+  - Window 8 @ t0=6.078400e-04
+    - Contenders / 경쟁자:
+      - MAC ID(20), Node(evse), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A)
+    - Losers / 탈락자:
+      - MAC ID(20), Node(evse), CAP(3), backoffSlots(2)
     - Non-contenders / 불참자:
       - MAC ID(24), Node(ev[0]), CAP(3)
       - MAC ID(28), Node(ev[1]), CAP(3)
       - MAC ID(32), Node(ev[2]), CAP(3)
       - MAC ID(36), Node(ev[3]), CAP(3)
-  - Window 3 @ t0=2.001717e-01
+  - Window 9 @ t0=6.436800e-04
     - Contenders / 경쟁자:
       - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A)
     - Losers / 탈락자:
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
     - Non-contenders / 불참자:
       - MAC ID(20), Node(evse), CAP(3)
-  - Window 4 @ t0=4.001717e-01
+      - MAC ID(28), Node(ev[1]), CAP(3)
+      - MAC ID(32), Node(ev[2]), CAP(3)
+      - MAC ID(36), Node(ev[3]), CAP(3)
+  - Window 10 @ t0=6.646400e-04
     - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(12)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3)
+      - MAC ID(20), Node(evse), CAP(3), backoffSlots(2)
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(0)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(0)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+    - Winner / 승자: MAC ID(20), Node(evse), CAP(3)
     - Losers / 탈락자:
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(12)
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(0)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(0)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
+    - Non-contenders / 불참자:
+      - MAC ID(36), Node(ev[3]), CAP(3)
+  - Window 11 @ t0=7.153600e-04
+    - Contenders / 경쟁자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(4)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(4)
+    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3)
+    - Losers / 탈락자:
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(4)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(4)
     - Non-contenders / 불참자:
       - MAC ID(20), Node(evse), CAP(3)
       - MAC ID(32), Node(ev[2]), CAP(3)
-      - MAC ID(36), Node(ev[3]), CAP(3)
-  - Window 5 @ t0=6.001717e-01
+  - Window 12 @ t0=8.080000e-04
     - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(8)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
-    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3)
-    - Losers / 탈락자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(8)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
-    - Non-contenders / 불참자:
-      - MAC ID(20), Node(evse), CAP(3)
-  - Window 6 @ t0=8.001717e-01
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(8)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(8)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(8)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(12)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3)
-    - Losers / 탈락자:
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(8)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(8)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(12)
-    - Non-contenders / 불참자:
-      - MAC ID(20), Node(evse), CAP(3)
-  - Window 7 @ t0=1.000172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(10)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(10)
       - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
-    - Winner / 승자: MAC ID(32), Node(ev[2]), CAP(3)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A)
     - Losers / 탈락자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(10)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(10)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
-    - Non-contenders / 불참자:
-      - MAC ID(20), Node(evse), CAP(3)
-  - Window 8 @ t0=1.200172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(10)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3)
-    - Losers / 탈락자:
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(10)
-    - Non-contenders / 불참자:
-      - MAC ID(20), Node(evse), CAP(3)
-  - Window 9 @ t0=1.400172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(10)
-    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3)
-    - Losers / 탈락자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(10)
-    - Non-contenders / 불참자:
-      - MAC ID(20), Node(evse), CAP(3)
-  - Window 10 @ t0=1.600172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3)
-    - Losers / 탈락자:
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
-    - Non-contenders / 불참자:
-      - MAC ID(20), Node(evse), CAP(3)
-  - Window 11 @ t0=1.800172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(12)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(6)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(12)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
-    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3)
-    - Losers / 탈락자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(12)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(12)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(8)
-    - Non-contenders / 불참자:
-      - MAC ID(20), Node(evse), CAP(3)
-  - Window 12 @ t0=2.000172e+00
-    - Contenders / 경쟁자:
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(2)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
-    - Winner / 승자: MAC ID(28), Node(ev[1]), CAP(3)
-    - Losers / 탈락자:
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
+      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
     - Non-contenders / 불참자:
       - MAC ID(20), Node(evse), CAP(3)
       - MAC ID(24), Node(ev[0]), CAP(3)
-  - Window 13 @ t0=2.200172e+00
+      - MAC ID(28), Node(ev[1]), CAP(3)
+      - MAC ID(36), Node(ev[3]), CAP(3)
+  - Window 13 @ t0=8.648000e-04
     - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(6)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
-    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(None)
+    - Winner / 승자: MAC ID(None), Node(None), CAP(N/A)
     - Losers / 탈락자:
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(6)
-      - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(6)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(None)
     - Non-contenders / 불참자:
       - MAC ID(20), Node(evse), CAP(3)
-  - Window 14 @ t0=2.400172e+00
+      - MAC ID(24), Node(ev[0]), CAP(3)
+      - MAC ID(32), Node(ev[2]), CAP(3)
+      - MAC ID(36), Node(ev[3]), CAP(3)
+  - Window 14 @ t0=8.796800e-04
     - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(0)
       - MAC ID(32), Node(ev[2]), CAP(3), backoffSlots(2)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
     - Winner / 승자: MAC ID(32), Node(ev[2]), CAP(3)
     - Losers / 탈락자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
-      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
-      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
+      - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(0)
     - Non-contenders / 불참자:
       - MAC ID(20), Node(evse), CAP(3)
-  - Window 15 @ t0=2.600172e+00
+      - MAC ID(24), Node(ev[0]), CAP(3)
+      - MAC ID(36), Node(ev[3]), CAP(3)
+  - Window 15 @ t0=9.155200e-04
     - Contenders / 경쟁자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
+      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(2)
       - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
       - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
-    - Winner / 승자: MAC ID(36), Node(ev[3]), CAP(3)
+    - Winner / 승자: MAC ID(24), Node(ev[0]), CAP(3)
     - Losers / 탈락자:
-      - MAC ID(24), Node(ev[0]), CAP(3), backoffSlots(6)
       - MAC ID(28), Node(ev[1]), CAP(3), backoffSlots(4)
+      - MAC ID(36), Node(ev[3]), CAP(3), backoffSlots(2)
     - Non-contenders / 불참자:
       - MAC ID(20), Node(evse), CAP(3)
       - MAC ID(32), Node(ev[2]), CAP(3)
 
 - CAP_LOG (runtime) / 런타임 CAP 로그:
 ```
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=0.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=0.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=0.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=0.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=1.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=1.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=1.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=1.8001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.0001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=2.2001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=2.4001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=2.6001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=2.8001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.0001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=3.2001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=3.4001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=3.6001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=3.8001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.0001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=4.2001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=4.4001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=4.6001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=4.8001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.0001
-[INFO]	CAP_LOG node=ev[0] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[1] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[2] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[3] cap=1 t=5.2001
-[INFO]	CAP_LOG node=ev[0] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[1] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[2] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[3] cap=0 t=5.4001
-[INFO]	CAP_LOG node=ev[0] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[1] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[2] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[3] cap=3 t=5.6001
-[INFO]	CAP_LOG node=ev[0] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[1] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[2] cap=2 t=5.8001
-[INFO]	CAP_LOG node=ev[3] cap=2 t=5.8001
 ```
 - Evidence / 증거: see `/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc5/results/General-#0.elog` and `/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc5/results/sim.out`
 - Runs Passed / 통과 회수: 10/10
@@ -2148,74 +757,720 @@ Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCha
 Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc5:  0
 
 Preparing for running configuration General, run #0...
-Assigned runID=General-0-20250919-11:23:50-617546
-Setting up network "test.common.TestBus"...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc5/results/cmdenv.log"...
 Recording eventlog to file `results/General-#0.elog'...
-Initializing...
-Initializing channel TestBus.ev[0].plcg$o.channel, stage 0
-Initializing channel TestBus.bus.port$o[0].channel, stage 0
-Initializing channel TestBus.ev[1].plcg$o.channel, stage 0
-Initializing channel TestBus.bus.port$o[1].channel, stage 0
-Initializing channel TestBus.ev[2].plcg$o.channel, stage 0
-Initializing channel TestBus.bus.port$o[2].channel, stage 0
-Initializing channel TestBus.ev[3].plcg$o.channel, stage 0
-Initializing channel TestBus.bus.port$o[3].channel, stage 0
-Initializing channel TestBus.evse.plcg$o.channel, stage 0
-Initializing channel TestBus.bus.port$o[4].channel, stage 0
-Initializing module TestBus, stage 0
-Initializing module TestBus.bus, stage 0
-Initializing module TestBus.evse, stage 0
-Initializing module TestBus.evse.plc, stage 0
-Initializing module TestBus.evse.plc.mac, stage 0
-[INFO]	IEEE1901Mac initialized with parameters:
-[INFO]	  txPower: 20 dBm
-[INFO]	  bitrate: 2e+08 bps
-[INFO]	  maxRetries: 7
-[INFO]	  slotTime: 0.00003584 s
-[INFO]	  sifsTime: 0.00001 s
-[INFO]	  difsTime: 0.000034 s
-[INFO]	  cwMin: 16
-[INFO]	  cwMax: 1024
-[INFO]	  prs0Duration: 0.00003584 s
-[INFO]	  prs1Duration: 0.00003584 s
-Initializing module TestBus.evse.plc.phy, stage 0
-[INFO]	IEEE1901Phy initialized with parameters:
-[INFO]	  dataRate: 10 Mbps
-[INFO]	  transmitPower: 10 dBm
-[INFO]	  noisePower: -90 dBm
-[INFO]	  channelAttenuation: 20 dB
-[INFO]	  enableBER: true
-[INFO]	  baseSNR: 25 dB
-[INFO]	  berAlpha: 0.5
-[INFO]	  berBeta: 0.4
-[INFO]	  maxBER: 0.1
-Initializing module TestBus.evse.slac, stage 0
-[WARN]	This is Priority Cycle Mode!!! it is not a charging protocol environment!!
-[INFO]	This is Priority Cycle Mode!!! it is not a charging protocol environment!!
-Initializing module TestBus.ev[0], stage 0
-Initializing module TestBus.ev[0].plc, stage 0
-Initializing module TestBus.ev[0].plc.mac, stage 0
-[INFO]	IEEE1901Mac initialized with parameters:
-[INFO]	  txPower: 20 dBm
-[INFO]	  bitrate: 2e+08 bps
-[INFO]	  maxRetries: 7
-[INFO]	  slotTime: 0.00003584 s
-[INFO]	  sifsTime: 0.00001 s
-[INFO]	  difsTime: 0.000034 s
-[INFO]	  cwMin: 16
-[INFO]	  cwMax: 1024
-[INFO]	  prs0Duration: 0.00003584 s
-[INFO]	  prs1Duration: 0.00003584 s
-Initializing module TestBus.ev[0].plc.phy, stage 0
-[INFO]	IEEE1901Phy initialized with parameters:
-[INFO]	  dataRate: 10 Mbps
-[INFO]	  transmitPower: 10 dBm
-[INFO]	  noisePower: -90 dBm
-[INFO]	  channelAttenuation: 20 dB
-[INFO]	  enableBER: true
+
+End.
+[run.sh] validator start (timeout 500s)
+OK
+--- run 2/10 [PASS] ---
+[run.sh] tc5 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc5:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc5/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+OK
+--- run 3/10 [PASS] ---
+[run.sh] tc5 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc5:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc5/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+OK
+--- run 4/10 [PASS] ---
+[run.sh] tc5 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc5:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc5/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+... (truncated) ...
+```
+
+## tc6
+- Conditions / 조건: timeout=500s, repeats=10
+- Runs Passed / 통과 회수: 0/10
+- Run Statuses / 실행 상태: [F, F, F, F, F, F, F, F, F, F]
+- Verdict / 판정: FAIL
+- Runner Output (first lines) / 실행 출력(일부):
+```
+--- run 1/10 [FAIL] ---
+[run.sh] tc6 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc6/results/cmdenv.log"...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 2/10 [FAIL] ---
+[run.sh] tc6 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc6/results/cmdenv.log"...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 3/10 [FAIL] ---
+[run.sh] tc6 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc6/results/cmdenv.log"...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 4/10 [FAIL] ---
+[run.sh] tc6 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc6/results/cmdenv.log"...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 5/10 [FAIL] ---
+[run.sh] tc6 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+... (truncated) ...
+```
+
+## tc7
+- Conditions / 조건: timeout=500s, repeats=10
+- Runs Passed / 통과 회수: 0/10
+- Run Statuses / 실행 상태: [F, F, F, F, F, F, F, F, F, F]
+- Verdict / 판정: FAIL
+- Runner Output (first lines) / 실행 출력(일부):
+```
+--- run 1/10 [FAIL] ---
+[run.sh] tc7 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+
+<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 2/10 [FAIL] ---
+[run.sh] tc7 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+
+<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 3/10 [FAIL] ---
+[run.sh] tc7 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+
+<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 4/10 [FAIL] ---
+[run.sh] tc7 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+
+<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 5/10 [FAIL] ---
+[run.sh] tc7 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+
+<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 6/10 [FAIL] ---
+[run.sh] tc7 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+
+<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 7/10 [FAIL] ---
+[run.sh] tc7 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+
+<!> Error: Configuration option cmdenv-log-level should be specified per object, try **.cmdenv-log-level=
+... (truncated) ...
+```
+
+## tc8
+- Conditions / 조건: timeout=500s, repeats=10
+- Runs Passed / 통과 회수: 0/10
+- Run Statuses / 실행 상태: [F, F, F, F, F, F, F, F, F, F]
+- Verdict / 판정: FAIL
+- Runner Output (first lines) / 실행 출력(일부):
+```
+--- run 1/10 [FAIL] ---
+[run.sh] tc8 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc8:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc8/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 2/10 [FAIL] ---
+[run.sh] tc8 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc8:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc8/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 3/10 [FAIL] ---
+[run.sh] tc8 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc8:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc8/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 4/10 [FAIL] ---
+[run.sh] tc8 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc8:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc8/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+... (truncated) ...
+```
+
+## tc9
+- Conditions / 조건: timeout=500s, repeats=10
+- Runs Passed / 통과 회수: 10/10
+- Run Statuses / 실행 상태: [P, P, P, P, P, P, P, P, P, P]
+- Verdict / 판정: PASS
+- Runner Output (first lines) / 실행 출력(일부):
+```
+--- run 1/10 [PASS] ---
+[run.sh] tc9 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc9:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc9/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+OK
+--- run 2/10 [PASS] ---
+[run.sh] tc9 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc9:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc9/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+OK
+--- run 3/10 [PASS] ---
+[run.sh] tc9 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc9:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc9/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+OK
+--- run 4/10 [PASS] ---
+[run.sh] tc9 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc9:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc9/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+... (truncated) ...
+```
+
+## tc10
+- Conditions / 조건: timeout=500s, repeats=10
+- Runs Passed / 통과 회수: 0/10
+- Run Statuses / 실행 상태: [F, F, F, F, F, F, F, F, F, F]
+- Verdict / 판정: FAIL
+- Runner Output (first lines) / 실행 출력(일부):
+```
+--- run 1/10 [FAIL] ---
+[run.sh] tc10 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc10:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc10/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 2/10 [FAIL] ---
+[run.sh] tc10 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc10:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc10/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 3/10 [FAIL] ---
+[run.sh] tc10 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc10:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc10/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 4/10 [FAIL] ---
+[run.sh] tc10 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc10:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc10/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+... (truncated) ...
+```
+
+## tc11
+- Conditions / 조건: timeout=500s, repeats=10
+- Runs Passed / 통과 회수: 0/10
+- Run Statuses / 실행 상태: [F, F, F, F, F, F, F, F, F, F]
+- Verdict / 판정: FAIL
+- Runner Output (first lines) / 실행 출력(일부):
+```
+--- run 1/10 [FAIL] ---
+[run.sh] tc11 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc11:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc11/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 2/10 [FAIL] ---
+[run.sh] tc11 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc11:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc11/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 3/10 [FAIL] ---
+[run.sh] tc11 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc11:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc11/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 4/10 [FAIL] ---
+[run.sh] tc11 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc11:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc11/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+... (truncated) ...
+```
+
+## tc12
+- Conditions / 조건: timeout=500s, repeats=10
+- Runs Passed / 통과 회수: 0/10
+- Run Statuses / 실행 상태: [F, F, F, F, F, F, F, F, F, F]
+- Verdict / 판정: FAIL
+- Runner Output (first lines) / 실행 출력(일부):
+```
+--- run 1/10 [FAIL] ---
+[run.sh] tc12 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc12:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc12/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 2/10 [FAIL] ---
+[run.sh] tc12 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc12:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc12/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 3/10 [FAIL] ---
+[run.sh] tc12 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc12:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc12/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
+
+End.
+[run.sh] validator start (timeout 500s)
+FAIL
+--- run 4/10 [FAIL] ---
+[run.sh] tc12 sim start (timeout 500s)
+OMNeT++ Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd.
+Version: 6.1, build: 241008-f7568267cd, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+
+Setting up Cmdenv...
+
+Loading NED files from .:  0
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET:  3
+Loading NED files from /home/kimdawoon/study/workspace/research/inet_plc/inet/src:  1232
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/common:  1
+Loading NED files from /home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc12:  0
+
+Preparing for running configuration General, run #0...
+Redirecting output to file "/home/kimdawoon/study/workspace/research/project_smartCharging_macLayer_improvement/csma_ca_hpgp_withINET/test/tc12/results/cmdenv.log"...
+Recording eventlog to file `results/General-#0.elog'...
 ... (truncated) ...
 ```
 
 ## Summary / 요약
-- Passed / 통과: 5
-- Failed / 실패: 0
+- Passed / 통과: 6
+- Failed / 실패: 6
+
+### Passed List / 통과 TC
+- tc1: PRS 지속시간/슬롯 간격 검증
+- tc2: PRS 윈도우 경쟁자 vs 승자 일치
+- tc3: 백오프 슬롯 평균≈slotTime
+- tc4: PRS→Backoff→TX→RIFS→CIFS 시퀀스
+- tc5: CAP 순환 동작
+- tc9: CA3 vs CA0 우선순위 우위
+
+### Failed List / 실패 TC
+- tc6: PRS 패배 시 defer 처리(삭제 금지)
+- tc7: Busy 슬롯 경로 동작
+- tc8: 충돌→MAC 재시도(BPC++)
+- tc10: DC==0 & busy에서 BPC++
+- tc11: 충돌 모델 ON 시 재시도 경로
+- tc12: Table I 백오프 매핑 증거
