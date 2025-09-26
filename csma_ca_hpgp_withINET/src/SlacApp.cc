@@ -390,7 +390,14 @@ class SlacApp : public cSimpleModule {
                     recordScalar("slacDoneTime(s)", simTime().dbl());
                     // start DC ticking only after SLAC completed
                     if (!dcTick) { dcTick = new cMessage("dcTick"); take(dcTick); }
-                    if (!dcTick->isScheduled()) scheduleAt(simTime(), dcTick);
+                    // First tick only: schedule after completion with optional small jitter
+                    if (!dcTick->isScheduled()) {
+                        double firstJitter = 1e-6;
+                        if (hasPar("dcFirstJitter")) {
+                            try { firstJitter = std::max(0.0, par("dcFirstJitter").doubleValue()); } catch (...) { firstJitter = 1e-6; }
+                        }
+                        scheduleAt(simTime() + firstJitter, dcTick);
+                    }
                     if (testInjectPostSlacMsgs && postSlacSweep && !postSlacSweep->isScheduled())
                         emitCapSweep(), startPeriodicCapSweep();
                     EV_INFO << "SLAC_LOG stage=SLAC_DONE node=" << getParentModule()->getFullName() << " t=" << simTime() << endl;

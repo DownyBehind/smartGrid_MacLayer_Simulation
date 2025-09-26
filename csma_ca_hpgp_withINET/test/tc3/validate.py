@@ -4,34 +4,48 @@ from pathlib import Path
 SLOT = 35.84e-6
 TOL = 1e-6  # 1us
 
-pat = re.compile(r"^(BS|ES)\s+id\s+\d+.*\bn\s+(prs1Timer|backoffTimer|txTimer)\b.*\bsm\s+(\d+)\b.*\bst\s+([0-9eE+\-\.]+)\s+am\s+\d+\s+at\s+([0-9eE+\-\.]+)")
+def parse_prs1_end_from_cmdenv(cmdenv: Path):
+    pat = re.compile(r"PRS1_END.*?t=([0-9eE+\-\.]+)")
+    with cmdenv.open(errors='ignore') as f:
+        for line in f:
+            m = pat.search(line)
+            if m:
+                try:
+                    return float(m.group(1))
+                except ValueError:
+                    continue
+    return None
 
-def parse(elog: Path):
-    prs1=[]; backs=[]; tx=[]
+def parse_backoff_tx(elog: Path):
+    pat = re.compile(r"^(ES)\s+id\s+\d+.*\bn\s+(backoffTimer|txTimer)\b.*\bsm\s+(\d+)\b.*\bst\s+([0-9eE+\-\.]+)\s+am\s+\d+\s+at\s+([0-9eE+\-\.]+)")
+    backs=[]; tx=[]
     with elog.open(errors='ignore') as f:
         for line in f:
             m = pat.search(line)
             if not m: continue
-            phase, name, sm, st, at = m.groups()
+            _, name, sm, st, at = m.groups()
             sm = int(sm); st = float(st); at = float(at)
-            if name=='prs1Timer' and phase=='ES': prs1.append((sm, st, at))
-            elif name=='backoffTimer' and phase=='ES': backs.append((sm, st, at))
-            elif name=='txTimer' and phase=='ES': tx.append((sm, st, at))
-    return prs1, backs, tx
+            if name=='backoffTimer': backs.append((sm, st, at))
+            else: tx.append((sm, st, at))
+    return backs, tx
 
 def main():
     elog = Path('results/General-#0.elog')
-    if not elog.exists():
-        print('NG: no eventlog')
+    cmdenv = Path('results/cmdenv.log')
+    if not elog.exists() or not cmdenv.exists():
+        print('NG: missing logs')
         sys.exit(1)
-    prs1, backs, tx = parse(elog)
-    if not prs1 or not tx:
-        print('NG: missing prs1/tx events')
+    prs1_at = parse_prs1_end_from_cmdenv(cmdenv)
+    if prs1_at is None:
+        print('NG: missing PRS1_END')
         sys.exit(1)
-    prs1_at = min(p[2] for p in prs1)
+    backs, tx = parse_backoff_tx(elog)
+    if not backs or not tx:
+        print('NG: missing backoff/tx events')
+        sys.exit(1)
     tx_after = sorted([t for t in tx if t[2] >= prs1_at], key=lambda x:x[2])
     if not tx_after:
-        print('NG: no tx after prs1')
+        print('NG: no tx after PRS1_END')
         sys.exit(1)
     win_sm, _, tx_at = tx_after[0]
     times = sorted([b[2] for b in backs if b[0]==win_sm and prs1_at <= b[2] <= tx_at])
